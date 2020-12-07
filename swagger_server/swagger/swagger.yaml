@@ -1,0 +1,852 @@
+openapi: 3.0.3
+info:
+  title: Flexgrid ATP API
+  description: The Automated Trading Platform (ATP) of the flexgrid project
+  termsOfService: https://atp.flexgrid-project.eu/terms/
+  contact:
+    name: Dimitros J. Vergados
+    url: https://flexgrid-project.eu
+  license:
+    name: BSD
+    url: https://github.com/pyeve/eve-swagger/blob/master/LICENSE
+  version: "1.0"
+servers:
+- url: http://localhost:8080/
+tags:
+- name: Prosumer
+paths:
+  /scenarios:
+    post:
+      tags:
+      - Scenario
+      summary: Initiates a simulation scenario
+      operationId: scenarios_post
+      requestBody:
+        $ref: '#/components/requestBodies/ScenarioParams'
+      responses:
+        "201":
+          description: operation has been successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScenarioResult'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/ScenarioResult'
+        "400":
+          description: bad request
+      security:
+      - MyTokenAuth: []
+      x-openapi-router-controller: swagger_server.controllers.scenario_controller
+components:
+  schemas:
+    ScenarioParams:
+      minItems: 1
+      type: array
+      items:
+        $ref: '#/components/schemas/ScenarioParams_inner'
+    DayPriceVector_Euro_MWh:
+      required:
+      - unit
+      - values
+      type: object
+      properties:
+        values:
+          $ref: '#/components/schemas/DayPriceVector'
+        unit:
+          type: string
+          enum:
+          - €/MWh
+    DayPriceVector:
+      maxItems: 25
+      minItems: 23
+      type: array
+      example:
+      - 113.3
+      - 12.4
+      - 5.5
+      - 225.3
+      - 2.6
+      - 21.1
+      - 21
+      - 24.9
+      - 24.2
+      - 1.45
+      - 15.4
+      - 15.2
+      - 15.1
+      - 1.45
+      - 5.54
+      - 5.34
+      - 6.45
+      - 8.45
+      - 8.45
+      - 3.34
+      - 1.34
+      - 2.45
+      - 7.14
+      - 9.53
+      items:
+        type: number
+        format: currency
+    StorageUnit:
+      required:
+      - location
+      type: object
+      properties:
+        power_capacity_KW:
+          minimum: 0
+          type: number
+        energy_capacity_KWh:
+          minimum: 0
+          type: number
+        inefficiency_rate_per_cent:
+          maximum: 1
+          minimum: 0
+          type: number
+        initial_final_SoC_per_cent:
+          maximum: 1
+          minimum: 0
+          type: number
+        location:
+          $ref: '#/components/schemas/Location'
+    Location:
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          format: objectid
+        name:
+          type: string
+    ScenarioResult:
+      minItems: 1
+      type: array
+      items:
+        $ref: '#/components/schemas/ScenarioResult_inner'
+    DayOfferVector:
+      maxItems: 25
+      minItems: 23
+      type: array
+      items:
+        $ref: '#/components/schemas/DayOfferVectorItem'
+    DayOfferVectorItem:
+      type: object
+      properties:
+        price:
+          type: number
+          format: currency
+        volume:
+          type: number
+      example:
+        volume: 6.02745618307040320615897144307382404804229736328125
+        price: 0.80082819046101150206595775671303272247314453125
+    DayOfferVector_Euro_MWh:
+      required:
+      - price_unit
+      - values
+      - volume_unit
+      type: object
+      properties:
+        values:
+          $ref: '#/components/schemas/DayOfferVector'
+        price_unit:
+          type: string
+          enum:
+          - €/MWh
+        volume_unit:
+          type: string
+          enum:
+          - MWh
+      example:
+        price_unit: €/MWh
+        volume_unit: MWh
+        values:
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+        - volume: 6.02745618307040320615897144307382404804229736328125
+          price: 0.80082819046101150206595775671303272247314453125
+    DayPriceVector_Euro:
+      required:
+      - currency
+      - values
+      type: object
+      properties:
+        values:
+          maxItems: 25
+          minItems: 23
+          type: array
+          example:
+          - 113.3
+          - 12.4
+          - 5.5
+          - 225.3
+          - 2.6
+          - 21.1
+          - 21
+          - 24.9
+          - 24.2
+          - 1.45
+          - 15.4
+          - 15.2
+          - 15.1
+          - 1.45
+          - 5.54
+          - 5.34
+          - 6.45
+          - 8.45
+          - 8.45
+          - 3.34
+          - 1.34
+          - 2.45
+          - 7.14
+          - 9.53
+          items:
+            $ref: '#/components/schemas/DayPriceVector_Euro_values'
+        currency:
+          type: string
+          enum:
+          - €
+      example:
+        values:
+        - 113.3
+        - 12.4
+        - 5.5
+        - 225.3
+        - 2.6
+        - 21.1
+        - 21
+        - 24.9
+        - 24.2
+        - 1.45
+        - 15.4
+        - 15.2
+        - 15.1
+        - 1.45
+        - 5.54
+        - 5.34
+        - 6.45
+        - 8.45
+        - 8.45
+        - 3.34
+        - 1.34
+        - 2.45
+        - 7.14
+        - 9.53
+        currency: €
+    ScenarioParams_inner:
+      required:
+      - countries
+      - sdate
+      type: object
+      properties:
+        sdate:
+          type: string
+          format: date
+          example: 2020-10-16
+        countries:
+          minItems: 1
+          type: array
+          items:
+            required:
+            - countries
+            - country_name
+            type: object
+            properties:
+              country_name:
+                type: string
+                example: Greece
+              day_ahead_market_prices:
+                $ref: '#/components/schemas/DayPriceVector_Euro_MWh'
+              reserve_market_prices:
+                required:
+                - unit
+                - values
+                type: object
+                properties:
+                  values:
+                    $ref: '#/components/schemas/DayPriceVector'
+                  unit:
+                    type: string
+                    enum:
+                    - (€/MWh)^2
+              d-LMPs:
+                $ref: '#/components/schemas/DayPriceVector_Euro_MWh'
+              q-LMPs:
+                required:
+                - unit
+                - values
+                type: object
+                properties:
+                  values:
+                    $ref: '#/components/schemas/DayPriceVector'
+                  unit:
+                    type: string
+                    enum:
+                    - €/MVar
+              balancing_market_prices:
+                $ref: '#/components/schemas/DayPriceVector_Euro_MWh'
+              storage_units:
+                minItems: 1
+                type: array
+                items:
+                  $ref: '#/components/schemas/StorageUnit'
+    ScenarioResult_inner:
+      required:
+      - countries
+      - date
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          example: 2020-10-16
+        countries:
+          minItems: 1
+          type: array
+          items:
+            required:
+            - flex_offer
+            - revenues
+            type: object
+            properties:
+              country_name:
+                type: string
+                example: Greece
+              flex_offer:
+                type: object
+                properties:
+                  day_ahead_market_offer:
+                    $ref: '#/components/schemas/DayOfferVector_Euro_MWh'
+                  reserve_market_offer:
+                    required:
+                    - unit
+                    - values
+                    type: object
+                    properties:
+                      values:
+                        $ref: '#/components/schemas/DayOfferVector'
+                      price_unit:
+                        type: string
+                        enum:
+                        - (€/MWh)^2
+                      volume_unit:
+                        type: string
+                        enum:
+                        - MWh^2
+                    example:
+                      price_unit: (€/MWh)^2
+                      volume_unit: MWh^2
+                      values: null
+                  d-LMPs:
+                    $ref: '#/components/schemas/DayOfferVector_Euro_MWh'
+                  q-LMPs:
+                    required:
+                    - unit
+                    - values
+                    type: object
+                    properties:
+                      values:
+                        $ref: '#/components/schemas/DayOfferVector'
+                      price_unit:
+                        type: string
+                        enum:
+                        - €/MVar
+                      volume_unit:
+                        type: string
+                        enum:
+                        - MVar
+                    example:
+                      price_unit: €/MVar
+                      volume_unit: MVar
+                      values: null
+                  balancing_market_offer:
+                    $ref: '#/components/schemas/DayOfferVector_Euro_MWh'
+                example:
+                  balancing_market_offer: null
+                  q-LMPs:
+                    price_unit: €/MVar
+                    volume_unit: MVar
+                    values: null
+                  reserve_market_offer:
+                    price_unit: (€/MWh)^2
+                    volume_unit: MWh^2
+                    values: null
+                  day_ahead_market_offer:
+                    price_unit: €/MWh
+                    volume_unit: MWh
+                    values:
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                    - volume: 6.02745618307040320615897144307382404804229736328125
+                      price: 0.80082819046101150206595775671303272247314453125
+                  d-LMPs: null
+              revenues:
+                type: object
+                properties:
+                  day_ahead_market_revenues:
+                    $ref: '#/components/schemas/DayPriceVector_Euro'
+                  reserve_market_revenues:
+                    $ref: '#/components/schemas/DayPriceVector_Euro'
+                  d-LMPs:
+                    $ref: '#/components/schemas/DayPriceVector_Euro'
+                  q-LMPs:
+                    $ref: '#/components/schemas/DayPriceVector_Euro'
+                  balancing_market_revenues:
+                    $ref: '#/components/schemas/DayPriceVector_Euro'
+                example:
+                  q-LMPs: null
+                  balancing_market_revenues: null
+                  reserve_market_revenues: null
+                  day_ahead_market_revenues:
+                    values:
+                    - 113.3
+                    - 12.4
+                    - 5.5
+                    - 225.3
+                    - 2.6
+                    - 21.1
+                    - 21
+                    - 24.9
+                    - 24.2
+                    - 1.45
+                    - 15.4
+                    - 15.2
+                    - 15.1
+                    - 1.45
+                    - 5.54
+                    - 5.34
+                    - 6.45
+                    - 8.45
+                    - 8.45
+                    - 3.34
+                    - 1.34
+                    - 2.45
+                    - 7.14
+                    - 9.53
+                    currency: €
+                  d-LMPs: null
+            example:
+              country_name: Greece
+              flex_offer:
+                balancing_market_offer: null
+                q-LMPs:
+                  price_unit: €/MVar
+                  volume_unit: MVar
+                  values: null
+                reserve_market_offer:
+                  price_unit: (€/MWh)^2
+                  volume_unit: MWh^2
+                  values: null
+                day_ahead_market_offer:
+                  price_unit: €/MWh
+                  volume_unit: MWh
+                  values:
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                  - volume: 6.02745618307040320615897144307382404804229736328125
+                    price: 0.80082819046101150206595775671303272247314453125
+                d-LMPs: null
+              revenues:
+                q-LMPs: null
+                balancing_market_revenues: null
+                reserve_market_revenues: null
+                day_ahead_market_revenues:
+                  values:
+                  - 113.3
+                  - 12.4
+                  - 5.5
+                  - 225.3
+                  - 2.6
+                  - 21.1
+                  - 21
+                  - 24.9
+                  - 24.2
+                  - 1.45
+                  - 15.4
+                  - 15.2
+                  - 15.1
+                  - 1.45
+                  - 5.54
+                  - 5.34
+                  - 6.45
+                  - 8.45
+                  - 8.45
+                  - 3.34
+                  - 1.34
+                  - 2.45
+                  - 7.14
+                  - 9.53
+                  currency: €
+                d-LMPs: null
+      example:
+        date: 2020-10-16T00:00:00.000+0000
+        countries:
+        - country_name: Greece
+          flex_offer:
+            balancing_market_offer: null
+            q-LMPs:
+              price_unit: €/MVar
+              volume_unit: MVar
+              values: null
+            reserve_market_offer:
+              price_unit: (€/MWh)^2
+              volume_unit: MWh^2
+              values: null
+            day_ahead_market_offer:
+              price_unit: €/MWh
+              volume_unit: MWh
+              values:
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+            d-LMPs: null
+          revenues:
+            q-LMPs: null
+            balancing_market_revenues: null
+            reserve_market_revenues: null
+            day_ahead_market_revenues:
+              values:
+              - 113.3
+              - 12.4
+              - 5.5
+              - 225.3
+              - 2.6
+              - 21.1
+              - 21
+              - 24.9
+              - 24.2
+              - 1.45
+              - 15.4
+              - 15.2
+              - 15.1
+              - 1.45
+              - 5.54
+              - 5.34
+              - 6.45
+              - 8.45
+              - 8.45
+              - 3.34
+              - 1.34
+              - 2.45
+              - 7.14
+              - 9.53
+              currency: €
+            d-LMPs: null
+        - country_name: Greece
+          flex_offer:
+            balancing_market_offer: null
+            q-LMPs:
+              price_unit: €/MVar
+              volume_unit: MVar
+              values: null
+            reserve_market_offer:
+              price_unit: (€/MWh)^2
+              volume_unit: MWh^2
+              values: null
+            day_ahead_market_offer:
+              price_unit: €/MWh
+              volume_unit: MWh
+              values:
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+              - volume: 6.02745618307040320615897144307382404804229736328125
+                price: 0.80082819046101150206595775671303272247314453125
+            d-LMPs: null
+          revenues:
+            q-LMPs: null
+            balancing_market_revenues: null
+            reserve_market_revenues: null
+            day_ahead_market_revenues:
+              values:
+              - 113.3
+              - 12.4
+              - 5.5
+              - 225.3
+              - 2.6
+              - 21.1
+              - 21
+              - 24.9
+              - 24.2
+              - 1.45
+              - 15.4
+              - 15.2
+              - 15.1
+              - 1.45
+              - 5.54
+              - 5.34
+              - 6.45
+              - 8.45
+              - 8.45
+              - 3.34
+              - 1.34
+              - 2.45
+              - 7.14
+              - 9.53
+              currency: €
+            d-LMPs: null
+    DayPriceVector_Euro_values:
+      type: object
+      properties:
+        price:
+          type: number
+          format: currency
+        volume:
+          type: number
+  requestBodies:
+    ScenarioParams:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ScenarioParams'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/ScenarioParams'
+      required: true
+  securitySchemes:
+    MyTokenAuth:
+      type: oauth2
+      flows:
+        password:
+          tokenUrl: https://db.flexgrid-project.eu/oauth/token
+          scopes: {}
+        clientCredentials:
+          tokenUrl: https://db.flexgrid-project.eu/authorization
+          scopes:
+            post_scenario: post a scenario
+      x-tokenInfoFunc: swagger_server.controllers.authorization_controller.check_MyTokenAuth
+      x-scopeValidateFunc: swagger_server.controllers.authorization_controller.validate_scope_MyTokenAuth
+
