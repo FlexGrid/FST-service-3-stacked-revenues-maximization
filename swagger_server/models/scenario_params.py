@@ -6,7 +6,7 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
-from swagger_server.models.scenario_params_inner import ScenarioParamsInner  # noqa: F401,E501
+from swagger_server.models.storage_unit import StorageUnit  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -15,15 +15,35 @@ class ScenarioParams(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self):  # noqa: E501
+    def __init__(self, sdate: date=None, country: str=None, markets: List[str]=None, storage_units: List[StorageUnit]=None):  # noqa: E501
         """ScenarioParams - a model defined in Swagger
 
+        :param sdate: The sdate of this ScenarioParams.  # noqa: E501
+        :type sdate: date
+        :param country: The country of this ScenarioParams.  # noqa: E501
+        :type country: str
+        :param markets: The markets of this ScenarioParams.  # noqa: E501
+        :type markets: List[str]
+        :param storage_units: The storage_units of this ScenarioParams.  # noqa: E501
+        :type storage_units: List[StorageUnit]
         """
         self.swagger_types = {
+            'sdate': date,
+            'country': str,
+            'markets': List[str],
+            'storage_units': List[StorageUnit]
         }
 
         self.attribute_map = {
+            'sdate': 'sdate',
+            'country': 'country',
+            'markets': 'markets',
+            'storage_units': 'storage_units'
         }
+        self._sdate = sdate
+        self._country = country
+        self._markets = markets
+        self._storage_units = storage_units
 
     @classmethod
     def from_dict(cls, dikt) -> 'ScenarioParams':
@@ -35,3 +55,95 @@ class ScenarioParams(Model):
         :rtype: ScenarioParams
         """
         return util.deserialize_model(dikt, cls)
+
+    @property
+    def sdate(self) -> date:
+        """Gets the sdate of this ScenarioParams.
+
+
+        :return: The sdate of this ScenarioParams.
+        :rtype: date
+        """
+        return self._sdate
+
+    @sdate.setter
+    def sdate(self, sdate: date):
+        """Sets the sdate of this ScenarioParams.
+
+
+        :param sdate: The sdate of this ScenarioParams.
+        :type sdate: date
+        """
+        if sdate is None:
+            raise ValueError("Invalid value for `sdate`, must not be `None`")  # noqa: E501
+
+        self._sdate = sdate
+
+    @property
+    def country(self) -> str:
+        """Gets the country of this ScenarioParams.
+
+
+        :return: The country of this ScenarioParams.
+        :rtype: str
+        """
+        return self._country
+
+    @country.setter
+    def country(self, country: str):
+        """Sets the country of this ScenarioParams.
+
+
+        :param country: The country of this ScenarioParams.
+        :type country: str
+        """
+        if country is None:
+            raise ValueError("Invalid value for `country`, must not be `None`")  # noqa: E501
+
+        self._country = country
+
+    @property
+    def markets(self) -> List[str]:
+        """Gets the markets of this ScenarioParams.
+
+
+        :return: The markets of this ScenarioParams.
+        :rtype: List[str]
+        """
+        return self._markets
+
+    @markets.setter
+    def markets(self, markets: List[str]):
+        """Sets the markets of this ScenarioParams.
+
+
+        :param markets: The markets of this ScenarioParams.
+        :type markets: List[str]
+        """
+        if markets is None:
+            raise ValueError("Invalid value for `markets`, must not be `None`")  # noqa: E501
+
+        self._markets = markets
+
+    @property
+    def storage_units(self) -> List[StorageUnit]:
+        """Gets the storage_units of this ScenarioParams.
+
+
+        :return: The storage_units of this ScenarioParams.
+        :rtype: List[StorageUnit]
+        """
+        return self._storage_units
+
+    @storage_units.setter
+    def storage_units(self, storage_units: List[StorageUnit]):
+        """Sets the storage_units of this ScenarioParams.
+
+
+        :param storage_units: The storage_units of this ScenarioParams.
+        :type storage_units: List[StorageUnit]
+        """
+        if storage_units is None:
+            raise ValueError("Invalid value for `storage_units`, must not be `None`")  # noqa: E501
+
+        self._storage_units = storage_units

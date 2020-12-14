@@ -6,7 +6,8 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
-from swagger_server.models.scenario_result_inner import ScenarioResultInner  # noqa: F401,E501
+from swagger_server.models.scenario_result_flex_offer import ScenarioResultFlexOffer  # noqa: F401,E501
+from swagger_server.models.scenario_result_revenues import ScenarioResultRevenues  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -15,15 +16,30 @@ class ScenarioResult(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self):  # noqa: E501
+    def __init__(self, sdate: date=None, flex_offer: ScenarioResultFlexOffer=None, revenues: ScenarioResultRevenues=None):  # noqa: E501
         """ScenarioResult - a model defined in Swagger
 
+        :param sdate: The sdate of this ScenarioResult.  # noqa: E501
+        :type sdate: date
+        :param flex_offer: The flex_offer of this ScenarioResult.  # noqa: E501
+        :type flex_offer: ScenarioResultFlexOffer
+        :param revenues: The revenues of this ScenarioResult.  # noqa: E501
+        :type revenues: ScenarioResultRevenues
         """
         self.swagger_types = {
+            'sdate': date,
+            'flex_offer': ScenarioResultFlexOffer,
+            'revenues': ScenarioResultRevenues
         }
 
         self.attribute_map = {
+            'sdate': 'sdate',
+            'flex_offer': 'flex_offer',
+            'revenues': 'revenues'
         }
+        self._sdate = sdate
+        self._flex_offer = flex_offer
+        self._revenues = revenues
 
     @classmethod
     def from_dict(cls, dikt) -> 'ScenarioResult':
@@ -35,3 +51,72 @@ class ScenarioResult(Model):
         :rtype: ScenarioResult
         """
         return util.deserialize_model(dikt, cls)
+
+    @property
+    def sdate(self) -> date:
+        """Gets the sdate of this ScenarioResult.
+
+
+        :return: The sdate of this ScenarioResult.
+        :rtype: date
+        """
+        return self._sdate
+
+    @sdate.setter
+    def sdate(self, sdate: date):
+        """Sets the sdate of this ScenarioResult.
+
+
+        :param sdate: The sdate of this ScenarioResult.
+        :type sdate: date
+        """
+        if sdate is None:
+            raise ValueError("Invalid value for `sdate`, must not be `None`")  # noqa: E501
+
+        self._sdate = sdate
+
+    @property
+    def flex_offer(self) -> ScenarioResultFlexOffer:
+        """Gets the flex_offer of this ScenarioResult.
+
+
+        :return: The flex_offer of this ScenarioResult.
+        :rtype: ScenarioResultFlexOffer
+        """
+        return self._flex_offer
+
+    @flex_offer.setter
+    def flex_offer(self, flex_offer: ScenarioResultFlexOffer):
+        """Sets the flex_offer of this ScenarioResult.
+
+
+        :param flex_offer: The flex_offer of this ScenarioResult.
+        :type flex_offer: ScenarioResultFlexOffer
+        """
+        if flex_offer is None:
+            raise ValueError("Invalid value for `flex_offer`, must not be `None`")  # noqa: E501
+
+        self._flex_offer = flex_offer
+
+    @property
+    def revenues(self) -> ScenarioResultRevenues:
+        """Gets the revenues of this ScenarioResult.
+
+
+        :return: The revenues of this ScenarioResult.
+        :rtype: ScenarioResultRevenues
+        """
+        return self._revenues
+
+    @revenues.setter
+    def revenues(self, revenues: ScenarioResultRevenues):
+        """Sets the revenues of this ScenarioResult.
+
+
+        :param revenues: The revenues of this ScenarioResult.
+        :type revenues: ScenarioResultRevenues
+        """
+        if revenues is None:
+            raise ValueError("Invalid value for `revenues`, must not be `None`")  # noqa: E501
+
+        self._revenues = revenues
