@@ -1,0 +1,3 @@
+[submodule "stacked_revenues"]
+	path = stacked_revenues
+	url = git@github.com:FlexGrid/stacked_revenues.git
