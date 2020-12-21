@@ -1,3 +1,8 @@
-connexion == 2.6.0
 python_dateutil == 2.6.0
 setuptools >= 21.0.0
+ipython
+pyomo
+numpy
+glpk
+requests-mock
+connexion[swagger-ui] == 2.6.0
