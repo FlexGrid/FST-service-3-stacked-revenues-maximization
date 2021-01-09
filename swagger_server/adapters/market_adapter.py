@@ -5,6 +5,7 @@ from datetime import datetime
 from swagger_server.models.day_price_vector_euro import DayPriceVectorEuro  # noqa: E501
 import json
 
+
 class MarketAdapter:
     def __init__(self, start_timestamp, end_timestamp):
         load_dotenv()
@@ -23,11 +24,13 @@ class MarketAdapter:
 
         url = f"https://api.fingrid.fi/v1/variable/{market_id}/events/json"
         headers = {'x-api-key': os.environ.get("FINGRID_TOKEN")}
-        return requests.request("GET", url, params={'start_time': self.start_timestamp, 'end_time': self.end_timestamp},  headers=headers).content
-
+        return json.loads(requests.request("GET", url, params={
+            'start_time': self.start_timestamp,
+            'end_time': self.end_timestamp},
+            headers=headers).content)
 
     def day_ahead_market(self):
-        return DayPriceVectorEuro.from_dict({'currency': '€', 'values': json.loads(self.fingrid(79))})
+        return self.fingrid(79)
 
     def balancing_market_up(self):
         return self.fingrid(244)

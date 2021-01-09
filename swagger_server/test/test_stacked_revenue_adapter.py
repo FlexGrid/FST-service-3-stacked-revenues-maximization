@@ -19,10 +19,20 @@ class TestStackedRevenueAdapter(BaseTestCase):
             "markets": ["day_ahead"],
             "storage_units": [
                 {
-                    "power_capacity_KW": 0,
-                    "energy_capacity_KWh": 0,
-                    "inefficiency_rate_per_cent": 0,
-                    "initial_final_SoC_per_cent": 0,
+                    "power_capacity_KW": 5,
+                    "energy_capacity_KWh": 10,
+                    "inefficiency_rate_per_cent": 0.5,
+                    "initial_final_SoC_per_cent": 0.5,
+                    "location": {
+                        "id": "string",
+                        "name": "string"
+                    }
+                },
+                {
+                    "power_capacity_KW": 5,
+                    "energy_capacity_KWh": 10,
+                    "inefficiency_rate_per_cent": 0.5,
+                    "initial_final_SoC_per_cent": 0.5,
                     "location": {
                         "id": "string",
                         "name": "string"
