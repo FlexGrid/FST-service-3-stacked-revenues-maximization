@@ -6,3 +6,4 @@ numpy
 glpk
 requests-mock
 connexion[swagger-ui] == 2.6.0
+python-dotenv

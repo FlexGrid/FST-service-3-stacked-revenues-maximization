@@ -39,6 +39,7 @@ class TestStackedRevenueAdapter(BaseTestCase):
         res = stacked_revenue_adapter(
             ScenarioParams.from_dict(self.request_obj))
 
+        print(f"the resutls if {res}")
         assert len(res.flex_offer.day_ahead_market_offer.values) > 0
 
 
