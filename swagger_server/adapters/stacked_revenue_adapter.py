@@ -1,5 +1,6 @@
 from swagger_server.models.scenario_params import ScenarioParams  # noqa: E501
 from swagger_server.models.scenario_result import ScenarioResult  # noqa: E501
+from swagger_server.models.day_offer_vector_euro_m_wh import DayOfferVectorEuroMWh  # noqa: E501
 from stacked_revenues.maximize_stacked_revenues import battery_portfolio
 from swagger_server.adapters.market_adapter import MarketAdapter
 from datetime import datetime, timedelta
@@ -60,92 +61,106 @@ def stacked_revenue_adapter(scenario_params):
     [Profits, pup, pdn, dam_schedule, rup_commitment, rdn_commitment, pflexibility, qflexibility,
         soc, DAM_profits, RM_profits, FM_profits, BM_profits] = bsu.maximize_stacked_revenues()
 
-    print([Profits, pup, pdn, dam_schedule, rup_commitment, rdn_commitment, pflexibility, qflexibility,
-           soc, DAM_profits, RM_profits, FM_profits, BM_profits])
+    print(f"\nProfits= {Profits},\n\n"
+          f"pup = {pup},\n\n"
+          f"pdn = {pdn},\n\n"
+          f"dam_schedule = {dam_schedule},\n\n"
+          f"rup_commitment = {rup_commitment},\n\n"
+          f"rdn_commitment = {rdn_commitment},\n\n"
+          f"pflexibility = {pflexibility},\n\n"
+          f"qflexibility = {qflexibility},\n\n"
+          f"soc = {soc},\n\n"
+          f"DAM_profits = {DAM_profits},\n\n"
+          f"RM_profits = {RM_profits},\n\n"
+          f"FM_profits = {FM_profits},\n\n"
+          f"BM_profits = {BM_profits}\n")
 
-    # return ScenarioResult.from_dict({
-    #     "sdate": str(scenario_params.sdate),
-    #     "flex_offer": {
-    #         "day_ahead_market_offer": {
-    #             "values": [
-    #                 {
-    #                     "price": 0,
-    #                     "volume": 0
-    #                 }
-    #             ],
-    #             "price_unit": "€/MWh",
-    #             "volume_unit": "MWh"
-    #         },
-    #         "reserve_market_offer": {
-    #             "values": [
-    #                 {
-    #                     "price": 0,
-    #                     "volume": 0
-    #                 }
-    #             ],
-    #             "price_unit": "(€/MWh)^2",
-    #             "volume_unit": "MWh^2"
-    #         },
-    #         "d-LMPs": {
-    #             "values": [
-    #                 {
-    #                     "price": 0,
-    #                     "volume": 0
-    #                 }
-    #             ],
-    #             "price_unit": "€/MWh",
-    #             "volume_unit": "MWh"
-    #         },
-    #         "q-LMPs": {
-    #             "values": [
-    #                 {
-    #                     "price": 0,
-    #                     "volume": 0
-    #                 }
-    #             ],
-    #             "price_unit": "€/MVar",
-    #             "volume_unit": "MVar"
-    #         },
-    #         "balancing_market_offer": {
-    #             "values": [
-    #                 {
-    #                     "price": 0,
-    #                     "volume": 0
-    #                 }
-    #             ],
-    #             "price_unit": "€/MWh",
-    #             "volume_unit": "MWh"
-    #         }
-    #     },
-    #     "revenues": {
-    #         "day_ahead_market_revenues": {
-    #             "values": [
-    #                 {"volume": 113.3, "price": 23.13},
-    #                 {"volume": 12.4, "price": 23.13},
-    #                 {"volume": 5.5, "price": 23.13},
-    #                 {"volume": 225.3, "price": 23.13},
-    #                 {"volume": 2.6, "price": 23.13},
-    #                 {"volume": 21.1, "price": 23.13},
-    #                 {"volume": 21, "price": 23.13},
-    #                 {"volume": 24.9, "price": 23.13},
-    #                 {"volume": 24.2, "price": 23.13},
-    #                 {"volume": 1.45, "price": 23.13},
-    #                 {"volume": 15.4, "price": 23.13},
-    #                 {"volume": 15.2, "price": 23.13},
-    #                 {"volume": 15.1, "price": 23.13},
-    #                 {"volume": 1.45, "price": 23.13},
-    #                 {"volume": 5.54, "price": 23.13},
-    #                 {"volume": 5.34, "price": 23.13},
-    #                 {"volume": 6.45, "price": 23.13},
-    #                 {"volume": 8.45, "price": 23.13},
-    #                 {"volume": 8.45, "price": 23.13},
-    #                 {"volume": 3.34, "price": 23.13},
-    #                 {"volume": 1.34, "price": 23.13},
-    #                 {"volume": 2.45, "price": 23.13},
-    #                 {"volume": 7.14, "price": 23.13},
-    #                 {"volume": 9.53, "price": 23.13},
-    #             ],
-    #             "currency": "€"
-    #         }
-    #     }
-    # })
+    return ScenarioResult.from_dict({
+        "sdate": str(scenario_params.sdate),
+        "flex_offer": {
+            "day_ahead_market_offer": build_market_offer(dam_prices, dam_schedule).to_dict(),
+            "reserve_market_offer": {
+                "values": [
+                    {
+                        "price": 0,
+                        "volume": 0
+                    }
+                ],
+                "price_unit": "(€/MWh)^2",
+                "volume_unit": "MWh^2"
+            },
+            "d-LMPs": {
+                "values": [
+                    {
+                        "price": 0,
+                        "volume": 0
+                    }
+                ],
+                "price_unit": "€/MWh",
+                "volume_unit": "MWh"
+            },
+            "q-LMPs": {
+                "values": [
+                    {
+                        "price": 0,
+                        "volume": 0
+                    }
+                ],
+                "price_unit": "€/MVar",
+                "volume_unit": "MVar"
+            },
+            "balancing_market_offer": build_market_offer(bm_up_prices, pflexibility).to_dict()
+        },
+        "revenues": {
+            "day_ahead_market_revenues": {
+                "values": [
+                    {"volume": 113.3, "price": 23.13},
+                    {"volume": 12.4, "price": 23.13},
+                    {"volume": 5.5, "price": 23.13},
+                    {"volume": 225.3, "price": 23.13},
+                    {"volume": 2.6, "price": 23.13},
+                    {"volume": 21.1, "price": 23.13},
+                    {"volume": 21, "price": 23.13},
+                    {"volume": 24.9, "price": 23.13},
+                    {"volume": 24.2, "price": 23.13},
+                    {"volume": 1.45, "price": 23.13},
+                    {"volume": 15.4, "price": 23.13},
+                    {"volume": 15.2, "price": 23.13},
+                    {"volume": 15.1, "price": 23.13},
+                    {"volume": 1.45, "price": 23.13},
+                    {"volume": 5.54, "price": 23.13},
+                    {"volume": 5.34, "price": 23.13},
+                    {"volume": 6.45, "price": 23.13},
+                    {"volume": 8.45, "price": 23.13},
+                    {"volume": 8.45, "price": 23.13},
+                    {"volume": 3.34, "price": 23.13},
+                    {"volume": 1.34, "price": 23.13},
+                    {"volume": 2.45, "price": 23.13},
+                    {"volume": 7.14, "price": 23.13},
+                    {"volume": 9.53, "price": 23.13},
+                ],
+                "currency": "€"
+            }
+        }
+    })
+
+
+def build_market_offer(prices, schedule):
+    return DayOfferVectorEuroMWh.from_dict({
+        "values": [{
+            "price": prices[i],
+            "volume": sum(schedule[j][i] for j in range(len(schedule)))
+        } for i in range(len(prices))],
+        "price_unit": "€/MWh",
+        "volume_unit": "MWh"
+    })
+
+def build_reserve_market_offer(prices, schedule):
+    return DayOfferVectorEuroMWh.from_dict({
+        "values": [{
+            "price": prices[i],
+            "volume": sum(schedule[j][i] for j in range(len(schedule)))
+        } for i in range(len(prices))],
+        "price_unit": "€/MWh",
+        "volume_unit": "MWh"
+    })
