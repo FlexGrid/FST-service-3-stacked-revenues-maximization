@@ -226,7 +226,7 @@ components:
       example:
         volume: 6.027456183070403
         price: 0.8008281904610115
-    DayOfferVector_Euro_MWh:
+    DayOfferVectorEuroMWh:
       required:
       - price_unit
       - values
@@ -365,7 +365,22 @@ components:
         - 7.14
         - 9.53
         currency: €
-    ScenarioResult_flex_offer_reserve_market_offer:
+    Price_In_Euro:
+      required:
+      - currency
+      - value
+      type: object
+      properties:
+        value:
+          type: number
+        currency:
+          type: string
+          enum:
+          - €
+      example:
+        value: 113.3
+        currency: €
+    DayOfferVectorEuroMWh2:
       required:
       - price_unit
       - values
@@ -377,7 +392,7 @@ components:
         price_unit:
           type: string
           enum:
-          - (€/MWh)^2
+          - €/MWh^2
         volume_unit:
           type: string
           enum:
@@ -411,61 +426,32 @@ components:
       type: object
       properties:
         day_ahead_market_offer:
-          $ref: '#/components/schemas/DayOfferVector_Euro_MWh'
-        reserve_market_offer:
-          $ref: '#/components/schemas/ScenarioResult_flex_offer_reserve_market_offer'
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh'
+        reserve_market_offer_up:
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh2'
+        reserve_market_offer_down:
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh2'
         d-LMPs:
-          $ref: '#/components/schemas/DayOfferVector_Euro_MWh'
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh'
         q-LMPs:
           $ref: '#/components/schemas/ScenarioResult_flex_offer_qLMPs'
-        balancing_market_offer:
-          $ref: '#/components/schemas/DayOfferVector_Euro_MWh'
-
+        balancing_market_offer_up:
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh'
+        balancing_market_offer_down:
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh'
     ScenarioResult_revenues:
       type: object
       properties:
         day_ahead_market_revenues:
-          $ref: '#/components/schemas/DayPriceVector_Euro'
+          $ref: '#/components/schemas/Price_In_Euro'
         reserve_market_revenues:
-          $ref: '#/components/schemas/DayPriceVector_Euro'
+          $ref: '#/components/schemas/Price_In_Euro'
         d-LMPs:
-          $ref: '#/components/schemas/DayPriceVector_Euro'
+          $ref: '#/components/schemas/Price_In_Euro'
         q-LMPs:
-          $ref: '#/components/schemas/DayPriceVector_Euro'
+          $ref: '#/components/schemas/Price_In_Euro'
         balancing_market_revenues:
-          $ref: '#/components/schemas/DayPriceVector_Euro'
-      example:
-        q-LMPs: null
-        balancing_market_revenues: null
-        reserve_market_revenues: null
-        day_ahead_market_revenues:
-          values:
-          - 113.3
-          - 12.4
-          - 5.5
-          - 225.3
-          - 2.6
-          - 21.1
-          - 21.0
-          - 24.9
-          - 24.2
-          - 1.45
-          - 15.4
-          - 15.2
-          - 15.1
-          - 1.45
-          - 5.54
-          - 5.34
-          - 6.45
-          - 8.45
-          - 8.45
-          - 3.34
-          - 1.34
-          - 2.45
-          - 7.14
-          - 9.53
-          currency: €
-        d-LMPs: null
+          $ref: '#/components/schemas/Price_In_Euro'
     DayPriceVector_Euro_values:
       type: object
       properties:

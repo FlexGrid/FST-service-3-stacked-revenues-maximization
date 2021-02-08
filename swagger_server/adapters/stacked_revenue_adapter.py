@@ -1,6 +1,8 @@
 from swagger_server.models.scenario_params import ScenarioParams  # noqa: E501
 from swagger_server.models.scenario_result import ScenarioResult  # noqa: E501
 from swagger_server.models.day_offer_vector_euro_m_wh import DayOfferVectorEuroMWh  # noqa: E501
+from swagger_server.models.day_offer_vector_euro_m_wh2 import DayOfferVectorEuroMWh2  # noqa: E501
+from swagger_server.models.price_in_euro import PriceInEuro  # noqa: E501
 from stacked_revenues.maximize_stacked_revenues import battery_portfolio
 from swagger_server.adapters.market_adapter import MarketAdapter
 from datetime import datetime, timedelta
@@ -79,26 +81,9 @@ def stacked_revenue_adapter(scenario_params):
         "sdate": str(scenario_params.sdate),
         "flex_offer": {
             "day_ahead_market_offer": build_market_offer(dam_prices, dam_schedule).to_dict(),
-            "reserve_market_offer": {
-                "values": [
-                    {
-                        "price": 0,
-                        "volume": 0
-                    }
-                ],
-                "price_unit": "(€/MWh)^2",
-                "volume_unit": "MWh^2"
-            },
-            "d-LMPs": {
-                "values": [
-                    {
-                        "price": 0,
-                        "volume": 0
-                    }
-                ],
-                "price_unit": "€/MWh",
-                "volume_unit": "MWh"
-            },
+            "reserve_market_offer_up": build_reserve_market_offer(rup_prices, rup_commitment).to_dict(),
+            "reserve_market_offer_down": build_reserve_market_offer(rdn_prices, rdn_commitment).to_dict(),
+            "d-LMPs": build_market_offer(fmp_prices, pflexibility).to_dict(),
             "q-LMPs": {
                 "values": [
                     {
@@ -109,38 +94,11 @@ def stacked_revenue_adapter(scenario_params):
                 "price_unit": "€/MVar",
                 "volume_unit": "MVar"
             },
-            "balancing_market_offer": build_market_offer(bm_up_prices, pflexibility).to_dict()
+            "balancing_market_offer_up": build_market_offer(bm_up_prices, pup).to_dict(),
+            "balancing_market_offer_down": build_market_offer(bm_dn_prices, pdn).to_dict()
         },
         "revenues": {
-            "day_ahead_market_revenues": {
-                "values": [
-                    {"volume": 113.3, "price": 23.13},
-                    {"volume": 12.4, "price": 23.13},
-                    {"volume": 5.5, "price": 23.13},
-                    {"volume": 225.3, "price": 23.13},
-                    {"volume": 2.6, "price": 23.13},
-                    {"volume": 21.1, "price": 23.13},
-                    {"volume": 21, "price": 23.13},
-                    {"volume": 24.9, "price": 23.13},
-                    {"volume": 24.2, "price": 23.13},
-                    {"volume": 1.45, "price": 23.13},
-                    {"volume": 15.4, "price": 23.13},
-                    {"volume": 15.2, "price": 23.13},
-                    {"volume": 15.1, "price": 23.13},
-                    {"volume": 1.45, "price": 23.13},
-                    {"volume": 5.54, "price": 23.13},
-                    {"volume": 5.34, "price": 23.13},
-                    {"volume": 6.45, "price": 23.13},
-                    {"volume": 8.45, "price": 23.13},
-                    {"volume": 8.45, "price": 23.13},
-                    {"volume": 3.34, "price": 23.13},
-                    {"volume": 1.34, "price": 23.13},
-                    {"volume": 2.45, "price": 23.13},
-                    {"volume": 7.14, "price": 23.13},
-                    {"volume": 9.53, "price": 23.13},
-                ],
-                "currency": "€"
-            }
+            "day_ahead_market_revenues": build_profits(DAM_profits).to_dict(),
         }
     })
 
@@ -156,11 +114,14 @@ def build_market_offer(prices, schedule):
     })
 
 def build_reserve_market_offer(prices, schedule):
-    return DayOfferVectorEuroMWh.from_dict({
+    return DayOfferVectorEuroMWh2.from_dict({
         "values": [{
             "price": prices[i],
             "volume": sum(schedule[j][i] for j in range(len(schedule)))
         } for i in range(len(prices))],
-        "price_unit": "€/MWh",
-        "volume_unit": "MWh"
+        "price_unit": "€/MWh^2",
+        "volume_unit": "MWh^2"
     })
+
+def build_profits(price):
+    return PriceInEuro.from_dict({'value': price, 'currency': '€'})

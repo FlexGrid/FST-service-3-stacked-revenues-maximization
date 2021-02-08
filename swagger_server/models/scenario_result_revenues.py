@@ -6,7 +6,7 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
-from swagger_server.models.day_price_vector_euro import DayPriceVectorEuro  # noqa: F401,E501
+from swagger_server.models.price_in_euro import PriceInEuro  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -15,26 +15,26 @@ class ScenarioResultRevenues(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, day_ahead_market_revenues: DayPriceVectorEuro=None, reserve_market_revenues: DayPriceVectorEuro=None, d_lm_ps: DayPriceVectorEuro=None, q_lm_ps: DayPriceVectorEuro=None, balancing_market_revenues: DayPriceVectorEuro=None):  # noqa: E501
+    def __init__(self, day_ahead_market_revenues: PriceInEuro=None, reserve_market_revenues: PriceInEuro=None, d_lm_ps: PriceInEuro=None, q_lm_ps: PriceInEuro=None, balancing_market_revenues: PriceInEuro=None):  # noqa: E501
         """ScenarioResultRevenues - a model defined in Swagger
 
         :param day_ahead_market_revenues: The day_ahead_market_revenues of this ScenarioResultRevenues.  # noqa: E501
-        :type day_ahead_market_revenues: DayPriceVectorEuro
+        :type day_ahead_market_revenues: PriceInEuro
         :param reserve_market_revenues: The reserve_market_revenues of this ScenarioResultRevenues.  # noqa: E501
-        :type reserve_market_revenues: DayPriceVectorEuro
+        :type reserve_market_revenues: PriceInEuro
         :param d_lm_ps: The d_lm_ps of this ScenarioResultRevenues.  # noqa: E501
-        :type d_lm_ps: DayPriceVectorEuro
+        :type d_lm_ps: PriceInEuro
         :param q_lm_ps: The q_lm_ps of this ScenarioResultRevenues.  # noqa: E501
-        :type q_lm_ps: DayPriceVectorEuro
+        :type q_lm_ps: PriceInEuro
         :param balancing_market_revenues: The balancing_market_revenues of this ScenarioResultRevenues.  # noqa: E501
-        :type balancing_market_revenues: DayPriceVectorEuro
+        :type balancing_market_revenues: PriceInEuro
         """
         self.swagger_types = {
-            'day_ahead_market_revenues': DayPriceVectorEuro,
-            'reserve_market_revenues': DayPriceVectorEuro,
-            'd_lm_ps': DayPriceVectorEuro,
-            'q_lm_ps': DayPriceVectorEuro,
-            'balancing_market_revenues': DayPriceVectorEuro
+            'day_ahead_market_revenues': PriceInEuro,
+            'reserve_market_revenues': PriceInEuro,
+            'd_lm_ps': PriceInEuro,
+            'q_lm_ps': PriceInEuro,
+            'balancing_market_revenues': PriceInEuro
         }
 
         self.attribute_map = {
@@ -62,106 +62,106 @@ class ScenarioResultRevenues(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def day_ahead_market_revenues(self) -> DayPriceVectorEuro:
+    def day_ahead_market_revenues(self) -> PriceInEuro:
         """Gets the day_ahead_market_revenues of this ScenarioResultRevenues.
 
 
         :return: The day_ahead_market_revenues of this ScenarioResultRevenues.
-        :rtype: DayPriceVectorEuro
+        :rtype: PriceInEuro
         """
         return self._day_ahead_market_revenues
 
     @day_ahead_market_revenues.setter
-    def day_ahead_market_revenues(self, day_ahead_market_revenues: DayPriceVectorEuro):
+    def day_ahead_market_revenues(self, day_ahead_market_revenues: PriceInEuro):
         """Sets the day_ahead_market_revenues of this ScenarioResultRevenues.
 
 
         :param day_ahead_market_revenues: The day_ahead_market_revenues of this ScenarioResultRevenues.
-        :type day_ahead_market_revenues: DayPriceVectorEuro
+        :type day_ahead_market_revenues: PriceInEuro
         """
 
         self._day_ahead_market_revenues = day_ahead_market_revenues
 
     @property
-    def reserve_market_revenues(self) -> DayPriceVectorEuro:
+    def reserve_market_revenues(self) -> PriceInEuro:
         """Gets the reserve_market_revenues of this ScenarioResultRevenues.
 
 
         :return: The reserve_market_revenues of this ScenarioResultRevenues.
-        :rtype: DayPriceVectorEuro
+        :rtype: PriceInEuro
         """
         return self._reserve_market_revenues
 
     @reserve_market_revenues.setter
-    def reserve_market_revenues(self, reserve_market_revenues: DayPriceVectorEuro):
+    def reserve_market_revenues(self, reserve_market_revenues: PriceInEuro):
         """Sets the reserve_market_revenues of this ScenarioResultRevenues.
 
 
         :param reserve_market_revenues: The reserve_market_revenues of this ScenarioResultRevenues.
-        :type reserve_market_revenues: DayPriceVectorEuro
+        :type reserve_market_revenues: PriceInEuro
         """
 
         self._reserve_market_revenues = reserve_market_revenues
 
     @property
-    def d_lm_ps(self) -> DayPriceVectorEuro:
+    def d_lm_ps(self) -> PriceInEuro:
         """Gets the d_lm_ps of this ScenarioResultRevenues.
 
 
         :return: The d_lm_ps of this ScenarioResultRevenues.
-        :rtype: DayPriceVectorEuro
+        :rtype: PriceInEuro
         """
         return self._d_lm_ps
 
     @d_lm_ps.setter
-    def d_lm_ps(self, d_lm_ps: DayPriceVectorEuro):
+    def d_lm_ps(self, d_lm_ps: PriceInEuro):
         """Sets the d_lm_ps of this ScenarioResultRevenues.
 
 
         :param d_lm_ps: The d_lm_ps of this ScenarioResultRevenues.
-        :type d_lm_ps: DayPriceVectorEuro
+        :type d_lm_ps: PriceInEuro
         """
 
         self._d_lm_ps = d_lm_ps
 
     @property
-    def q_lm_ps(self) -> DayPriceVectorEuro:
+    def q_lm_ps(self) -> PriceInEuro:
         """Gets the q_lm_ps of this ScenarioResultRevenues.
 
 
         :return: The q_lm_ps of this ScenarioResultRevenues.
-        :rtype: DayPriceVectorEuro
+        :rtype: PriceInEuro
         """
         return self._q_lm_ps
 
     @q_lm_ps.setter
-    def q_lm_ps(self, q_lm_ps: DayPriceVectorEuro):
+    def q_lm_ps(self, q_lm_ps: PriceInEuro):
         """Sets the q_lm_ps of this ScenarioResultRevenues.
 
 
         :param q_lm_ps: The q_lm_ps of this ScenarioResultRevenues.
-        :type q_lm_ps: DayPriceVectorEuro
+        :type q_lm_ps: PriceInEuro
         """
 
         self._q_lm_ps = q_lm_ps
 
     @property
-    def balancing_market_revenues(self) -> DayPriceVectorEuro:
+    def balancing_market_revenues(self) -> PriceInEuro:
         """Gets the balancing_market_revenues of this ScenarioResultRevenues.
 
 
         :return: The balancing_market_revenues of this ScenarioResultRevenues.
-        :rtype: DayPriceVectorEuro
+        :rtype: PriceInEuro
         """
         return self._balancing_market_revenues
 
     @balancing_market_revenues.setter
-    def balancing_market_revenues(self, balancing_market_revenues: DayPriceVectorEuro):
+    def balancing_market_revenues(self, balancing_market_revenues: PriceInEuro):
         """Sets the balancing_market_revenues of this ScenarioResultRevenues.
 
 
         :param balancing_market_revenues: The balancing_market_revenues of this ScenarioResultRevenues.
-        :type balancing_market_revenues: DayPriceVectorEuro
+        :type balancing_market_revenues: PriceInEuro
         """
 
         self._balancing_market_revenues = balancing_market_revenues
