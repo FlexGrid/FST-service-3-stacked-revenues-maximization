@@ -8,7 +8,8 @@ from typing import List, Dict  # noqa: F401
 from swagger_server.models.base_model_ import Model
 from swagger_server.models.day_offer_vector_euro_m_wh import DayOfferVectorEuroMWh  # noqa: F401,E501
 from swagger_server.models.day_offer_vector_euro_m_wh2 import DayOfferVectorEuroMWh2  # noqa: F401,E501
-from swagger_server.models.scenario_result_flex_offer_qlm_ps import ScenarioResultFlexOfferQLMPs  # noqa: F401,E501
+from swagger_server.models.flex_offer_dlm_ps import FlexOfferDLMPs  # noqa: F401,E501
+from swagger_server.models.flex_offer_qlm_ps import FlexOfferQLMPs  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -17,7 +18,7 @@ class ScenarioResultFlexOffer(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, day_ahead_market_offer: DayOfferVectorEuroMWh=None, reserve_market_offer_up: DayOfferVectorEuroMWh2=None, reserve_market_offer_down: DayOfferVectorEuroMWh2=None, d_lm_ps: DayOfferVectorEuroMWh=None, q_lm_ps: ScenarioResultFlexOfferQLMPs=None, balancing_market_offer_up: DayOfferVectorEuroMWh=None, balancing_market_offer_down: DayOfferVectorEuroMWh=None):  # noqa: E501
+    def __init__(self, day_ahead_market_offer: DayOfferVectorEuroMWh=None, reserve_market_offer_up: DayOfferVectorEuroMWh2=None, reserve_market_offer_down: DayOfferVectorEuroMWh2=None, d_lm_ps: FlexOfferDLMPs=None, q_lm_ps: FlexOfferQLMPs=None, balancing_market_offer_up: DayOfferVectorEuroMWh=None, balancing_market_offer_down: DayOfferVectorEuroMWh=None):  # noqa: E501
         """ScenarioResultFlexOffer - a model defined in Swagger
 
         :param day_ahead_market_offer: The day_ahead_market_offer of this ScenarioResultFlexOffer.  # noqa: E501
@@ -27,9 +28,9 @@ class ScenarioResultFlexOffer(Model):
         :param reserve_market_offer_down: The reserve_market_offer_down of this ScenarioResultFlexOffer.  # noqa: E501
         :type reserve_market_offer_down: DayOfferVectorEuroMWh2
         :param d_lm_ps: The d_lm_ps of this ScenarioResultFlexOffer.  # noqa: E501
-        :type d_lm_ps: DayOfferVectorEuroMWh
+        :type d_lm_ps: FlexOfferDLMPs
         :param q_lm_ps: The q_lm_ps of this ScenarioResultFlexOffer.  # noqa: E501
-        :type q_lm_ps: ScenarioResultFlexOfferQLMPs
+        :type q_lm_ps: FlexOfferQLMPs
         :param balancing_market_offer_up: The balancing_market_offer_up of this ScenarioResultFlexOffer.  # noqa: E501
         :type balancing_market_offer_up: DayOfferVectorEuroMWh
         :param balancing_market_offer_down: The balancing_market_offer_down of this ScenarioResultFlexOffer.  # noqa: E501
@@ -39,8 +40,8 @@ class ScenarioResultFlexOffer(Model):
             'day_ahead_market_offer': DayOfferVectorEuroMWh,
             'reserve_market_offer_up': DayOfferVectorEuroMWh2,
             'reserve_market_offer_down': DayOfferVectorEuroMWh2,
-            'd_lm_ps': DayOfferVectorEuroMWh,
-            'q_lm_ps': ScenarioResultFlexOfferQLMPs,
+            'd_lm_ps': FlexOfferDLMPs,
+            'q_lm_ps': FlexOfferQLMPs,
             'balancing_market_offer_up': DayOfferVectorEuroMWh,
             'balancing_market_offer_down': DayOfferVectorEuroMWh
         }
@@ -137,43 +138,43 @@ class ScenarioResultFlexOffer(Model):
         self._reserve_market_offer_down = reserve_market_offer_down
 
     @property
-    def d_lm_ps(self) -> DayOfferVectorEuroMWh:
+    def d_lm_ps(self) -> FlexOfferDLMPs:
         """Gets the d_lm_ps of this ScenarioResultFlexOffer.
 
 
         :return: The d_lm_ps of this ScenarioResultFlexOffer.
-        :rtype: DayOfferVectorEuroMWh
+        :rtype: FlexOfferDLMPs
         """
         return self._d_lm_ps
 
     @d_lm_ps.setter
-    def d_lm_ps(self, d_lm_ps: DayOfferVectorEuroMWh):
+    def d_lm_ps(self, d_lm_ps: FlexOfferDLMPs):
         """Sets the d_lm_ps of this ScenarioResultFlexOffer.
 
 
         :param d_lm_ps: The d_lm_ps of this ScenarioResultFlexOffer.
-        :type d_lm_ps: DayOfferVectorEuroMWh
+        :type d_lm_ps: FlexOfferDLMPs
         """
 
         self._d_lm_ps = d_lm_ps
 
     @property
-    def q_lm_ps(self) -> ScenarioResultFlexOfferQLMPs:
+    def q_lm_ps(self) -> FlexOfferQLMPs:
         """Gets the q_lm_ps of this ScenarioResultFlexOffer.
 
 
         :return: The q_lm_ps of this ScenarioResultFlexOffer.
-        :rtype: ScenarioResultFlexOfferQLMPs
+        :rtype: FlexOfferQLMPs
         """
         return self._q_lm_ps
 
     @q_lm_ps.setter
-    def q_lm_ps(self, q_lm_ps: ScenarioResultFlexOfferQLMPs):
+    def q_lm_ps(self, q_lm_ps: FlexOfferQLMPs):
         """Sets the q_lm_ps of this ScenarioResultFlexOffer.
 
 
         :param q_lm_ps: The q_lm_ps of this ScenarioResultFlexOffer.
-        :type q_lm_ps: ScenarioResultFlexOfferQLMPs
+        :type q_lm_ps: FlexOfferQLMPs
         """
 
         self._q_lm_ps = q_lm_ps

@@ -2,6 +2,8 @@ from swagger_server.models.scenario_params import ScenarioParams  # noqa: E501
 from swagger_server.models.scenario_result import ScenarioResult  # noqa: E501
 from swagger_server.models.day_offer_vector_euro_m_wh import DayOfferVectorEuroMWh  # noqa: E501
 from swagger_server.models.day_offer_vector_euro_m_wh2 import DayOfferVectorEuroMWh2  # noqa: E501
+from swagger_server.models.flex_offer_dlm_ps_item import FlexOfferDLMPsItem
+from swagger_server.models.flex_offer_qlm_ps_item import FlexOfferQLMPsItem
 from swagger_server.models.price_in_euro import PriceInEuro  # noqa: E501
 from stacked_revenues.maximize_stacked_revenues import battery_portfolio
 from swagger_server.adapters.market_adapter import MarketAdapter
@@ -83,22 +85,16 @@ def stacked_revenue_adapter(scenario_params):
             "day_ahead_market_offer": build_market_offer(dam_prices, dam_schedule).to_dict(),
             "reserve_market_offer_up": build_reserve_market_offer(rup_prices, rup_commitment).to_dict(),
             "reserve_market_offer_down": build_reserve_market_offer(rdn_prices, rdn_commitment).to_dict(),
-            "d-LMPs": build_market_offer(fmp_prices, pflexibility).to_dict(),
-            "q-LMPs": {
-                "values": [
-                    {
-                        "price": 0,
-                        "volume": 0
-                    }
-                ],
-                "price_unit": "€/MVar",
-                "volume_unit": "MVar"
-            },
+            "d-LMPs":  build_dflex_market_offer(fmp_prices, pflexibility, scenario_params.storage_units),
+            "q-LMPs": build_qflex_market_offer(fmq_prices, qflexibility, scenario_params.storage_units),
             "balancing_market_offer_up": build_market_offer(bm_up_prices, pup).to_dict(),
             "balancing_market_offer_down": build_market_offer(bm_dn_prices, pdn).to_dict()
         },
         "revenues": {
             "day_ahead_market_revenues": build_profits(DAM_profits).to_dict(),
+            "reserve_market_revenues": build_profits(RM_profits).to_dict(),
+            "flexibility_market_revenues": build_profits(FM_profits).to_dict(),
+            "balancing_market_revenues": build_profits(BM_profits).to_dict(),
         }
     })
 
@@ -113,6 +109,7 @@ def build_market_offer(prices, schedule):
         "volume_unit": "MWh"
     })
 
+
 def build_reserve_market_offer(prices, schedule):
     return DayOfferVectorEuroMWh2.from_dict({
         "values": [{
@@ -122,6 +119,35 @@ def build_reserve_market_offer(prices, schedule):
         "price_unit": "€/MWh^2",
         "volume_unit": "MWh^2"
     })
+
+
+def build_dflex_market_offer(prices, schedule, storage_units):
+    print(f"The price is {prices}, the scedule is {schedule}")
+    return [
+        FlexOfferDLMPsItem.from_dict({
+            'price_unit': "€/MWh",
+            'storage_unit': i,
+            'values': [{
+                "price": prices[i][j],
+                "volume": schedule[i][j],
+            } for j in range(len(schedule[i]))],
+            'volume_unit': "MWh",
+        }) for i in range(len(storage_units))]
+
+
+def build_qflex_market_offer(prices, schedule, storage_units):
+    print(f"The price is {prices}, the scedule is {schedule}")
+    return [
+        FlexOfferQLMPsItem.from_dict({
+            'price_unit': "€/MVar",
+            'storage_unit': i,
+            'values': [{
+                "price": prices[i][j],
+                "volume": schedule[i][j],
+            } for j in range(len(schedule[i]))],
+            'volume_unit': "MVar",
+        }) for i in range(len(storage_units))]
+
 
 def build_profits(price):
     return PriceInEuro.from_dict({'value': price, 'currency': '€'})

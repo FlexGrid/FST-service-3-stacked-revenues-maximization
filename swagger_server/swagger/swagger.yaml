@@ -401,13 +401,44 @@ components:
         price_unit: (€/MWh)^2
         volume_unit: MWh^2
         values: null
-    ScenarioResult_flex_offer_qLMPs:
+    FlexOfferDLMPs:
+      type: array
+      items:
+        type: FlexOfferDLMPsItem
+    FlexOfferDLMPsItem:
       required:
       - price_unit
+      - storage_unit
       - values
       - volume_unit
       type: object
       properties:
+        storage_unit:
+          type: string
+        values:
+          $ref: '#/components/schemas/DayOfferVector'
+        price_unit:
+          type: string
+          enum:
+          - €/MWh
+        volume_unit:
+          type: string
+          enum:
+          - MWh
+    FlexOfferQLMPs:
+      type: array
+      items:
+        type: FlexOfferQLMPsItem
+    FlexOfferQLMPsItem:
+      required:
+      - price_unit
+      - storage_unit
+      - values
+      - volume_unit
+      type: object
+      properties:
+        storage_unit:
+          type: string
         values:
           $ref: '#/components/schemas/DayOfferVector'
         price_unit:
@@ -418,10 +449,6 @@ components:
           type: string
           enum:
           - MVar
-      example:
-        price_unit: €/MVar
-        volume_unit: MVar
-        values: null
     ScenarioResult_flex_offer:
       type: object
       properties:
@@ -432,9 +459,9 @@ components:
         reserve_market_offer_down:
           $ref: '#/components/schemas/DayOfferVectorEuroMWh2'
         d-LMPs:
-          $ref: '#/components/schemas/DayOfferVectorEuroMWh'
+          $ref: '#/components/schemas/FlexOfferDLMPs'
         q-LMPs:
-          $ref: '#/components/schemas/ScenarioResult_flex_offer_qLMPs'
+          $ref: '#/components/schemas/FlexOfferQLMPs'
         balancing_market_offer_up:
           $ref: '#/components/schemas/DayOfferVectorEuroMWh'
         balancing_market_offer_down:
