@@ -6,7 +6,7 @@ from swagger_server.models.scenario_params import ScenarioParams  # noqa: E501
 from swagger_server.models.scenario_result import ScenarioResult  # noqa: E501
 from swagger_server.adapters.stacked_revenue_adapter import stacked_revenue_adapter
 from swagger_server.test import BaseTestCase
-
+import responses
 
 class TestStackedRevenueAdapter(BaseTestCase):
     """StackedRevenueAdapter integration test stubs"""
@@ -41,6 +41,7 @@ class TestStackedRevenueAdapter(BaseTestCase):
             ]
         }
 
+    @responses.activate
     def test_run(self):
         """Test case for scenarios_post
 
@@ -49,7 +50,6 @@ class TestStackedRevenueAdapter(BaseTestCase):
         res = stacked_revenue_adapter(
             ScenarioParams.from_dict(self.request_obj))
 
-        print(f"the resutls if {res}")
         assert len(res.flex_offer.day_ahead_market_offer.values) > 0
 
 

@@ -473,9 +473,7 @@ components:
           $ref: '#/components/schemas/Price_In_Euro'
         reserve_market_revenues:
           $ref: '#/components/schemas/Price_In_Euro'
-        d-LMPs:
-          $ref: '#/components/schemas/Price_In_Euro'
-        q-LMPs:
+        flexibility_market_revenues:
           $ref: '#/components/schemas/Price_In_Euro'
         balancing_market_revenues:
           $ref: '#/components/schemas/Price_In_Euro'

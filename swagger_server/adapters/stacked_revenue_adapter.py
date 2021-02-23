@@ -26,21 +26,18 @@ def stacked_revenue_adapter(scenario_params):
     fm_participation = 0
     bm_participation = 1
 
-    dam_prices = [5.24, 9.85, 9.94, 9.85, 9.85, 9.15, 9.31, 12.77, 12.31, 12.12, 12.5, 12.0, 12.31, 12.31, 12.69, 12.31,
-                  12.12, 12.31, 12.88, 13.08, 14.0, 9.0, 8.85, 7.92]  # [obj['value'] for obj in martketAdapter.day_ahead_market()]
+    dam_prices = [obj['value'] for obj in martketAdapter.day_ahead_market()]
     print(f"dam_prices= {len(dam_prices)}")
     rup_prices = [0] * len(dam_prices)
     rdn_prices = [0] * len(dam_prices)
     fmp_prices = [[0] * len(dam_prices)] * ns
     fmq_prices = [[0] * len(dam_prices)] * ns
-    bm_up_prices = [20.01, 20.13, 19.7, 19.56, 19.57, 19.96, 35.23, 50.03, 54.29, 66.22, 62.34, 100.59,
-                    52.9, 52.84, 52.79, 45.23, 44.57, 46.42, 58.44, 80.0, 58.56, 39.59, 35.96, 52.5]  # [obj['value']
-#                    for obj in martketAdapter.balancing_market_up()]
+    bm_up_prices = [obj['value']
+                    for obj in martketAdapter.balancing_market_up()]
     print(f"bm_up_prices= {len(bm_up_prices)}")
 
-    bm_dn_prices = [20.01, 20.13, 19.7, 19.56, 19.57, 19.96, 35.23, 24.5, 54.29, 28.0, 28.0, 56.59,
-                    52.9, 52.84, 52.79, 24.5, 24.5, 18.5, 26.0, 59.68, 58.56, 39.59, 16.0, 26.48]  # [obj['value']
- #                   for obj in martketAdapter.balancing_market_down()]
+    bm_dn_prices = [obj['value']
+                    for obj in martketAdapter.balancing_market_down()]
     print(f"bm_dn_prices= {len(bm_dn_prices)}")
 
     p_max = [obj.power_capacity_kw for obj in scenario_params.storage_units]

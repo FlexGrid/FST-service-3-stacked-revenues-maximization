@@ -15,39 +15,34 @@ class ScenarioResultRevenues(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, day_ahead_market_revenues: PriceInEuro=None, reserve_market_revenues: PriceInEuro=None, d_lm_ps: PriceInEuro=None, q_lm_ps: PriceInEuro=None, balancing_market_revenues: PriceInEuro=None):  # noqa: E501
+    def __init__(self, day_ahead_market_revenues: PriceInEuro=None, reserve_market_revenues: PriceInEuro=None, flexibility_market_revenues: PriceInEuro=None, balancing_market_revenues: PriceInEuro=None):  # noqa: E501
         """ScenarioResultRevenues - a model defined in Swagger
 
         :param day_ahead_market_revenues: The day_ahead_market_revenues of this ScenarioResultRevenues.  # noqa: E501
         :type day_ahead_market_revenues: PriceInEuro
         :param reserve_market_revenues: The reserve_market_revenues of this ScenarioResultRevenues.  # noqa: E501
         :type reserve_market_revenues: PriceInEuro
-        :param d_lm_ps: The d_lm_ps of this ScenarioResultRevenues.  # noqa: E501
-        :type d_lm_ps: PriceInEuro
-        :param q_lm_ps: The q_lm_ps of this ScenarioResultRevenues.  # noqa: E501
-        :type q_lm_ps: PriceInEuro
+        :param flexibility_market_revenues: The flexibility_market_revenues of this ScenarioResultRevenues.  # noqa: E501
+        :type flexibility_market_revenues: PriceInEuro
         :param balancing_market_revenues: The balancing_market_revenues of this ScenarioResultRevenues.  # noqa: E501
         :type balancing_market_revenues: PriceInEuro
         """
         self.swagger_types = {
             'day_ahead_market_revenues': PriceInEuro,
             'reserve_market_revenues': PriceInEuro,
-            'd_lm_ps': PriceInEuro,
-            'q_lm_ps': PriceInEuro,
+            'flexibility_market_revenues': PriceInEuro,
             'balancing_market_revenues': PriceInEuro
         }
 
         self.attribute_map = {
             'day_ahead_market_revenues': 'day_ahead_market_revenues',
             'reserve_market_revenues': 'reserve_market_revenues',
-            'd_lm_ps': 'd-LMPs',
-            'q_lm_ps': 'q-LMPs',
+            'flexibility_market_revenues': 'flexibility_market_revenues',
             'balancing_market_revenues': 'balancing_market_revenues'
         }
         self._day_ahead_market_revenues = day_ahead_market_revenues
         self._reserve_market_revenues = reserve_market_revenues
-        self._d_lm_ps = d_lm_ps
-        self._q_lm_ps = q_lm_ps
+        self._flexibility_market_revenues = flexibility_market_revenues
         self._balancing_market_revenues = balancing_market_revenues
 
     @classmethod
@@ -104,46 +99,25 @@ class ScenarioResultRevenues(Model):
         self._reserve_market_revenues = reserve_market_revenues
 
     @property
-    def d_lm_ps(self) -> PriceInEuro:
-        """Gets the d_lm_ps of this ScenarioResultRevenues.
+    def flexibility_market_revenues(self) -> PriceInEuro:
+        """Gets the flexibility_market_revenues of this ScenarioResultRevenues.
 
 
-        :return: The d_lm_ps of this ScenarioResultRevenues.
+        :return: The flexibility_market_revenues of this ScenarioResultRevenues.
         :rtype: PriceInEuro
         """
-        return self._d_lm_ps
+        return self._flexibility_market_revenues
 
-    @d_lm_ps.setter
-    def d_lm_ps(self, d_lm_ps: PriceInEuro):
-        """Sets the d_lm_ps of this ScenarioResultRevenues.
+    @flexibility_market_revenues.setter
+    def flexibility_market_revenues(self, flexibility_market_revenues: PriceInEuro):
+        """Sets the flexibility_market_revenues of this ScenarioResultRevenues.
 
 
-        :param d_lm_ps: The d_lm_ps of this ScenarioResultRevenues.
-        :type d_lm_ps: PriceInEuro
+        :param flexibility_market_revenues: The flexibility_market_revenues of this ScenarioResultRevenues.
+        :type flexibility_market_revenues: PriceInEuro
         """
 
-        self._d_lm_ps = d_lm_ps
-
-    @property
-    def q_lm_ps(self) -> PriceInEuro:
-        """Gets the q_lm_ps of this ScenarioResultRevenues.
-
-
-        :return: The q_lm_ps of this ScenarioResultRevenues.
-        :rtype: PriceInEuro
-        """
-        return self._q_lm_ps
-
-    @q_lm_ps.setter
-    def q_lm_ps(self, q_lm_ps: PriceInEuro):
-        """Sets the q_lm_ps of this ScenarioResultRevenues.
-
-
-        :param q_lm_ps: The q_lm_ps of this ScenarioResultRevenues.
-        :type q_lm_ps: PriceInEuro
-        """
-
-        self._q_lm_ps = q_lm_ps
+        self._flexibility_market_revenues = flexibility_market_revenues
 
     @property
     def balancing_market_revenues(self) -> PriceInEuro:
