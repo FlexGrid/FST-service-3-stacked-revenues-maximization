@@ -15,29 +15,29 @@ servers:
 tags:
 - name: Prosumer
 paths:
-  /scenarios:
+  /stacked_revenues:
     post:
       tags:
-      - Scenario
-      summary: Initiates a simulation scenario
-      operationId: scenarios_post
+      - StackedRevenues
+      summary: Initiates a simulation scenario for Stacked Revenues maximization
+      operationId: stacked_revenues_post
       requestBody:
-        $ref: '#/components/requestBodies/ScenarioParams'
+        $ref: '#/components/requestBodies/StackedRevenuesParams'
       responses:
         "201":
           description: operation has been successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ScenarioResult'
+                $ref: '#/components/schemas/StackedRevenuesResult'
         "400":
           description: bad request
       security:
       - MyTokenAuth: []
-      x-openapi-router-controller: swagger_server.controllers.scenario_controller
+      x-openapi-router-controller: swagger_server.controllers.stacked_revenues_controller
 components:
   schemas:
-    ScenarioParams:
+    StackedRevenuesParams:
       required:
       - country
       - markets
@@ -48,16 +48,13 @@ components:
         sdate:
           type: string
           format: date
-          example: 2020-10-16
         country:
           type: string
-          example: GR
         markets:
           minItems: 1
           type: array
           items:
             type: string
-            example: day_ahead
         storage_units:
           minItems: 1
           type: array
@@ -95,7 +92,7 @@ components:
           format: objectid
         name:
           type: string
-    ScenarioResult:
+    StackedRevenuesResult:
       required:
       - flex_offer
       - revenues
@@ -105,23 +102,33 @@ components:
         sdate:
           type: string
           format: date
-          example: 2020-10-16
         flex_offer:
-          $ref: '#/components/schemas/ScenarioResult_flex_offer'
+          $ref: '#/components/schemas/StackedRevenuesResultFlexOffer'
         revenues:
-          $ref: '#/components/schemas/ScenarioResult_revenues'
+          $ref: '#/components/schemas/StackedRevenuesResultRevenues'
       example:
-        sdate: 2020-10-16T00:00:00.000+0000
+        sdate: 2000-01-23
         flex_offer:
-          balancing_market_offer: null
+          balancing_market_offer_down: null
           q-LMPs:
-            price_unit: €/MVar
-            volume_unit: MVar
-            values: null
-          reserve_market_offer:
-            price_unit: (€/MWh)^2
-            volume_unit: MWh^2
-            values: null
+          - - price_unit: €/MVar
+              volume_unit: MVar
+              storage_unit: storage_unit
+              values: null
+            - price_unit: €/MVar
+              volume_unit: MVar
+              storage_unit: storage_unit
+              values: null
+          - - price_unit: €/MVar
+              volume_unit: MVar
+              storage_unit: storage_unit
+              values: null
+            - price_unit: €/MVar
+              volume_unit: MVar
+              storage_unit: storage_unit
+              values: null
+          reserve_market_offer_down: null
+          balancing_market_offer_up: null
           day_ahead_market_offer:
             price_unit: €/MWh
             volume_unit: MWh
@@ -176,39 +183,34 @@ components:
               price: 0.8008281904610115
             - volume: 6.027456183070403
               price: 0.8008281904610115
-          d-LMPs: null
+          reserve_market_offer_up:
+            price_unit: €/MWh^2
+            volume_unit: MWh^2
+            values: null
+          d-LMPs:
+          - - price_unit: €/MWh
+              volume_unit: MWh
+              storage_unit: storage_unit
+              values: null
+            - price_unit: €/MWh
+              volume_unit: MWh
+              storage_unit: storage_unit
+              values: null
+          - - price_unit: €/MWh
+              volume_unit: MWh
+              storage_unit: storage_unit
+              values: null
+            - price_unit: €/MWh
+              volume_unit: MWh
+              storage_unit: storage_unit
+              values: null
         revenues:
-          q-LMPs: null
           balancing_market_revenues: null
           reserve_market_revenues: null
+          flexibility_market_revenues: null
           day_ahead_market_revenues:
-            values:
-            - 113.3
-            - 12.4
-            - 5.5
-            - 225.3
-            - 2.6
-            - 21.1
-            - 21.0
-            - 24.9
-            - 24.2
-            - 1.45
-            - 15.4
-            - 15.2
-            - 15.1
-            - 1.45
-            - 5.54
-            - 5.34
-            - 6.45
-            - 8.45
-            - 8.45
-            - 3.34
-            - 1.34
-            - 2.45
-            - 7.14
-            - 9.53
             currency: €
-          d-LMPs: null
+            value: 1.4658129805029452
     DayOfferVector:
       maxItems: 25
       minItems: 23
@@ -297,74 +299,6 @@ components:
           price: 0.8008281904610115
         - volume: 6.027456183070403
           price: 0.8008281904610115
-    DayPriceVector_Euro:
-      required:
-      - currency
-      - values
-      type: object
-      properties:
-        values:
-          maxItems: 25
-          minItems: 23
-          type: array
-          example:
-          - 113.3
-          - 12.4
-          - 5.5
-          - 225.3
-          - 2.6
-          - 21.1
-          - 21.0
-          - 24.9
-          - 24.2
-          - 1.45
-          - 15.4
-          - 15.2
-          - 15.1
-          - 1.45
-          - 5.54
-          - 5.34
-          - 6.45
-          - 8.45
-          - 8.45
-          - 3.34
-          - 1.34
-          - 2.45
-          - 7.14
-          - 9.53
-          items:
-            $ref: '#/components/schemas/DayPriceVector_Euro_values'
-        currency:
-          type: string
-          enum:
-          - €
-      example:
-        values:
-        - 113.3
-        - 12.4
-        - 5.5
-        - 225.3
-        - 2.6
-        - 21.1
-        - 21.0
-        - 24.9
-        - 24.2
-        - 1.45
-        - 15.4
-        - 15.2
-        - 15.1
-        - 1.45
-        - 5.54
-        - 5.34
-        - 6.45
-        - 8.45
-        - 8.45
-        - 3.34
-        - 1.34
-        - 2.45
-        - 7.14
-        - 9.53
-        currency: €
     Price_In_Euro:
       required:
       - currency
@@ -378,8 +312,8 @@ components:
           enum:
           - €
       example:
-        value: 113.3
         currency: €
+        value: 1.4658129805029452
     DayOfferVectorEuroMWh2:
       required:
       - price_unit
@@ -398,13 +332,15 @@ components:
           enum:
           - MWh^2
       example:
-        price_unit: (€/MWh)^2
+        price_unit: €/MWh^2
         volume_unit: MWh^2
         values: null
     FlexOfferDLMPs:
       type: array
       items:
-        type: FlexOfferDLMPsItem
+        type: array
+        items:
+          $ref: '#/components/schemas/FlexOfferDLMPsItem'
     FlexOfferDLMPsItem:
       required:
       - price_unit
@@ -425,10 +361,17 @@ components:
           type: string
           enum:
           - MWh
+      example:
+        price_unit: €/MWh
+        volume_unit: MWh
+        storage_unit: storage_unit
+        values: null
     FlexOfferQLMPs:
       type: array
       items:
-        type: FlexOfferQLMPsItem
+        type: array
+        items:
+          $ref: '#/components/schemas/FlexOfferQLMPsItem'
     FlexOfferQLMPsItem:
       required:
       - price_unit
@@ -449,7 +392,12 @@ components:
           type: string
           enum:
           - MVar
-    ScenarioResult_flex_offer:
+      example:
+        price_unit: €/MVar
+        volume_unit: MVar
+        storage_unit: storage_unit
+        values: null
+    StackedRevenuesResultFlexOffer:
       type: object
       properties:
         day_ahead_market_offer:
@@ -466,7 +414,103 @@ components:
           $ref: '#/components/schemas/DayOfferVectorEuroMWh'
         balancing_market_offer_down:
           $ref: '#/components/schemas/DayOfferVectorEuroMWh'
-    ScenarioResult_revenues:
+      example:
+        balancing_market_offer_down: null
+        q-LMPs:
+        - - price_unit: €/MVar
+            volume_unit: MVar
+            storage_unit: storage_unit
+            values: null
+          - price_unit: €/MVar
+            volume_unit: MVar
+            storage_unit: storage_unit
+            values: null
+        - - price_unit: €/MVar
+            volume_unit: MVar
+            storage_unit: storage_unit
+            values: null
+          - price_unit: €/MVar
+            volume_unit: MVar
+            storage_unit: storage_unit
+            values: null
+        reserve_market_offer_down: null
+        balancing_market_offer_up: null
+        day_ahead_market_offer:
+          price_unit: €/MWh
+          volume_unit: MWh
+          values:
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+          - volume: 6.027456183070403
+            price: 0.8008281904610115
+        reserve_market_offer_up:
+          price_unit: €/MWh^2
+          volume_unit: MWh^2
+          values: null
+        d-LMPs:
+        - - price_unit: €/MWh
+            volume_unit: MWh
+            storage_unit: storage_unit
+            values: null
+          - price_unit: €/MWh
+            volume_unit: MWh
+            storage_unit: storage_unit
+            values: null
+        - - price_unit: €/MWh
+            volume_unit: MWh
+            storage_unit: storage_unit
+            values: null
+          - price_unit: €/MWh
+            volume_unit: MWh
+            storage_unit: storage_unit
+            values: null
+    StackedRevenuesResultRevenues:
       type: object
       properties:
         day_ahead_market_revenues:
@@ -477,20 +521,19 @@ components:
           $ref: '#/components/schemas/Price_In_Euro'
         balancing_market_revenues:
           $ref: '#/components/schemas/Price_In_Euro'
-    DayPriceVector_Euro_values:
-      type: object
-      properties:
-        price:
-          type: number
-          format: currency
-        volume:
-          type: number
+      example:
+        balancing_market_revenues: null
+        reserve_market_revenues: null
+        flexibility_market_revenues: null
+        day_ahead_market_revenues:
+          currency: €
+          value: 1.4658129805029452
   requestBodies:
-    ScenarioParams:
+    StackedRevenuesParams:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ScenarioParams'
+            $ref: '#/components/schemas/StackedRevenuesParams'
       required: true
   securitySchemes:
     MyTokenAuth:
@@ -502,7 +545,7 @@ components:
         clientCredentials:
           tokenUrl: https://db.flexgrid-project.eu/authorization
           scopes:
-            post_scenario: post a scenario
+            post_stacked_revenues: post a stacked revenues scenario
       x-tokenInfoFunc: swagger_server.controllers.authorization_controller.check_MyTokenAuth
       x-scopeValidateFunc: swagger_server.controllers.authorization_controller.validate_scope_MyTokenAuth
 

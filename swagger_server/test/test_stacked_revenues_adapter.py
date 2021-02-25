@@ -2,9 +2,9 @@
 
 from __future__ import absolute_import
 
-from swagger_server.models.scenario_params import ScenarioParams  # noqa: E501
-from swagger_server.models.scenario_result import ScenarioResult  # noqa: E501
-from swagger_server.adapters.stacked_revenue_adapter import stacked_revenue_adapter
+from swagger_server.models.stacked_revenues_params import StackedRevenuesParams  # noqa: E501
+from swagger_server.models.stacked_revenues_result import StackedRevenuesResult  # noqa: E501
+from swagger_server.adapters.stacked_revenues_adapter import stacked_revenues_adapter
 from swagger_server.test import BaseTestCase
 import responses
 
@@ -43,12 +43,12 @@ class TestStackedRevenueAdapter(BaseTestCase):
 
     @responses.activate
     def test_run(self):
-        """Test case for scenarios_post
+        """Test case for stacked_revenues_post
 
         Initiates a simulation scenario
         """
-        res = stacked_revenue_adapter(
-            ScenarioParams.from_dict(self.request_obj))
+        res = stacked_revenues_adapter(
+            StackedRevenuesParams.from_dict(self.request_obj))
 
         assert len(res.flex_offer.day_ahead_market_offer.values) > 0
 

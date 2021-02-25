@@ -2,7 +2,6 @@ import requests
 import os
 from dotenv import load_dotenv
 from datetime import datetime
-from swagger_server.models.day_price_vector_euro import DayPriceVectorEuro  # noqa: E501
 import json
 
 

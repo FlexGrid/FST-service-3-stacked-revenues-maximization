@@ -5,14 +5,14 @@ from __future__ import absolute_import
 from flask import json
 from six import BytesIO
 
-from swagger_server.models.scenario_params import ScenarioParams  # noqa: E501
-from swagger_server.models.scenario_result import ScenarioResult  # noqa: E501
+from swagger_server.models.stacked_revenues_params import StackedRevenuesParams  # noqa: E501
+from swagger_server.models.stacked_revenues_result import StackedRevenuesResult  # noqa: E501
 from swagger_server.test import BaseTestCase
 import responses
 
 
-class TestScenarioController(BaseTestCase):
-    """ScenarioController integration test stubs"""
+class TestStackedRevenuesController(BaseTestCase):
+    """StackedRevenuesController integration test stubs"""
 
     def __init__(self, args):
         super().__init__(args)
@@ -35,15 +35,15 @@ class TestScenarioController(BaseTestCase):
         }
 
     @responses.activate
-    def test_scenarios_post(self):
-        """Test case for scenarios_post
+    def test_stacked_revenues_post(self):
+        """Test case for stacked_revenues_post
 
         Initiates a simulation scenario
         """
 
-        body = ScenarioParams.from_dict(self.request_obj)
+        body = StackedRevenuesParams.from_dict(self.request_obj)
         response = self.client.open(
-            '/scenarios',
+            '/stacked_revenues',
             method='POST',
             data=json.dumps(body),
             content_type='application/json',
@@ -53,18 +53,18 @@ class TestScenarioController(BaseTestCase):
 
         res = json.loads(response.data.decode('utf-8'))
 
-        assert len(ScenarioResult.from_dict(
+        assert len(StackedRevenuesResult.from_dict(
             res).flex_offer.day_ahead_market_offer.values) > 0
 
     @responses.activate
-    def test_scenarios_post_wrong_auth(self):
-        """Test case for scenarios_post
+    def test_stacked_revenues_post_wrong_auth(self):
+        """Test case for stacked_revenues_post
 
         Initiates a simulation scenario
         # """
-        body = ScenarioParams.from_dict(self.request_obj)
+        body = StackedRevenuesParams.from_dict(self.request_obj)
         response = self.client.open(
-            '/scenarios',
+            '/stacked_revenues',
             method='POST',
             data=json.dumps(body),
             content_type='application/json',
@@ -73,14 +73,14 @@ class TestScenarioController(BaseTestCase):
                        'Response body is : ' + response.data.decode('utf-8'))
 
     @responses.activate
-    def test_scenarios_post_no_auth(self):
-        """Test case for scenarios_post
+    def test_stacked_revenues_post_no_auth(self):
+        """Test case for stacked_revenues_post
 
         Initiates a simulation scenario
         """
-        body = ScenarioParams.from_dict(self.request_obj)
+        body = StackedRevenuesParams.from_dict(self.request_obj)
         response = self.client.open(
-            '/scenarios',
+            '/stacked_revenues',
             method='POST',
             data=json.dumps(body),
             content_type='application/json')

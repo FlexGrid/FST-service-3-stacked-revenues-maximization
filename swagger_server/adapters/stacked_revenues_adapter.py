@@ -1,5 +1,5 @@
-from swagger_server.models.scenario_params import ScenarioParams  # noqa: E501
-from swagger_server.models.scenario_result import ScenarioResult  # noqa: E501
+from swagger_server.models.stacked_revenues_params import StackedRevenuesParams  # noqa: E501
+from swagger_server.models.stacked_revenues_result import StackedRevenuesResult  # noqa: E501
 from swagger_server.models.day_offer_vector_euro_m_wh import DayOfferVectorEuroMWh  # noqa: E501
 from swagger_server.models.day_offer_vector_euro_m_wh2 import DayOfferVectorEuroMWh2  # noqa: E501
 from swagger_server.models.flex_offer_dlm_ps_item import FlexOfferDLMPsItem
@@ -10,15 +10,15 @@ from swagger_server.adapters.market_adapter import MarketAdapter
 from datetime import datetime, timedelta
 
 
-def stacked_revenue_adapter(scenario_params):
-    assert isinstance(scenario_params, ScenarioParams)
+def stacked_revenues_adapter(stacked_revenues_params):
+    assert isinstance(stacked_revenues_params, StackedRevenuesParams)
 
-    ns = len(scenario_params.storage_units)
+    ns = len(stacked_revenues_params.storage_units)
     print(f"We got {ns} batteries")
 
     martketAdapter = MarketAdapter(
-        datetime.combine(scenario_params.sdate, datetime.min.time()),
-        datetime.combine(scenario_params.sdate, datetime.min.time()) +
+        datetime.combine(stacked_revenues_params.sdate, datetime.min.time()),
+        datetime.combine(stacked_revenues_params.sdate, datetime.min.time()) +
         timedelta(days=1) - timedelta(minutes=1))
 
     dam_participation = 1
@@ -40,17 +40,17 @@ def stacked_revenue_adapter(scenario_params):
                     for obj in martketAdapter.balancing_market_down()]
     print(f"bm_dn_prices= {len(bm_dn_prices)}")
 
-    p_max = [obj.power_capacity_kw for obj in scenario_params.storage_units]
+    p_max = [obj.power_capacity_kw for obj in stacked_revenues_params.storage_units]
     print(f"p_max= {p_max}")
 
-    E_max = [obj.energy_capacity_k_wh for obj in scenario_params.storage_units]
+    E_max = [obj.energy_capacity_k_wh for obj in stacked_revenues_params.storage_units]
     print(f"E_max= {E_max}")
 
     roundtrip_eff = [
-        obj.inefficiency_rate_per_cent for obj in scenario_params.storage_units]
+        obj.inefficiency_rate_per_cent for obj in stacked_revenues_params.storage_units]
     print(f"roundtrip_eff= {roundtrip_eff}")
 
-    E0 = [obj.initial_final_so_c_per_cent for obj in scenario_params.storage_units]
+    E0 = [obj.initial_final_so_c_per_cent for obj in stacked_revenues_params.storage_units]
     print(f"E0= {E0}")
 
     # Create a battery object
@@ -76,14 +76,14 @@ def stacked_revenue_adapter(scenario_params):
           f"FM_profits = {FM_profits},\n\n"
           f"BM_profits = {BM_profits}\n")
 
-    return ScenarioResult.from_dict({
-        "sdate": str(scenario_params.sdate),
+    return StackedRevenuesResult.from_dict({
+        "sdate": str(stacked_revenues_params.sdate),
         "flex_offer": {
             "day_ahead_market_offer": build_market_offer(dam_prices, dam_schedule).to_dict(),
             "reserve_market_offer_up": build_reserve_market_offer(rup_prices, rup_commitment).to_dict(),
             "reserve_market_offer_down": build_reserve_market_offer(rdn_prices, rdn_commitment).to_dict(),
-            "d-LMPs":  build_dflex_market_offer(fmp_prices, pflexibility, scenario_params.storage_units),
-            "q-LMPs": build_qflex_market_offer(fmq_prices, qflexibility, scenario_params.storage_units),
+            "d-LMPs":  build_dflex_market_offer(fmp_prices, pflexibility, stacked_revenues_params.storage_units),
+            "q-LMPs": build_qflex_market_offer(fmq_prices, qflexibility, stacked_revenues_params.storage_units),
             "balancing_market_offer_up": build_market_offer(bm_up_prices, pup).to_dict(),
             "balancing_market_offer_down": build_market_offer(bm_dn_prices, pdn).to_dict()
         },

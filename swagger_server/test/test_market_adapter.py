@@ -2,8 +2,8 @@
 
 from __future__ import absolute_import
 
-from swagger_server.models.scenario_params import ScenarioParams  # noqa: E501
-from swagger_server.models.scenario_result import ScenarioResult  # noqa: E501
+from swagger_server.models.stacked_revenues_params import StackedRevenuesParams  # noqa: E501
+from swagger_server.models.stacked_revenues_result import StackedRevenuesResult  # noqa: E501
 from swagger_server.adapters.market_adapter import MarketAdapter
 from swagger_server.test import BaseTestCase
 from datetime import datetime
@@ -21,7 +21,7 @@ class TestMarketAdapter(BaseTestCase):
 
     @responses.activate
     def test_run(self):
-        """Test case for scenarios_post
+        """Test case for stacked_revenues_post
 
         Initiates a simulation scenario
         """
