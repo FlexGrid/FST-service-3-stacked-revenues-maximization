@@ -18,7 +18,7 @@ paths:
   /stacked_revenues:
     post:
       tags:
-      - StackedRevenues
+      - StackedRevenues (UCS 2.3)
       summary: Initiates a simulation scenario for Stacked Revenues maximization
       operationId: stacked_revenues_post
       requestBody:
@@ -35,6 +35,48 @@ paths:
       security:
       - MyTokenAuth: []
       x-openapi-router-controller: swagger_server.controllers.stacked_revenues_controller
+  /flex_offers:
+    post:
+      tags:
+        - FlexOffers (UCS 4.3)
+      summary: Creates a Flexibility Offser (FlexOffer) based of FlexAssets
+      operationId: flex_offers_post
+      requestBody:
+        $ref: '#/components/requestBodies/FlexOfferParams'
+      responses:
+        "201":
+          description: operation has been successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlexOfferResult'
+        "400":
+          description: bad request
+      security:
+      - MyTokenAuth: []
+      x-openapi-router-controller: swagger_server.controllers.flex_offers_controller
+  /pricing:
+    post:
+      tags:
+        - Pricing (UCS 4.2)
+      summary: Creates an evaluation of various pricing mechanisms
+      operationId: pricing_post
+      requestBody:
+        $ref: '#/components/requestBodies/PricingParams'
+      responses:
+        "201":
+          description: operation has been successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PricingResult'
+        "400":
+          description: bad request
+      security:
+      - MyTokenAuth: []
+      x-openapi-router-controller: swagger_server.controllers.pricing_controller
+
+
 components:
   schemas:
     StackedRevenuesParams:
@@ -60,6 +102,186 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/StorageUnit'
+
+    StackedRevenuesResult:
+      required:
+      - flex_offer
+      - revenues
+      - sdate
+      type: object
+      properties:
+        sdate:
+          type: string
+          format: date
+        flex_offer:
+          $ref: '#/components/schemas/FlexOffer'
+        revenues:
+          $ref: '#/components/schemas/StackedRevenuesResultRevenues'
+
+
+    FlexOfferParams:
+      type: object
+      properties:
+        country:
+          type: string
+        flex_assets:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/FlexAsset'
+        start_datetime:
+          type: string
+          format: date-time
+        end_datetime:
+          type: string
+          format: date-time
+        time_granularity:
+          type: object
+          properties:
+            id:
+              type: string
+            duration_seconds:
+              type: integer
+        location:
+          $ref: '#/components/schemas/Location'
+        store_data:
+          type: boolean
+
+    FlexOfferResult:
+      type: object
+      properties:
+        reserve_market_offer_up:
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh2'
+        reserve_market_offer_down:
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh2'
+        expected_revenues:
+          type: object
+          properties:
+            currecy:
+              type: string
+            revenue_vector:  
+              $ref: '#/components/schemas/RevenueVector'
+
+
+    PricingParams:
+      type: object
+      properties:
+        country:
+          type: string
+        start_datetime:
+          type: string
+          format: date-time
+        end_datetime:
+          type: string
+          format: date-time
+        time_granularity:
+          type: object
+          properties:
+            id:
+              type: string
+            duration_seconds:
+              type: integer
+        time_frame_id:
+          type: string
+        flex_request:
+          $ref: '#/components/schemas/FlexOffer'    
+        flex_assets:
+          type: array
+          items: 
+            $ref: '#/components/schemas/FlexAsset'
+        storage_units:
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/StorageUnit'
+        curtailable_loads:
+          type: array
+          items:
+            $ref: '#/components/schemas/CurtailableLoad'
+        flex_contracts:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlexContract'
+        profit_margin:
+          type: number
+        store_data:
+          type: boolean
+        
+    PricingResult:
+      type: object
+      properties:
+        flex_contracts:
+          type: array
+          items:
+            type: object
+            properties:
+              flex_contract:
+                $ref: '#/components/schemas/FlexContract'
+              flexibility_revenues:
+                type: object
+                properties:
+                  currecy:
+                    type: string
+                  revenue_vector:  
+                    $ref: '#/components/schemas/RevenueVector'
+              aggregated_user_welfare:
+                type: object
+                properties:
+                  currecy:
+                    type: string
+                  welfare_vector:  
+                    $ref: '#/components/schemas/RevenueVector'
+              flexibility:
+                $ref: '#/components/schemas/FlexOffer'
+
+        users:
+          type: array
+          items:
+            type: object
+            properties:
+              currecy:
+                type: string
+              welfare_vector:  
+                $ref: '#/components/schemas/RevenueVector'
+          
+                  
+    FlexAsset:
+      type: object
+      properties:
+        consumer_id:
+          type: string
+        reserve_market_offer_up:
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh2'
+        reserve_market_offer_down:
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh2'
+        location:
+          $ref: '#/components/schemas/Location'
+
+    CurtailableLoad:
+      type: object
+      properties:
+        consumer_id:
+          type: string
+        unit:
+           type: string
+           enum :
+             - 'KW'
+        power_vector:
+          $ref: '#/components/schemas/PowerVector'
+        location:
+          $ref: '#/components/schemas/Location'
+
+
+    FlexContract:
+      type: object
+      properties:
+        name:
+          type: string
+        id:
+          type: number
+        gamma:
+          type: number
+
     StorageUnit:
       required:
       - location
@@ -92,142 +314,65 @@ components:
           format: objectid
         name:
           type: string
-    StackedRevenuesResult:
-      required:
-      - flex_offer
-      - revenues
-      - sdate
-      type: object
-      properties:
-        sdate:
-          type: string
-          format: date
-        flex_offer:
-          $ref: '#/components/schemas/StackedRevenuesResultFlexOffer'
-        revenues:
-          $ref: '#/components/schemas/StackedRevenuesResultRevenues'
-      example:
-        sdate: 2000-01-23
-        flex_offer:
-          balancing_market_offer_down: null
-          q-LMPs:
-          - - price_unit: €/MVar
-              volume_unit: MVar
-              storage_unit: storage_unit
-              values: null
-            - price_unit: €/MVar
-              volume_unit: MVar
-              storage_unit: storage_unit
-              values: null
-          - - price_unit: €/MVar
-              volume_unit: MVar
-              storage_unit: storage_unit
-              values: null
-            - price_unit: €/MVar
-              volume_unit: MVar
-              storage_unit: storage_unit
-              values: null
-          reserve_market_offer_down: null
-          balancing_market_offer_up: null
-          day_ahead_market_offer:
-            price_unit: €/MWh
-            volume_unit: MWh
-            values:
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-            - volume: 6.027456183070403
-              price: 0.8008281904610115
-          reserve_market_offer_up:
-            price_unit: €/MWh^2
-            volume_unit: MWh^2
-            values: null
-          d-LMPs:
-          - - price_unit: €/MWh
-              volume_unit: MWh
-              storage_unit: storage_unit
-              values: null
-            - price_unit: €/MWh
-              volume_unit: MWh
-              storage_unit: storage_unit
-              values: null
-          - - price_unit: €/MWh
-              volume_unit: MWh
-              storage_unit: storage_unit
-              values: null
-            - price_unit: €/MWh
-              volume_unit: MWh
-              storage_unit: storage_unit
-              values: null
-        revenues:
-          balancing_market_revenues: null
-          reserve_market_revenues: null
-          flexibility_market_revenues: null
-          day_ahead_market_revenues:
-            currency: €
-            value: 1.4658129805029452
+
+
     DayOfferVector:
       maxItems: 25
       minItems: 23
       type: array
       items:
         $ref: '#/components/schemas/DayOfferVectorItem'
+        
+        
     DayOfferVectorItem:
       type: object
       properties:
+        start_timestamp:
+          type: string
+          format: date-time
+        end_timestamp:
+          type: string
+          format: date-time
         price:
           type: number
           format: currency
         volume:
           type: number
-      example:
-        volume: 6.027456183070403
-        price: 0.8008281904610115
+
+    RevenueVector:
+      type: array
+      items:
+        $ref: '#/components/schemas/RevenueVectorItem'
+    RevenueVectorItem:
+      type: object
+      properties:
+        start_timestamp:
+          type: string
+          format: date-time
+        end_timestamp:
+          type: string
+          format: date-time
+        revenue:
+          type: number
+          format: currency
+
+
+    PowerVector:
+      type: array
+      items:
+        $ref: '#/components/schemas/PowerVectorItem'
+    PowerVectorItem:
+      type: object
+      properties:
+        start_timestamp:
+          type: string
+          format: date-time
+        end_timestamp:
+          type: string
+          format: date-time
+        power:
+          type: number
+      
     DayOfferVectorEuroMWh:
       required:
       - price_unit
@@ -245,60 +390,6 @@ components:
           type: string
           enum:
           - MWh
-      example:
-        price_unit: €/MWh
-        volume_unit: MWh
-        values:
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
-        - volume: 6.027456183070403
-          price: 0.8008281904610115
     Price_In_Euro:
       required:
       - currency
@@ -311,9 +402,6 @@ components:
           type: string
           enum:
           - €
-      example:
-        currency: €
-        value: 1.4658129805029452
     DayOfferVectorEuroMWh2:
       required:
       - price_unit
@@ -331,10 +419,6 @@ components:
           type: string
           enum:
           - MWh^2
-      example:
-        price_unit: €/MWh^2
-        volume_unit: MWh^2
-        values: null
     FlexOfferDLMPs:
       type: array
       items:
@@ -361,11 +445,6 @@ components:
           type: string
           enum:
           - MWh
-      example:
-        price_unit: €/MWh
-        volume_unit: MWh
-        storage_unit: storage_unit
-        values: null
     FlexOfferQLMPs:
       type: array
       items:
@@ -392,12 +471,7 @@ components:
           type: string
           enum:
           - MVar
-      example:
-        price_unit: €/MVar
-        volume_unit: MVar
-        storage_unit: storage_unit
-        values: null
-    StackedRevenuesResultFlexOffer:
+    FlexOffer:
       type: object
       properties:
         day_ahead_market_offer:
@@ -414,102 +488,6 @@ components:
           $ref: '#/components/schemas/DayOfferVectorEuroMWh'
         balancing_market_offer_down:
           $ref: '#/components/schemas/DayOfferVectorEuroMWh'
-      example:
-        balancing_market_offer_down: null
-        q-LMPs:
-        - - price_unit: €/MVar
-            volume_unit: MVar
-            storage_unit: storage_unit
-            values: null
-          - price_unit: €/MVar
-            volume_unit: MVar
-            storage_unit: storage_unit
-            values: null
-        - - price_unit: €/MVar
-            volume_unit: MVar
-            storage_unit: storage_unit
-            values: null
-          - price_unit: €/MVar
-            volume_unit: MVar
-            storage_unit: storage_unit
-            values: null
-        reserve_market_offer_down: null
-        balancing_market_offer_up: null
-        day_ahead_market_offer:
-          price_unit: €/MWh
-          volume_unit: MWh
-          values:
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            price: 0.8008281904610115
-        reserve_market_offer_up:
-          price_unit: €/MWh^2
-          volume_unit: MWh^2
-          values: null
-        d-LMPs:
-        - - price_unit: €/MWh
-            volume_unit: MWh
-            storage_unit: storage_unit
-            values: null
-          - price_unit: €/MWh
-            volume_unit: MWh
-            storage_unit: storage_unit
-            values: null
-        - - price_unit: €/MWh
-            volume_unit: MWh
-            storage_unit: storage_unit
-            values: null
-          - price_unit: €/MWh
-            volume_unit: MWh
-            storage_unit: storage_unit
-            values: null
     StackedRevenuesResultRevenues:
       type: object
       properties:
@@ -521,13 +499,6 @@ components:
           $ref: '#/components/schemas/Price_In_Euro'
         balancing_market_revenues:
           $ref: '#/components/schemas/Price_In_Euro'
-      example:
-        balancing_market_revenues: null
-        reserve_market_revenues: null
-        flexibility_market_revenues: null
-        day_ahead_market_revenues:
-          currency: €
-          value: 1.4658129805029452
   requestBodies:
     StackedRevenuesParams:
       content:
@@ -535,6 +506,18 @@ components:
           schema:
             $ref: '#/components/schemas/StackedRevenuesParams'
       required: true
+    FlexOfferParams:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FlexOfferParams'
+
+    PricingParams:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PricingParams'
+
   securitySchemes:
     MyTokenAuth:
       type: oauth2
