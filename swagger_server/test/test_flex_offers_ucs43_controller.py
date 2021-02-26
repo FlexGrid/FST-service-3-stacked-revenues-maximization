@@ -8,11 +8,13 @@ from six import BytesIO
 from swagger_server.models.flex_offer_params import FlexOfferParams  # noqa: E501
 from swagger_server.models.flex_offer_result import FlexOfferResult  # noqa: E501
 from swagger_server.test import BaseTestCase
+import responses
 
 
 class TestFlexOffersUCS43Controller(BaseTestCase):
     """FlexOffersUCS43Controller integration test stubs"""
 
+    @responses.activate
     def test_flex_offers_post(self):
         """Test case for flex_offers_post
 
@@ -23,7 +25,8 @@ class TestFlexOffersUCS43Controller(BaseTestCase):
             '/flex_offers',
             method='POST',
             data=json.dumps(body),
-            content_type='application/json')
+            content_type='application/json',
+            headers={'Authorization': 'Bearer 1234'})
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
