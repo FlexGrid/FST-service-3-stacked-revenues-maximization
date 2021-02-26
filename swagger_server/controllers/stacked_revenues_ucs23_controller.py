@@ -9,6 +9,7 @@ from swagger_server.adapters.stacked_revenues_adapter import stacked_revenues_ad
 import logging
 import traceback
 
+
 def stacked_revenues_post(body):  # noqa: E501
     """Initiates a simulation scenario for Stacked Revenues maximization
 

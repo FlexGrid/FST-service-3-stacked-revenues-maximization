@@ -8,11 +8,12 @@ from six import BytesIO
 from swagger_server.models.stacked_revenues_params import StackedRevenuesParams  # noqa: E501
 from swagger_server.models.stacked_revenues_result import StackedRevenuesResult  # noqa: E501
 from swagger_server.test import BaseTestCase
+
 import responses
 
 
-class TestStackedRevenuesController(BaseTestCase):
-    """StackedRevenuesController integration test stubs"""
+class TestStackedRevenuesUCS23Controller(BaseTestCase):
+    """StackedRevenuesUCS23Controller integration test stubs"""
 
     def __init__(self, args):
         super().__init__(args)

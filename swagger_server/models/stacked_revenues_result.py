@@ -6,7 +6,7 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
-from swagger_server.models.stacked_revenues_result_flex_offer import StackedRevenuesResultFlexOffer  # noqa: F401,E501
+from swagger_server.models.flex_offer import FlexOffer  # noqa: F401,E501
 from swagger_server.models.stacked_revenues_result_revenues import StackedRevenuesResultRevenues  # noqa: F401,E501
 from swagger_server import util
 
@@ -16,19 +16,19 @@ class StackedRevenuesResult(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, sdate: date=None, flex_offer: StackedRevenuesResultFlexOffer=None, revenues: StackedRevenuesResultRevenues=None):  # noqa: E501
+    def __init__(self, sdate: date=None, flex_offer: FlexOffer=None, revenues: StackedRevenuesResultRevenues=None):  # noqa: E501
         """StackedRevenuesResult - a model defined in Swagger
 
         :param sdate: The sdate of this StackedRevenuesResult.  # noqa: E501
         :type sdate: date
         :param flex_offer: The flex_offer of this StackedRevenuesResult.  # noqa: E501
-        :type flex_offer: StackedRevenuesResultFlexOffer
+        :type flex_offer: FlexOffer
         :param revenues: The revenues of this StackedRevenuesResult.  # noqa: E501
         :type revenues: StackedRevenuesResultRevenues
         """
         self.swagger_types = {
             'sdate': date,
-            'flex_offer': StackedRevenuesResultFlexOffer,
+            'flex_offer': FlexOffer,
             'revenues': StackedRevenuesResultRevenues
         }
 
@@ -76,22 +76,22 @@ class StackedRevenuesResult(Model):
         self._sdate = sdate
 
     @property
-    def flex_offer(self) -> StackedRevenuesResultFlexOffer:
+    def flex_offer(self) -> FlexOffer:
         """Gets the flex_offer of this StackedRevenuesResult.
 
 
         :return: The flex_offer of this StackedRevenuesResult.
-        :rtype: StackedRevenuesResultFlexOffer
+        :rtype: FlexOffer
         """
         return self._flex_offer
 
     @flex_offer.setter
-    def flex_offer(self, flex_offer: StackedRevenuesResultFlexOffer):
+    def flex_offer(self, flex_offer: FlexOffer):
         """Sets the flex_offer of this StackedRevenuesResult.
 
 
         :param flex_offer: The flex_offer of this StackedRevenuesResult.
-        :type flex_offer: StackedRevenuesResultFlexOffer
+        :type flex_offer: FlexOffer
         """
         if flex_offer is None:
             raise ValueError("Invalid value for `flex_offer`, must not be `None`")  # noqa: E501

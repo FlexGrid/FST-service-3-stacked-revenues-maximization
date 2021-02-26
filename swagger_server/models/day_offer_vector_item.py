@@ -14,23 +14,33 @@ class DayOfferVectorItem(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, price: float=None, volume: float=None):  # noqa: E501
+    def __init__(self, start_timestamp: datetime=None, end_timestamp: datetime=None, price: float=None, volume: float=None):  # noqa: E501
         """DayOfferVectorItem - a model defined in Swagger
 
+        :param start_timestamp: The start_timestamp of this DayOfferVectorItem.  # noqa: E501
+        :type start_timestamp: datetime
+        :param end_timestamp: The end_timestamp of this DayOfferVectorItem.  # noqa: E501
+        :type end_timestamp: datetime
         :param price: The price of this DayOfferVectorItem.  # noqa: E501
         :type price: float
         :param volume: The volume of this DayOfferVectorItem.  # noqa: E501
         :type volume: float
         """
         self.swagger_types = {
+            'start_timestamp': datetime,
+            'end_timestamp': datetime,
             'price': float,
             'volume': float
         }
 
         self.attribute_map = {
+            'start_timestamp': 'start_timestamp',
+            'end_timestamp': 'end_timestamp',
             'price': 'price',
             'volume': 'volume'
         }
+        self._start_timestamp = start_timestamp
+        self._end_timestamp = end_timestamp
         self._price = price
         self._volume = volume
 
@@ -44,6 +54,48 @@ class DayOfferVectorItem(Model):
         :rtype: DayOfferVectorItem
         """
         return util.deserialize_model(dikt, cls)
+
+    @property
+    def start_timestamp(self) -> datetime:
+        """Gets the start_timestamp of this DayOfferVectorItem.
+
+
+        :return: The start_timestamp of this DayOfferVectorItem.
+        :rtype: datetime
+        """
+        return self._start_timestamp
+
+    @start_timestamp.setter
+    def start_timestamp(self, start_timestamp: datetime):
+        """Sets the start_timestamp of this DayOfferVectorItem.
+
+
+        :param start_timestamp: The start_timestamp of this DayOfferVectorItem.
+        :type start_timestamp: datetime
+        """
+
+        self._start_timestamp = start_timestamp
+
+    @property
+    def end_timestamp(self) -> datetime:
+        """Gets the end_timestamp of this DayOfferVectorItem.
+
+
+        :return: The end_timestamp of this DayOfferVectorItem.
+        :rtype: datetime
+        """
+        return self._end_timestamp
+
+    @end_timestamp.setter
+    def end_timestamp(self, end_timestamp: datetime):
+        """Sets the end_timestamp of this DayOfferVectorItem.
+
+
+        :param end_timestamp: The end_timestamp of this DayOfferVectorItem.
+        :type end_timestamp: datetime
+        """
+
+        self._end_timestamp = end_timestamp
 
     @property
     def price(self) -> float:
