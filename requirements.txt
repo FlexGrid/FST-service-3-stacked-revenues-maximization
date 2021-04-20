@@ -9,3 +9,4 @@ connexion[swagger-ui] == 2.6.0
 python-dotenv
 responses
 flask_testing
+python-dateutil==2.8.1
