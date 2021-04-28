@@ -28,8 +28,11 @@ def stacked_revenues_adapter(stacked_revenues_params):
 
     dam_prices = [obj['value'] for obj in martketAdapter.day_ahead_market()]
     print(f"dam_prices= {len(dam_prices)}")
-    rup_prices = [0] * len(dam_prices)
-    rdn_prices = [0] * len(dam_prices)
+    rup_prices = [obj['value']
+                    for obj in martketAdapter.reserve_market()]
+    rdn_prices = [obj['value']
+                    for obj in martketAdapter.reserve_market()]
+
     fmp_prices = [[0] * len(dam_prices)] * ns
     fmq_prices = [[0] * len(dam_prices)] * ns
     bm_up_prices = [obj['value']

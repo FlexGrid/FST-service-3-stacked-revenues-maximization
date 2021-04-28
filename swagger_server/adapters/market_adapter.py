@@ -57,3 +57,6 @@ class MarketAdapter:
 
     def balancing_market_down(self):
         return self.fingrid(106)
+
+    def reserve_market(self):
+        return self.fingrid(79)
