@@ -8,6 +8,7 @@ from swagger_server.models.price_in_euro import PriceInEuro  # noqa: E501
 from stacked_revenues.maximize_stacked_revenues import battery_portfolio
 from swagger_server.adapters.market_adapter import MarketAdapter
 from datetime import datetime, timedelta
+import dateutil.parser
 
 
 def stacked_revenues_adapter(stacked_revenues_params):
@@ -21,6 +22,15 @@ def stacked_revenues_adapter(stacked_revenues_params):
         datetime.combine(stacked_revenues_params.sdate, datetime.min.time()) +
         timedelta(days=1) - timedelta(minutes=1))
 
+    timestamps = [(
+        (dateutil.parser.isoparse(martketAdapter.start_timestamp) +
+         timedelta(hours=t)).strftime('%Y-%m-%dT%H:%M:%SZ'),
+        (dateutil.parser.isoparse(martketAdapter.start_timestamp) +
+         timedelta(hours=t+1)).strftime('%Y-%m-%dT%H:%M:%SZ'),
+    ) for t in range(24)]
+
+    print(f"min time {datetime.min.time()} timestamps= {timestamps}")
+
     dam_participation = 1
     rm_participation = 0
     fm_participation = 0
@@ -29,9 +39,9 @@ def stacked_revenues_adapter(stacked_revenues_params):
     dam_prices = [obj['value'] for obj in martketAdapter.day_ahead_market()]
     print(f"dam_prices= {len(dam_prices)}")
     rup_prices = [obj['value']
-                    for obj in martketAdapter.reserve_market()]
+                  for obj in martketAdapter.reserve_market()]
     rdn_prices = [obj['value']
-                    for obj in martketAdapter.reserve_market()]
+                  for obj in martketAdapter.reserve_market()]
 
     fmp_prices = [[0] * len(dam_prices)] * ns
     fmq_prices = [[0] * len(dam_prices)] * ns
@@ -82,13 +92,13 @@ def stacked_revenues_adapter(stacked_revenues_params):
     return StackedRevenuesResult.from_dict({
         "sdate": str(stacked_revenues_params.sdate),
         "flex_offer": {
-            "day_ahead_market_offer": build_market_offer(dam_prices, dam_schedule).to_dict(),
-            "reserve_market_offer_up": build_reserve_market_offer(rup_prices, rup_commitment).to_dict(),
-            "reserve_market_offer_down": build_reserve_market_offer(rdn_prices, rdn_commitment).to_dict(),
-            "d-LMPs":  build_dflex_market_offer(fmp_prices, pflexibility, stacked_revenues_params.storage_units),
-            "q-LMPs": build_qflex_market_offer(fmq_prices, qflexibility, stacked_revenues_params.storage_units),
-            "balancing_market_offer_up": build_market_offer(bm_up_prices, pup).to_dict(),
-            "balancing_market_offer_down": build_market_offer(bm_dn_prices, pdn).to_dict()
+            "day_ahead_market_offer": build_market_offer(timestamps, dam_schedule).to_dict(),
+            "reserve_market_offer_up": build_reserve_market_offer(timestamps, rup_commitment).to_dict(),
+            "reserve_market_offer_down": build_reserve_market_offer(timestamps, rdn_commitment).to_dict(),
+            "d-LMPs":  build_dflex_market_offer(timestamps, pflexibility, stacked_revenues_params.storage_units),
+            "q-LMPs": build_qflex_market_offer(timestamps, qflexibility, stacked_revenues_params.storage_units),
+            "balancing_market_offer_up": build_market_offer(timestamps, pup).to_dict(),
+            "balancing_market_offer_down": build_market_offer(timestamps, pdn).to_dict()
         },
         "revenues": {
             "day_ahead_market_revenues": build_profits(DAM_profits).to_dict(),
@@ -99,50 +109,54 @@ def stacked_revenues_adapter(stacked_revenues_params):
     })
 
 
-def build_market_offer(prices, schedule):
+def build_market_offer(timestamps, schedule):
     return DayOfferVectorEuroMWh.from_dict({
         "values": [{
-            "price": prices[i],
+            "start_timestamp": timestamps[i][0],
+            "end_timestamp": timestamps[i][1],
             "volume": sum(schedule[j][i] for j in range(len(schedule)))
-        } for i in range(len(prices))],
+        } for i in range(len(schedule))],
         "price_unit": "€/MWh",
         "volume_unit": "MWh"
     })
 
 
-def build_reserve_market_offer(prices, schedule):
+def build_reserve_market_offer(timestamps, schedule):
     return DayOfferVectorEuroMWh2.from_dict({
         "values": [{
-            "price": prices[i],
+            "start_timestamp": timestamps[i][0],
+            "end_timestamp": timestamps[i][1],
             "volume": sum(schedule[j][i] for j in range(len(schedule)))
-        } for i in range(len(prices))],
+        } for i in range(len(schedule))],
         "price_unit": "€/MWh^2",
         "volume_unit": "MWh^2"
     })
 
 
-def build_dflex_market_offer(prices, schedule, storage_units):
-    print(f"The price is {prices}, the scedule is {schedule}")
+def build_dflex_market_offer(timestamps, schedule, storage_units):
+    print(f"The timestamps are {timestamps}, the scedule is {schedule}")
     return [
         FlexOfferDLMPsItem.from_dict({
             'price_unit': "€/MWh",
             'storage_unit': i,
             'values': [{
-                "price": prices[i][j],
+                "start_timestamp": timestamps[i][0],
+                "end_timestamp": timestamps[i][1],
                 "volume": schedule[i][j],
             } for j in range(len(schedule[i]))],
             'volume_unit': "MWh",
         }) for i in range(len(storage_units))]
 
 
-def build_qflex_market_offer(prices, schedule, storage_units):
-    print(f"The price is {prices}, the scedule is {schedule}")
+def build_qflex_market_offer(timestamps, schedule, storage_units):
+    print(f"The timestamps are {timestamps}, the scedule is {schedule}")
     return [
         FlexOfferQLMPsItem.from_dict({
             'price_unit': "€/MVar",
             'storage_unit': i,
             'values': [{
-                "price": prices[i][j],
+                "start_timestamp": timestamps[i][0],
+                "end_timestamp": timestamps[i][1],
                 "volume": schedule[i][j],
             } for j in range(len(schedule[i]))],
             'volume_unit': "MVar",

@@ -50,6 +50,7 @@ class TestStackedRevenueAdapter(BaseTestCase):
         res = stacked_revenues_adapter(
             StackedRevenuesParams.from_dict(self.request_obj))
 
+        print(f"The flexoffer is {res}")
         assert len(res.flex_offer.day_ahead_market_offer.values) > 0
 
 
