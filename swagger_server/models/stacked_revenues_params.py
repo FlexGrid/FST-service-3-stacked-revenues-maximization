@@ -120,8 +120,13 @@ class StackedRevenuesParams(Model):
         :param markets: The markets of this StackedRevenuesParams.
         :type markets: List[str]
         """
-        if markets is None:
-            raise ValueError("Invalid value for `markets`, must not be `None`")  # noqa: E501
+        allowed_values = ["DAM", "RM", "FM", "BM"]  # noqa: E501
+        if not set(markets).issubset(set(allowed_values)):
+            raise ValueError(
+                "Invalid values for `markets` [{0}], must be a subset of [{1}]"  # noqa: E501
+                .format(", ".join(map(str, set(markets) - set(allowed_values))),  # noqa: E501
+                        ", ".join(map(str, allowed_values)))
+            )
 
         self._markets = markets
 

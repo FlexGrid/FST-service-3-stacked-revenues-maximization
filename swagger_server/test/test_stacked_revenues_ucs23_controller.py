@@ -20,7 +20,7 @@ class TestStackedRevenuesUCS23Controller(BaseTestCase):
         self.request_obj = {
             "sdate": "2020-10-16",
             "country": "GR",
-            "markets": ["day_ahead"],
+            "markets": ["DAM"],
             "storage_units": [
                 {
                     "power_capacity_KW": 5,

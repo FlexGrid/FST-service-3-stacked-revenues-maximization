@@ -16,7 +16,7 @@ class TestStackedRevenueAdapter(BaseTestCase):
         self.request_obj = {
             "sdate": "2020-10-16",
             "country": "GR",
-            "markets": ["day_ahead"],
+            "markets": ["DAM", "RM", "FM", "BM"],
             "storage_units": [
                 {
                     "power_capacity_KW": 5,

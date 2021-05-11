@@ -95,6 +95,11 @@ components:
           type: array
           items:
             type: string
+            enum:
+            - DAM
+            - RM
+            - FM
+            - BM
         storage_units:
           minItems: 1
           type: array

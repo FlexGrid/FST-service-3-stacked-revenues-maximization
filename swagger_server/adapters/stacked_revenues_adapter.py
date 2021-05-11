@@ -31,10 +31,10 @@ def stacked_revenues_adapter(stacked_revenues_params):
 
     print(f"min time {datetime.min.time()} timestamps= {timestamps}")
 
-    dam_participation = 1
-    rm_participation = 0
-    fm_participation = 0
-    bm_participation = 1
+    dam_participation = "DAM" in stacked_revenues_params.markets
+    rm_participation = "RM" in stacked_revenues_params.markets
+    fm_participation = "FM" in stacked_revenues_params.markets
+    bm_participation = "BM" in stacked_revenues_params.markets
 
     dam_prices = [obj['value'] for obj in martketAdapter.day_ahead_market()]
     print(f"dam_prices= {len(dam_prices)}")
@@ -115,7 +115,7 @@ def build_market_offer(timestamps, schedule):
             "start_timestamp": timestamps[i][0],
             "end_timestamp": timestamps[i][1],
             "volume": sum(schedule[j][i] for j in range(len(schedule)))
-        } for i in range(len(schedule))],
+        } for i in range(len(timestamps))],
         "price_unit": "€/MWh",
         "volume_unit": "MWh"
     })
@@ -127,7 +127,7 @@ def build_reserve_market_offer(timestamps, schedule):
             "start_timestamp": timestamps[i][0],
             "end_timestamp": timestamps[i][1],
             "volume": sum(schedule[j][i] for j in range(len(schedule)))
-        } for i in range(len(schedule))],
+        } for i in range(len(timestamps))],
         "price_unit": "€/MWh^2",
         "volume_unit": "MWh^2"
     })
