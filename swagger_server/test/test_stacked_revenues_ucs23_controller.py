@@ -28,7 +28,7 @@ class TestStackedRevenuesUCS23Controller(BaseTestCase):
                     "inefficiency_rate_per_cent": 0.5,
                     "initial_final_SoC_per_cent": 0.5,
                     "location": {
-                        "id": "string",
+                        "id": "BSU3",
                         "name": "string"
                     }
                 },
@@ -55,7 +55,7 @@ class TestStackedRevenuesUCS23Controller(BaseTestCase):
         res = json.loads(response.data.decode('utf-8'))
 
         assert len(StackedRevenuesResult.from_dict(
-            res).flex_offer.day_ahead_market_offer.values) > 0
+            res).flex_offer[0]['day_ahead_market_offer']['values']) > 0
 
     @responses.activate
     def test_stacked_revenues_post_wrong_auth(self):

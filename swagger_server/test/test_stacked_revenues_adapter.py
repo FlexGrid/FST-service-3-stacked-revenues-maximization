@@ -8,6 +8,7 @@ from swagger_server.adapters.stacked_revenues_adapter import stacked_revenues_ad
 from swagger_server.test import BaseTestCase
 import responses
 
+
 class TestStackedRevenueAdapter(BaseTestCase):
     """StackedRevenueAdapter integration test stubs"""
 
@@ -24,7 +25,7 @@ class TestStackedRevenueAdapter(BaseTestCase):
                     "inefficiency_rate_per_cent": 0.5,
                     "initial_final_SoC_per_cent": 0.5,
                     "location": {
-                        "id": "string",
+                        "id": "BSU1",
                         "name": "string"
                     }
                 },
@@ -34,7 +35,7 @@ class TestStackedRevenueAdapter(BaseTestCase):
                     "inefficiency_rate_per_cent": 0.5,
                     "initial_final_SoC_per_cent": 0.5,
                     "location": {
-                        "id": "string",
+                        "id": "BSU2",
                         "name": "string"
                     }
                 }
@@ -51,7 +52,7 @@ class TestStackedRevenueAdapter(BaseTestCase):
             StackedRevenuesParams.from_dict(self.request_obj))
 
         print(f"The flexoffer is {res}")
-        assert len(res.flex_offer.day_ahead_market_offer.values) > 0
+        assert len(res.flex_offer[0]['day_ahead_market_offer']['values']) > 0
 
 
 if __name__ == '__main__':

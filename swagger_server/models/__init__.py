@@ -5,18 +5,16 @@ from __future__ import absolute_import
 # import models into model package
 from swagger_server.models.curtailable_load import CurtailableLoad
 from swagger_server.models.day_offer_vector import DayOfferVector
+from swagger_server.models.day_offer_vector_euro_m_var import DayOfferVectorEuroMVar
 from swagger_server.models.day_offer_vector_euro_m_wh import DayOfferVectorEuroMWh
 from swagger_server.models.day_offer_vector_euro_m_wh2 import DayOfferVectorEuroMWh2
 from swagger_server.models.day_offer_vector_item import DayOfferVectorItem
 from swagger_server.models.flex_asset import FlexAsset
 from swagger_server.models.flex_contract import FlexContract
 from swagger_server.models.flex_offer import FlexOffer
-from swagger_server.models.flex_offer_dlm_ps import FlexOfferDLMPs
-from swagger_server.models.flex_offer_dlm_ps_item import FlexOfferDLMPsItem
+from swagger_server.models.flex_offer_item import FlexOfferItem
 from swagger_server.models.flex_offer_params import FlexOfferParams
 from swagger_server.models.flex_offer_params_time_granularity import FlexOfferParamsTimeGranularity
-from swagger_server.models.flex_offer_qlm_ps import FlexOfferQLMPs
-from swagger_server.models.flex_offer_qlm_ps_item import FlexOfferQLMPsItem
 from swagger_server.models.flex_offer_result import FlexOfferResult
 from swagger_server.models.flex_offer_result_expected_revenues import FlexOfferResultExpectedRevenues
 from swagger_server.models.location import Location

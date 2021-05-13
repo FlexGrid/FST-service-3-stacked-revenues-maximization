@@ -63,8 +63,12 @@ class Location(Model):
         :param id: The id of this Location.
         :type id: str
         """
-        if id is None:
-            raise ValueError("Invalid value for `id`, must not be `None`")  # noqa: E501
+        allowed_values = ["BSU1", "BSU2", "BSU3", "BSU4"]  # noqa: E501
+        if id not in allowed_values:
+            raise ValueError(
+                "Invalid value for `id` ({0}), must be one of {1}"
+                .format(id, allowed_values)
+            )
 
         self._id = id
 

@@ -2,8 +2,7 @@ from swagger_server.models.stacked_revenues_params import StackedRevenuesParams 
 from swagger_server.models.stacked_revenues_result import StackedRevenuesResult  # noqa: E501
 from swagger_server.models.day_offer_vector_euro_m_wh import DayOfferVectorEuroMWh  # noqa: E501
 from swagger_server.models.day_offer_vector_euro_m_wh2 import DayOfferVectorEuroMWh2  # noqa: E501
-from swagger_server.models.flex_offer_dlm_ps_item import FlexOfferDLMPsItem
-from swagger_server.models.flex_offer_qlm_ps_item import FlexOfferQLMPsItem
+from swagger_server.models.day_offer_vector_euro_m_var import DayOfferVectorEuroMVar  # noqa: E501
 from swagger_server.models.price_in_euro import PriceInEuro  # noqa: E501
 from stacked_revenues.maximize_stacked_revenues import battery_portfolio
 from swagger_server.adapters.market_adapter import MarketAdapter
@@ -43,8 +42,10 @@ def stacked_revenues_adapter(stacked_revenues_params):
     rdn_prices = [obj['value']
                   for obj in martketAdapter.reserve_market()]
 
-    fmp_prices = [[0] * len(dam_prices)] * ns
-    fmq_prices = [[0] * len(dam_prices)] * ns
+    fmp_prices = martketAdapter.fmp(
+        [su.location.id for su in stacked_revenues_params.storage_units])
+    fmq_prices = martketAdapter.fmq(
+        [su.location.id for su in stacked_revenues_params.storage_units])
     bm_up_prices = [obj['value']
                     for obj in martketAdapter.balancing_market_up()]
     print(f"bm_up_prices= {len(bm_up_prices)}")
@@ -91,15 +92,16 @@ def stacked_revenues_adapter(stacked_revenues_params):
 
     return StackedRevenuesResult.from_dict({
         "sdate": str(stacked_revenues_params.sdate),
-        "flex_offer": {
-            "day_ahead_market_offer": build_market_offer(timestamps, dam_schedule).to_dict(),
-            "reserve_market_offer_up": build_reserve_market_offer(timestamps, rup_commitment).to_dict(),
-            "reserve_market_offer_down": build_reserve_market_offer(timestamps, rdn_commitment).to_dict(),
-            "d-LMPs":  build_dflex_market_offer(timestamps, pflexibility, stacked_revenues_params.storage_units),
-            "q-LMPs": build_qflex_market_offer(timestamps, qflexibility, stacked_revenues_params.storage_units),
-            "balancing_market_offer_up": build_market_offer(timestamps, pup).to_dict(),
-            "balancing_market_offer_down": build_market_offer(timestamps, pdn).to_dict()
-        },
+        "flex_offer": [{
+            "location": stacked_revenues_params.storage_units[su_ind].location.id,
+            "day_ahead_market_offer": build_market_offer_mwh(timestamps, dam_schedule[su_ind]).to_dict(),
+            "reserve_market_offer_up": build_market_offer_mwh2(timestamps, rup_commitment[su_ind]).to_dict(),
+            "reserve_market_offer_down": build_market_offer_mwh2(timestamps, rdn_commitment[su_ind]).to_dict(),
+            "d-LMPs":  build_market_offer_mwh(timestamps, pflexibility[su_ind]),
+            "q-LMPs": build_market_offer_mvar(timestamps, qflexibility[su_ind]),
+            "balancing_market_offer_up": build_market_offer_mwh(timestamps, pup[su_ind]).to_dict(),
+            "balancing_market_offer_down": build_market_offer_mwh(timestamps, pdn[su_ind]).to_dict()
+        } for su_ind in range(len(stacked_revenues_params.storage_units))],
         "revenues": {
             "day_ahead_market_revenues": build_profits(DAM_profits).to_dict(),
             "reserve_market_revenues": build_profits(RM_profits).to_dict(),
@@ -109,58 +111,40 @@ def stacked_revenues_adapter(stacked_revenues_params):
     })
 
 
-def build_market_offer(timestamps, schedule):
+def build_market_offer_mwh(timestamps, schedule):
     return DayOfferVectorEuroMWh.from_dict({
         "values": [{
             "start_timestamp": timestamps[i][0],
             "end_timestamp": timestamps[i][1],
-            "volume": sum(schedule[j][i] for j in range(len(schedule)))
+            "volume": schedule[i],
         } for i in range(len(timestamps))],
         "price_unit": "€/MWh",
         "volume_unit": "MWh"
     })
 
 
-def build_reserve_market_offer(timestamps, schedule):
+def build_market_offer_mwh2(timestamps, schedule):
     return DayOfferVectorEuroMWh2.from_dict({
         "values": [{
             "start_timestamp": timestamps[i][0],
             "end_timestamp": timestamps[i][1],
-            "volume": sum(schedule[j][i] for j in range(len(schedule)))
+            "volume": schedule[i],
         } for i in range(len(timestamps))],
-        "price_unit": "€/MWh^2",
+        "price_unit": f"€/MWh^2",
         "volume_unit": "MWh^2"
     })
 
 
-def build_dflex_market_offer(timestamps, schedule, storage_units):
-    print(f"The timestamps are {timestamps}, the scedule is {schedule}")
-    return [
-        FlexOfferDLMPsItem.from_dict({
-            'price_unit': "€/MWh",
-            'storage_unit': i,
-            'values': [{
-                "start_timestamp": timestamps[i][0],
-                "end_timestamp": timestamps[i][1],
-                "volume": schedule[i][j],
-            } for j in range(len(schedule[i]))],
-            'volume_unit': "MWh",
-        }) for i in range(len(storage_units))]
-
-
-def build_qflex_market_offer(timestamps, schedule, storage_units):
-    print(f"The timestamps are {timestamps}, the scedule is {schedule}")
-    return [
-        FlexOfferQLMPsItem.from_dict({
-            'price_unit': "€/MVar",
-            'storage_unit': i,
-            'values': [{
-                "start_timestamp": timestamps[i][0],
-                "end_timestamp": timestamps[i][1],
-                "volume": schedule[i][j],
-            } for j in range(len(schedule[i]))],
-            'volume_unit': "MVar",
-        }) for i in range(len(storage_units))]
+def build_market_offer_mvar(timestamps, schedule):
+    return DayOfferVectorEuroMVar.from_dict({
+        "values": [{
+            "start_timestamp": timestamps[i][0],
+            "end_timestamp": timestamps[i][1],
+            "volume": schedule[i],
+        } for i in range(len(timestamps))],
+        "price_unit": "€/MVar",
+        "volume_unit": "MVar"
+    })
 
 
 def build_profits(price):

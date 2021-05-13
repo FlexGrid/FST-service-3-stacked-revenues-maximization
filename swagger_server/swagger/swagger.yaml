@@ -776,7 +776,11 @@ components:
       properties:
         id:
           type: string
-          format: objectid
+          enum:
+          - BSU1
+          - BSU2
+          - BSU3
+          - BSU4
         name:
           type: string
     DayOfferVector:
@@ -996,53 +1000,13 @@ components:
         price_unit: €/MWh^2
         volume_unit: MWh^2
         values: null
-    FlexOfferDLMPs:
-      type: array
-      items:
-        type: array
-        items:
-          $ref: '#/components/schemas/FlexOfferDLMPsItem'
-    FlexOfferDLMPsItem:
+    DayOfferVectorEuroMVar:
       required:
       - price_unit
-      - storage_unit
       - values
       - volume_unit
       type: object
       properties:
-        storage_unit:
-          type: string
-        values:
-          $ref: '#/components/schemas/DayOfferVector'
-        price_unit:
-          type: string
-          enum:
-          - €/MWh
-        volume_unit:
-          type: string
-          enum:
-          - MWh
-      example:
-        price_unit: €/MWh
-        volume_unit: MWh
-        storage_unit: storage_unit
-        values: null
-    FlexOfferQLMPs:
-      type: array
-      items:
-        type: array
-        items:
-          $ref: '#/components/schemas/FlexOfferQLMPsItem'
-    FlexOfferQLMPsItem:
-      required:
-      - price_unit
-      - storage_unit
-      - values
-      - volume_unit
-      type: object
-      properties:
-        storage_unit:
-          type: string
         values:
           $ref: '#/components/schemas/DayOfferVector'
         price_unit:
@@ -1053,14 +1017,15 @@ components:
           type: string
           enum:
           - MVar
-      example:
-        price_unit: €/MVar
-        volume_unit: MVar
-        storage_unit: storage_unit
-        values: null
     FlexOffer:
+      type: array
+      items:
+        $ref: '#/components/schemas/FlexOfferItem'
+    FlexOfferItem:
       type: object
       properties:
+        storage_unit:
+          type: string
         day_ahead_market_offer:
           $ref: '#/components/schemas/DayOfferVectorEuroMWh'
         reserve_market_offer_up:
@@ -1068,159 +1033,13 @@ components:
         reserve_market_offer_down:
           $ref: '#/components/schemas/DayOfferVectorEuroMWh2'
         d-LMPs:
-          $ref: '#/components/schemas/FlexOfferDLMPs'
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh'
         q-LMPs:
-          $ref: '#/components/schemas/FlexOfferQLMPs'
+          $ref: '#/components/schemas/DayOfferVectorEuroMVar'
         balancing_market_offer_up:
           $ref: '#/components/schemas/DayOfferVectorEuroMWh'
         balancing_market_offer_down:
           $ref: '#/components/schemas/DayOfferVectorEuroMWh'
-      example:
-        balancing_market_offer_down: null
-        q-LMPs:
-        - - price_unit: €/MVar
-            volume_unit: MVar
-            storage_unit: storage_unit
-            values: null
-          - price_unit: €/MVar
-            volume_unit: MVar
-            storage_unit: storage_unit
-            values: null
-        - - price_unit: €/MVar
-            volume_unit: MVar
-            storage_unit: storage_unit
-            values: null
-          - price_unit: €/MVar
-            volume_unit: MVar
-            storage_unit: storage_unit
-            values: null
-        reserve_market_offer_down: null
-        balancing_market_offer_up: null
-        day_ahead_market_offer:
-          price_unit: €/MWh
-          volume_unit: MWh
-          values:
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-          - volume: 6.027456183070403
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-            price: 0.8008281904610115
-        reserve_market_offer_up:
-          price_unit: €/MWh^2
-          volume_unit: MWh^2
-          values: null
-        d-LMPs:
-        - - price_unit: €/MWh
-            volume_unit: MWh
-            storage_unit: storage_unit
-            values: null
-          - price_unit: €/MWh
-            volume_unit: MWh
-            storage_unit: storage_unit
-            values: null
-        - - price_unit: €/MWh
-            volume_unit: MWh
-            storage_unit: storage_unit
-            values: null
-          - price_unit: €/MWh
-            volume_unit: MWh
-            storage_unit: storage_unit
-            values: null
     StackedRevenuesResultRevenues:
       type: object
       properties:
