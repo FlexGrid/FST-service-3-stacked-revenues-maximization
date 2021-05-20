@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 class NordpoolAuthClient:
 
-    token = None
+    token = {}
     # url = f"https://sts.nordpoolgroup.com/connect/token"
 
     def __init__(self):
@@ -20,7 +20,7 @@ class NordpoolAuthClient:
             'Content-Type': 'application/x-www-form-urlencoded'
         }
         # print(f"headers: {headers} user {os.environ.get('NORDPOOL_USERNAME')} pass {os.environ.get('NORDPOOL_PASSWORD')}")
-        NordpoolAuthClient.token = json.loads(
+        __class__.token = json.loads(
             requests.post(
                 'https://sts.nordpoolgroup.com/connect/token',
                 data={
@@ -31,10 +31,10 @@ class NordpoolAuthClient:
                 },
                 headers=headers
             ).content)
-        NordpoolAuthClient.token['acquired at'] = datetime.utcnow()
+        __class__.token['acquired_at'] = datetime.utcnow()
 
     def have_valid_token(self):
-        return __class__.token and (__class__.token['acquired at'] + timedelta(seconds=__class__.token['expires_in'] - 30) > datetime.utcnow())
+        return __class__.token and 'acquired_at' in __class__.token and 'expires_in' in __class__.token and (__class__.token['acquired_at'] + timedelta(seconds=__class__.token['expires_in'] - 30) > datetime.utcnow())
 
     def auth_headers(self):
 
