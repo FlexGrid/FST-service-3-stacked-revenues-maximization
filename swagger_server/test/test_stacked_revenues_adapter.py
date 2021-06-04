@@ -23,7 +23,8 @@ class TestStackedRevenueAdapter(BaseTestCase):
                     "power_capacity_KW": 5,
                     "energy_capacity_KWh": 10,
                     "inefficiency_rate_per_cent": 0.5,
-                    "initial_final_SoC_per_cent": 0.5,
+                    "initial_SoC_per_cent": 0.5,
+                    "final_SoC_per_cent": 0.5,
                     "location": {
                         "id": "BSU1",
                         "name": "string"
@@ -33,7 +34,8 @@ class TestStackedRevenueAdapter(BaseTestCase):
                     "power_capacity_KW": 5,
                     "energy_capacity_KWh": 10,
                     "inefficiency_rate_per_cent": 0.5,
-                    "initial_final_SoC_per_cent": 0.5,
+                    "initial_SoC_per_cent": 0.5,
+                    "final_SoC_per_cent": 0.5,
                     "location": {
                         "id": "BSU2",
                         "name": "string"

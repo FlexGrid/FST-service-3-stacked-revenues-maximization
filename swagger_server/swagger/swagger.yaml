@@ -1029,7 +1029,11 @@ components:
           maximum: 1
           minimum: 0
           type: number
-        initial_final_SoC_per_cent:
+        initial_SoC_per_cent:
+          maximum: 1
+          minimum: 0
+          type: number
+        final_SoC_per_cent:
           maximum: 1
           minimum: 0
           type: number

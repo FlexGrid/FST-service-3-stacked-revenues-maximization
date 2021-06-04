@@ -64,13 +64,16 @@ def stacked_revenues_adapter(stacked_revenues_params):
         obj.inefficiency_rate_per_cent for obj in stacked_revenues_params.storage_units]
     print(f"roundtrip_eff= {roundtrip_eff}")
 
-    E0 = [obj.initial_final_so_c_per_cent for obj in stacked_revenues_params.storage_units]
+    E0 = [obj.initial_so_c_per_cent for obj in stacked_revenues_params.storage_units]
     print(f"E0= {E0}")
+
+    ET = [obj.final_so_c_per_cent for obj in stacked_revenues_params.storage_units]
+    print(f"ET= {ET}")
 
     # Create a battery object
     bsu = battery_portfolio(ns, dam_participation, rm_participation, fm_participation, bm_participation, dam_prices,
                             rup_prices, rdn_prices, fmp_prices, fmq_prices, bm_up_prices, bm_dn_prices,
-                            p_max, E_max, roundtrip_eff, E0)
+                            p_max, E_max, roundtrip_eff, E0, ET)
 
     # Maximize stacked revenues
     [Profits, pup, pdn, dam_schedule, rup_commitment, rdn_commitment, pflexibility, qflexibility,

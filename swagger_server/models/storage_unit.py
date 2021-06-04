@@ -15,7 +15,7 @@ class StorageUnit(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, power_capacity_kw: float=None, energy_capacity_k_wh: float=None, inefficiency_rate_per_cent: float=None, initial_final_so_c_per_cent: float=None, location: Location=None):  # noqa: E501
+    def __init__(self, power_capacity_kw: float=None, energy_capacity_k_wh: float=None, inefficiency_rate_per_cent: float=None, initial_so_c_per_cent: float=None, final_so_c_per_cent: float=None, location: Location=None):  # noqa: E501
         """StorageUnit - a model defined in Swagger
 
         :param power_capacity_kw: The power_capacity_kw of this StorageUnit.  # noqa: E501
@@ -24,8 +24,10 @@ class StorageUnit(Model):
         :type energy_capacity_k_wh: float
         :param inefficiency_rate_per_cent: The inefficiency_rate_per_cent of this StorageUnit.  # noqa: E501
         :type inefficiency_rate_per_cent: float
-        :param initial_final_so_c_per_cent: The initial_final_so_c_per_cent of this StorageUnit.  # noqa: E501
-        :type initial_final_so_c_per_cent: float
+        :param initial_so_c_per_cent: The initial_so_c_per_cent of this StorageUnit.  # noqa: E501
+        :type initial_so_c_per_cent: float
+        :param final_so_c_per_cent: The final_so_c_per_cent of this StorageUnit.  # noqa: E501
+        :type final_so_c_per_cent: float
         :param location: The location of this StorageUnit.  # noqa: E501
         :type location: Location
         """
@@ -33,7 +35,8 @@ class StorageUnit(Model):
             'power_capacity_kw': float,
             'energy_capacity_k_wh': float,
             'inefficiency_rate_per_cent': float,
-            'initial_final_so_c_per_cent': float,
+            'initial_so_c_per_cent': float,
+            'final_so_c_per_cent': float,
             'location': Location
         }
 
@@ -41,13 +44,15 @@ class StorageUnit(Model):
             'power_capacity_kw': 'power_capacity_KW',
             'energy_capacity_k_wh': 'energy_capacity_KWh',
             'inefficiency_rate_per_cent': 'inefficiency_rate_per_cent',
-            'initial_final_so_c_per_cent': 'initial_final_SoC_per_cent',
+            'initial_so_c_per_cent': 'initial_SoC_per_cent',
+            'final_so_c_per_cent': 'final_SoC_per_cent',
             'location': 'location'
         }
         self._power_capacity_kw = power_capacity_kw
         self._energy_capacity_k_wh = energy_capacity_k_wh
         self._inefficiency_rate_per_cent = inefficiency_rate_per_cent
-        self._initial_final_so_c_per_cent = initial_final_so_c_per_cent
+        self._initial_so_c_per_cent = initial_so_c_per_cent
+        self._final_so_c_per_cent = final_so_c_per_cent
         self._location = location
 
     @classmethod
@@ -125,25 +130,46 @@ class StorageUnit(Model):
         self._inefficiency_rate_per_cent = inefficiency_rate_per_cent
 
     @property
-    def initial_final_so_c_per_cent(self) -> float:
-        """Gets the initial_final_so_c_per_cent of this StorageUnit.
+    def initial_so_c_per_cent(self) -> float:
+        """Gets the initial_so_c_per_cent of this StorageUnit.
 
 
-        :return: The initial_final_so_c_per_cent of this StorageUnit.
+        :return: The initial_so_c_per_cent of this StorageUnit.
         :rtype: float
         """
-        return self._initial_final_so_c_per_cent
+        return self._initial_so_c_per_cent
 
-    @initial_final_so_c_per_cent.setter
-    def initial_final_so_c_per_cent(self, initial_final_so_c_per_cent: float):
-        """Sets the initial_final_so_c_per_cent of this StorageUnit.
+    @initial_so_c_per_cent.setter
+    def initial_so_c_per_cent(self, initial_so_c_per_cent: float):
+        """Sets the initial_so_c_per_cent of this StorageUnit.
 
 
-        :param initial_final_so_c_per_cent: The initial_final_so_c_per_cent of this StorageUnit.
-        :type initial_final_so_c_per_cent: float
+        :param initial_so_c_per_cent: The initial_so_c_per_cent of this StorageUnit.
+        :type initial_so_c_per_cent: float
         """
 
-        self._initial_final_so_c_per_cent = initial_final_so_c_per_cent
+        self._initial_so_c_per_cent = initial_so_c_per_cent
+
+    @property
+    def final_so_c_per_cent(self) -> float:
+        """Gets the final_so_c_per_cent of this StorageUnit.
+
+
+        :return: The final_so_c_per_cent of this StorageUnit.
+        :rtype: float
+        """
+        return self._final_so_c_per_cent
+
+    @final_so_c_per_cent.setter
+    def final_so_c_per_cent(self, final_so_c_per_cent: float):
+        """Sets the final_so_c_per_cent of this StorageUnit.
+
+
+        :param final_so_c_per_cent: The final_so_c_per_cent of this StorageUnit.
+        :type final_so_c_per_cent: float
+        """
+
+        self._final_so_c_per_cent = final_so_c_per_cent
 
     @property
     def location(self) -> Location:
