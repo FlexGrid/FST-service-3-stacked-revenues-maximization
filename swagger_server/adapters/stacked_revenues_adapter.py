@@ -119,7 +119,7 @@ def build_market_offer_mwh(timestamps, schedule):
         "values": [{
             "start_timestamp": timestamps[i][0],
             "end_timestamp": timestamps[i][1],
-            "volume": schedule[i],
+            "volume": round(schedule[i],2),
         } for i in range(len(timestamps))],
         "price_unit": "€/MWh",
         "volume_unit": "MWh"
@@ -131,7 +131,7 @@ def build_market_offer_mwh2(timestamps, schedule):
         "values": [{
             "start_timestamp": timestamps[i][0],
             "end_timestamp": timestamps[i][1],
-            "volume": schedule[i],
+            "volume": round(schedule[i],2),
         } for i in range(len(timestamps))],
         "price_unit": f"€/MWh^2",
         "volume_unit": "MWh^2"
@@ -143,7 +143,7 @@ def build_market_offer_mvar(timestamps, schedule):
         "values": [{
             "start_timestamp": timestamps[i][0],
             "end_timestamp": timestamps[i][1],
-            "volume": schedule[i],
+            "volume": round(schedule[i],2),
         } for i in range(len(timestamps))],
         "price_unit": "€/MVar",
         "volume_unit": "MVar"
