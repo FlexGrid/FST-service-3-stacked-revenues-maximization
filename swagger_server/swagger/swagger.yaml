@@ -1048,10 +1048,11 @@ components:
         id:
           type: string
           enum:
-          - BSU1
-          - BSU2
-          - BSU3
-          - BSU4
+          - DSO_AREA_1
+          - DSO_AREA_2
+          - DSO_AREA_3
+          - DSO_AREA_4
+          - DSO_AREA_5
         name:
           type: string
     DayOfferVector:

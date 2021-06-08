@@ -26,7 +26,7 @@ class TestStackedRevenueAdapter(BaseTestCase):
                     "initial_SoC_per_cent": 0.5,
                     "final_SoC_per_cent": 0.5,
                     "location": {
-                        "id": "BSU1",
+                        "id": "DSO_AREA_1",
                         "name": "string"
                     }
                 },
@@ -37,7 +37,7 @@ class TestStackedRevenueAdapter(BaseTestCase):
                     "initial_SoC_per_cent": 0.5,
                     "final_SoC_per_cent": 0.5,
                     "location": {
-                        "id": "BSU2",
+                        "id": "DSO_AREA_2",
                         "name": "string"
                     }
                 }

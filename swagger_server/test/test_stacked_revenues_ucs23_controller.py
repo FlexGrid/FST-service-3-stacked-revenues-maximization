@@ -29,7 +29,7 @@ class TestStackedRevenuesUCS23Controller(BaseTestCase):
                     "initial_SoC_per_cent": 0.5,
                     "final_SoC_per_cent": 0.5,
                     "location": {
-                        "id": "BSU3",
+                        "id": "DSO_AREA_3",
                         "name": "string"
                     }
                 },
