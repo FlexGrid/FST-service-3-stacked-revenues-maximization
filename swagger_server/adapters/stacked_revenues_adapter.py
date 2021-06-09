@@ -122,7 +122,7 @@ def build_market_offer_mwh(timestamps, schedule):
             "volume": round(schedule[i],2),
         } for i in range(len(timestamps))],
         "price_unit": "€/MWh",
-        "volume_unit": "MWh"
+        "volume_unit": "kWh"
     })
 
 
@@ -134,7 +134,7 @@ def build_market_offer_mwh2(timestamps, schedule):
             "volume": round(schedule[i],2),
         } for i in range(len(timestamps))],
         "price_unit": f"€/MWh^2",
-        "volume_unit": "MWh^2"
+        "volume_unit": "kWh^2"
     })
 
 
@@ -146,7 +146,7 @@ def build_market_offer_mvar(timestamps, schedule):
             "volume": round(schedule[i],2),
         } for i in range(len(timestamps))],
         "price_unit": "€/MVar",
-        "volume_unit": "MVar"
+        "volume_unit": "kVar"
     })
 
 

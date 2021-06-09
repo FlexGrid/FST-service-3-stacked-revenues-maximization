@@ -1132,6 +1132,7 @@ components:
           type: string
           enum:
           - MWh
+          - kWh
       example:
         price_unit: €/MWh
         volume_unit: MWh
@@ -1268,6 +1269,7 @@ components:
           type: string
           enum:
           - MWh^2
+          - kWh^2
       example:
         price_unit: €/MWh^2
         volume_unit: MWh^2
@@ -1289,6 +1291,7 @@ components:
           type: string
           enum:
           - MVar
+          - kVar
       example:
         price_unit: €/MVar
         volume_unit: MVar
