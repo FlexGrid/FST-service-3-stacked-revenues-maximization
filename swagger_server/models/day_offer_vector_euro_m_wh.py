@@ -119,7 +119,7 @@ class DayOfferVectorEuroMWh(Model):
         :param volume_unit: The volume_unit of this DayOfferVectorEuroMWh.
         :type volume_unit: str
         """
-        allowed_values = ["MWh"]  # noqa: E501
+        allowed_values = ["MWh", "kWh"]  # noqa: E501
         if volume_unit not in allowed_values:
             raise ValueError(
                 "Invalid value for `volume_unit` ({0}), must be one of {1}"
