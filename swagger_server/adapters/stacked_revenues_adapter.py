@@ -1,7 +1,6 @@
 from swagger_server.models.stacked_revenues_params import StackedRevenuesParams  # noqa: E501
 from swagger_server.models.stacked_revenues_result import StackedRevenuesResult  # noqa: E501
 from swagger_server.models.day_offer_vector_euro_m_wh import DayOfferVectorEuroMWh  # noqa: E501
-from swagger_server.models.day_offer_vector_euro_m_wh2 import DayOfferVectorEuroMWh2  # noqa: E501
 from swagger_server.models.day_offer_vector_euro_m_var import DayOfferVectorEuroMVar  # noqa: E501
 from swagger_server.models.price_in_euro import PriceInEuro  # noqa: E501
 from stacked_revenues.maximize_stacked_revenues import battery_portfolio
@@ -98,8 +97,8 @@ def stacked_revenues_adapter(stacked_revenues_params):
         "flex_offer": [{
             "location": stacked_revenues_params.storage_units[su_ind].location.id,
             "day_ahead_market_offer": build_market_offer_mwh(timestamps, dam_schedule[su_ind]).to_dict(),
-            "reserve_market_offer_up": build_market_offer_mwh2(timestamps, rup_commitment[su_ind]).to_dict(),
-            "reserve_market_offer_down": build_market_offer_mwh2(timestamps, rdn_commitment[su_ind]).to_dict(),
+            "reserve_market_offer_up": build_market_offer_mwh(timestamps, rup_commitment[su_ind]).to_dict(),
+            "reserve_market_offer_down": build_market_offer_mwh(timestamps, rdn_commitment[su_ind]).to_dict(),
             "d-LMPs":  build_market_offer_mwh(timestamps, pflexibility[su_ind]),
             "q-LMPs": build_market_offer_mvar(timestamps, qflexibility[su_ind]),
             "balancing_market_offer_up": build_market_offer_mwh(timestamps, pup[su_ind]).to_dict(),
@@ -119,22 +118,10 @@ def build_market_offer_mwh(timestamps, schedule):
         "values": [{
             "start_timestamp": timestamps[i][0],
             "end_timestamp": timestamps[i][1],
-            "volume": round(schedule[i],2),
+            "volume": round(schedule[i], 2),
         } for i in range(len(timestamps))],
         "price_unit": "€/MWh",
         "volume_unit": "kWh"
-    })
-
-
-def build_market_offer_mwh2(timestamps, schedule):
-    return DayOfferVectorEuroMWh2.from_dict({
-        "values": [{
-            "start_timestamp": timestamps[i][0],
-            "end_timestamp": timestamps[i][1],
-            "volume": round(schedule[i],2),
-        } for i in range(len(timestamps))],
-        "price_unit": f"€/MWh^2",
-        "volume_unit": "kWh^2"
     })
 
 
@@ -143,7 +130,7 @@ def build_market_offer_mvar(timestamps, schedule):
         "values": [{
             "start_timestamp": timestamps[i][0],
             "end_timestamp": timestamps[i][1],
-            "volume": round(schedule[i],2),
+            "volume": round(schedule[i], 2),
         } for i in range(len(timestamps))],
         "price_unit": "€/MVar",
         "volume_unit": "kVar"

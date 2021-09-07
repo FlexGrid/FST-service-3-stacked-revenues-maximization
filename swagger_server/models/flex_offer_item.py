@@ -8,7 +8,6 @@ from typing import List, Dict  # noqa: F401
 from swagger_server.models.base_model_ import Model
 from swagger_server.models.day_offer_vector_euro_m_var import DayOfferVectorEuroMVar  # noqa: F401,E501
 from swagger_server.models.day_offer_vector_euro_m_wh import DayOfferVectorEuroMWh  # noqa: F401,E501
-from swagger_server.models.day_offer_vector_euro_m_wh2 import DayOfferVectorEuroMWh2  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -17,7 +16,7 @@ class FlexOfferItem(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, storage_unit: str=None, day_ahead_market_offer: DayOfferVectorEuroMWh=None, reserve_market_offer_up: DayOfferVectorEuroMWh2=None, reserve_market_offer_down: DayOfferVectorEuroMWh2=None, d_lm_ps: DayOfferVectorEuroMWh=None, q_lm_ps: DayOfferVectorEuroMVar=None, balancing_market_offer_up: DayOfferVectorEuroMWh=None, balancing_market_offer_down: DayOfferVectorEuroMWh=None):  # noqa: E501
+    def __init__(self, storage_unit: str=None, day_ahead_market_offer: DayOfferVectorEuroMWh=None, reserve_market_offer_up: DayOfferVectorEuroMWh=None, reserve_market_offer_down: DayOfferVectorEuroMWh=None, d_lm_ps: DayOfferVectorEuroMWh=None, q_lm_ps: DayOfferVectorEuroMVar=None, balancing_market_offer_up: DayOfferVectorEuroMWh=None, balancing_market_offer_down: DayOfferVectorEuroMWh=None):  # noqa: E501
         """FlexOfferItem - a model defined in Swagger
 
         :param storage_unit: The storage_unit of this FlexOfferItem.  # noqa: E501
@@ -25,9 +24,9 @@ class FlexOfferItem(Model):
         :param day_ahead_market_offer: The day_ahead_market_offer of this FlexOfferItem.  # noqa: E501
         :type day_ahead_market_offer: DayOfferVectorEuroMWh
         :param reserve_market_offer_up: The reserve_market_offer_up of this FlexOfferItem.  # noqa: E501
-        :type reserve_market_offer_up: DayOfferVectorEuroMWh2
+        :type reserve_market_offer_up: DayOfferVectorEuroMWh
         :param reserve_market_offer_down: The reserve_market_offer_down of this FlexOfferItem.  # noqa: E501
-        :type reserve_market_offer_down: DayOfferVectorEuroMWh2
+        :type reserve_market_offer_down: DayOfferVectorEuroMWh
         :param d_lm_ps: The d_lm_ps of this FlexOfferItem.  # noqa: E501
         :type d_lm_ps: DayOfferVectorEuroMWh
         :param q_lm_ps: The q_lm_ps of this FlexOfferItem.  # noqa: E501
@@ -40,8 +39,8 @@ class FlexOfferItem(Model):
         self.swagger_types = {
             'storage_unit': str,
             'day_ahead_market_offer': DayOfferVectorEuroMWh,
-            'reserve_market_offer_up': DayOfferVectorEuroMWh2,
-            'reserve_market_offer_down': DayOfferVectorEuroMWh2,
+            'reserve_market_offer_up': DayOfferVectorEuroMWh,
+            'reserve_market_offer_down': DayOfferVectorEuroMWh,
             'd_lm_ps': DayOfferVectorEuroMWh,
             'q_lm_ps': DayOfferVectorEuroMVar,
             'balancing_market_offer_up': DayOfferVectorEuroMWh,
@@ -121,43 +120,43 @@ class FlexOfferItem(Model):
         self._day_ahead_market_offer = day_ahead_market_offer
 
     @property
-    def reserve_market_offer_up(self) -> DayOfferVectorEuroMWh2:
+    def reserve_market_offer_up(self) -> DayOfferVectorEuroMWh:
         """Gets the reserve_market_offer_up of this FlexOfferItem.
 
 
         :return: The reserve_market_offer_up of this FlexOfferItem.
-        :rtype: DayOfferVectorEuroMWh2
+        :rtype: DayOfferVectorEuroMWh
         """
         return self._reserve_market_offer_up
 
     @reserve_market_offer_up.setter
-    def reserve_market_offer_up(self, reserve_market_offer_up: DayOfferVectorEuroMWh2):
+    def reserve_market_offer_up(self, reserve_market_offer_up: DayOfferVectorEuroMWh):
         """Sets the reserve_market_offer_up of this FlexOfferItem.
 
 
         :param reserve_market_offer_up: The reserve_market_offer_up of this FlexOfferItem.
-        :type reserve_market_offer_up: DayOfferVectorEuroMWh2
+        :type reserve_market_offer_up: DayOfferVectorEuroMWh
         """
 
         self._reserve_market_offer_up = reserve_market_offer_up
 
     @property
-    def reserve_market_offer_down(self) -> DayOfferVectorEuroMWh2:
+    def reserve_market_offer_down(self) -> DayOfferVectorEuroMWh:
         """Gets the reserve_market_offer_down of this FlexOfferItem.
 
 
         :return: The reserve_market_offer_down of this FlexOfferItem.
-        :rtype: DayOfferVectorEuroMWh2
+        :rtype: DayOfferVectorEuroMWh
         """
         return self._reserve_market_offer_down
 
     @reserve_market_offer_down.setter
-    def reserve_market_offer_down(self, reserve_market_offer_down: DayOfferVectorEuroMWh2):
+    def reserve_market_offer_down(self, reserve_market_offer_down: DayOfferVectorEuroMWh):
         """Sets the reserve_market_offer_down of this FlexOfferItem.
 
 
         :param reserve_market_offer_down: The reserve_market_offer_down of this FlexOfferItem.
-        :type reserve_market_offer_down: DayOfferVectorEuroMWh2
+        :type reserve_market_offer_down: DayOfferVectorEuroMWh
         """
 
         self._reserve_market_offer_down = reserve_market_offer_down

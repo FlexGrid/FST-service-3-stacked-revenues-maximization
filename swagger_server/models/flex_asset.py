@@ -6,7 +6,7 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
-from swagger_server.models.day_offer_vector_euro_m_wh2 import DayOfferVectorEuroMWh2  # noqa: F401,E501
+from swagger_server.models.day_offer_vector_euro_m_wh import DayOfferVectorEuroMWh  # noqa: F401,E501
 from swagger_server.models.location import Location  # noqa: F401,E501
 from swagger_server import util
 
@@ -16,22 +16,22 @@ class FlexAsset(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, consumer_id: str=None, reserve_market_offer_up: DayOfferVectorEuroMWh2=None, reserve_market_offer_down: DayOfferVectorEuroMWh2=None, location: Location=None):  # noqa: E501
+    def __init__(self, consumer_id: str=None, reserve_market_offer_up: DayOfferVectorEuroMWh=None, reserve_market_offer_down: DayOfferVectorEuroMWh=None, location: Location=None):  # noqa: E501
         """FlexAsset - a model defined in Swagger
 
         :param consumer_id: The consumer_id of this FlexAsset.  # noqa: E501
         :type consumer_id: str
         :param reserve_market_offer_up: The reserve_market_offer_up of this FlexAsset.  # noqa: E501
-        :type reserve_market_offer_up: DayOfferVectorEuroMWh2
+        :type reserve_market_offer_up: DayOfferVectorEuroMWh
         :param reserve_market_offer_down: The reserve_market_offer_down of this FlexAsset.  # noqa: E501
-        :type reserve_market_offer_down: DayOfferVectorEuroMWh2
+        :type reserve_market_offer_down: DayOfferVectorEuroMWh
         :param location: The location of this FlexAsset.  # noqa: E501
         :type location: Location
         """
         self.swagger_types = {
             'consumer_id': str,
-            'reserve_market_offer_up': DayOfferVectorEuroMWh2,
-            'reserve_market_offer_down': DayOfferVectorEuroMWh2,
+            'reserve_market_offer_up': DayOfferVectorEuroMWh,
+            'reserve_market_offer_down': DayOfferVectorEuroMWh,
             'location': Location
         }
 
@@ -75,47 +75,49 @@ class FlexAsset(Model):
         :param consumer_id: The consumer_id of this FlexAsset.
         :type consumer_id: str
         """
+        if consumer_id is None:
+            raise ValueError("Invalid value for `consumer_id`, must not be `None`")  # noqa: E501
 
         self._consumer_id = consumer_id
 
     @property
-    def reserve_market_offer_up(self) -> DayOfferVectorEuroMWh2:
+    def reserve_market_offer_up(self) -> DayOfferVectorEuroMWh:
         """Gets the reserve_market_offer_up of this FlexAsset.
 
 
         :return: The reserve_market_offer_up of this FlexAsset.
-        :rtype: DayOfferVectorEuroMWh2
+        :rtype: DayOfferVectorEuroMWh
         """
         return self._reserve_market_offer_up
 
     @reserve_market_offer_up.setter
-    def reserve_market_offer_up(self, reserve_market_offer_up: DayOfferVectorEuroMWh2):
+    def reserve_market_offer_up(self, reserve_market_offer_up: DayOfferVectorEuroMWh):
         """Sets the reserve_market_offer_up of this FlexAsset.
 
 
         :param reserve_market_offer_up: The reserve_market_offer_up of this FlexAsset.
-        :type reserve_market_offer_up: DayOfferVectorEuroMWh2
+        :type reserve_market_offer_up: DayOfferVectorEuroMWh
         """
 
         self._reserve_market_offer_up = reserve_market_offer_up
 
     @property
-    def reserve_market_offer_down(self) -> DayOfferVectorEuroMWh2:
+    def reserve_market_offer_down(self) -> DayOfferVectorEuroMWh:
         """Gets the reserve_market_offer_down of this FlexAsset.
 
 
         :return: The reserve_market_offer_down of this FlexAsset.
-        :rtype: DayOfferVectorEuroMWh2
+        :rtype: DayOfferVectorEuroMWh
         """
         return self._reserve_market_offer_down
 
     @reserve_market_offer_down.setter
-    def reserve_market_offer_down(self, reserve_market_offer_down: DayOfferVectorEuroMWh2):
+    def reserve_market_offer_down(self, reserve_market_offer_down: DayOfferVectorEuroMWh):
         """Sets the reserve_market_offer_down of this FlexAsset.
 
 
         :param reserve_market_offer_down: The reserve_market_offer_down of this FlexAsset.
-        :type reserve_market_offer_down: DayOfferVectorEuroMWh2
+        :type reserve_market_offer_down: DayOfferVectorEuroMWh
         """
 
         self._reserve_market_offer_down = reserve_market_offer_down
@@ -138,5 +140,7 @@ class FlexAsset(Model):
         :param location: The location of this FlexAsset.
         :type location: Location
         """
+        if location is None:
+            raise ValueError("Invalid value for `location`, must not be `None`")  # noqa: E501
 
         self._location = location

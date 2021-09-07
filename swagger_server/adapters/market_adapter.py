@@ -487,7 +487,6 @@ class MarketAdapter:
                 }
             ]""")
 
-
         return self.fingrid(106)
 
     def reserve_market(self):

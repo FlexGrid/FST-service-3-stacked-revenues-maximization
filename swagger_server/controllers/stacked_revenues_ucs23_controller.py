@@ -23,7 +23,7 @@ def stacked_revenues_post(body):  # noqa: E501
     if connexion.request.is_json:
         try:
             body = StackedRevenuesParams.from_dict(connexion.request.get_json())  # noqa: E501
-    
+
             result = stacked_revenues_adapter(body)
 
             return result

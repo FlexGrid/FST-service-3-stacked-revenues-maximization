@@ -389,9 +389,9 @@ components:
       type: object
       properties:
         reserve_market_offer_up:
-          $ref: '#/components/schemas/DayOfferVectorEuroMWh2'
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh'
         reserve_market_offer_down:
-          $ref: '#/components/schemas/DayOfferVectorEuroMWh2'
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh'
         expected_revenues:
           $ref: '#/components/schemas/FlexOfferResult_expected_revenues'
       example:
@@ -978,16 +978,24 @@ components:
         - null
         - null
     FlexAsset:
+      required:
+      - consumer_id
+      - location
       type: object
       properties:
         consumer_id:
           type: string
         reserve_market_offer_up:
-          $ref: '#/components/schemas/DayOfferVectorEuroMWh2'
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh'
         reserve_market_offer_down:
-          $ref: '#/components/schemas/DayOfferVectorEuroMWh2'
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh'
         location:
           $ref: '#/components/schemas/Location'
+      anyOf:
+      - required:
+        - reserve_market_offer_up
+      - required:
+        - reserve_market_offer_down
     CurtailableLoad:
       type: object
       properties:
@@ -1252,28 +1260,6 @@ components:
       example:
         currency: €
         value: 1.4658129805029452
-    DayOfferVectorEuroMWh2:
-      required:
-      - price_unit
-      - values
-      - volume_unit
-      type: object
-      properties:
-        values:
-          $ref: '#/components/schemas/DayOfferVector'
-        price_unit:
-          type: string
-          enum:
-          - €/MWh^2
-        volume_unit:
-          type: string
-          enum:
-          - MWh^2
-          - kWh^2
-      example:
-        price_unit: €/MWh^2
-        volume_unit: MWh^2
-        values: null
     DayOfferVectorEuroMVar:
       required:
       - price_unit
@@ -1308,9 +1294,9 @@ components:
         day_ahead_market_offer:
           $ref: '#/components/schemas/DayOfferVectorEuroMWh'
         reserve_market_offer_up:
-          $ref: '#/components/schemas/DayOfferVectorEuroMWh2'
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh'
         reserve_market_offer_down:
-          $ref: '#/components/schemas/DayOfferVectorEuroMWh2'
+          $ref: '#/components/schemas/DayOfferVectorEuroMWh'
         d-LMPs:
           $ref: '#/components/schemas/DayOfferVectorEuroMWh'
         q-LMPs:
