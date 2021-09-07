@@ -392,8 +392,6 @@ components:
           $ref: '#/components/schemas/DayOfferVectorEuroMWh'
         reserve_market_offer_down:
           $ref: '#/components/schemas/DayOfferVectorEuroMWh'
-        expected_revenues:
-          $ref: '#/components/schemas/FlexOfferResult_expected_revenues'
       example:
         reserve_market_offer_down: null
         expected_revenues:
@@ -409,6 +407,11 @@ components:
           price_unit: €/MWh^2
           volume_unit: MWh^2
           values: null
+      anyOf:
+      - required:
+        - reserve_market_offer_up
+      - required:
+        - reserve_market_offer_down
     PricingParams:
       type: object
       properties:
@@ -986,9 +989,9 @@ components:
         consumer_id:
           type: string
         reserve_market_offer_up:
-          $ref: '#/components/schemas/DayOfferVectorEuroMWh'
+          $ref: '#/components/schemas/DayOfferMatrixEuroMWh'
         reserve_market_offer_down:
-          $ref: '#/components/schemas/DayOfferVectorEuroMWh'
+          $ref: '#/components/schemas/DayOfferMatrixEuroMWh'
         location:
           $ref: '#/components/schemas/Location'
       anyOf:
@@ -1069,6 +1072,30 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/DayOfferVectorItem'
+    DayOfferMatrix:
+      maxItems: 25
+      minItems: 23
+      type: array
+      items:
+        $ref: '#/components/schemas/DayOfferMatrixItem'
+    DayOfferMatrixItem:
+      required:
+      - end_timestamp
+      - start_timestamp
+      - values
+      type: object
+      properties:
+        start_timestamp:
+          type: string
+          format: date-time
+        end_timestamp:
+          type: string
+          format: date-time
+        values:
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/DayOfferMatrixItem_values'
     DayOfferVectorItem:
       type: object
       properties:
@@ -1245,6 +1272,24 @@ components:
           end_timestamp: 2000-01-23T04:56:07.000+00:00
           start_timestamp: 2000-01-23T04:56:07.000+00:00
           price: 0.8008281904610115
+    DayOfferMatrixEuroMWh:
+      required:
+      - price_unit
+      - values
+      - volume_unit
+      type: object
+      properties:
+        values:
+          $ref: '#/components/schemas/DayOfferMatrix'
+        price_unit:
+          type: string
+          enum:
+          - €/MWh
+        volume_unit:
+          type: string
+          enum:
+          - MWh
+          - kWh
     Price_In_Euro:
       required:
       - currency
@@ -1749,6 +1794,14 @@ components:
           - revenue: 0.8008281904610115
             end_timestamp: 2000-01-23T04:56:07.000+00:00
             start_timestamp: 2000-01-23T04:56:07.000+00:00
+    DayOfferMatrixItem_values:
+      type: object
+      properties:
+        price:
+          type: number
+          format: currency
+        volume:
+          type: number
   requestBodies:
     StackedRevenuesParams:
       content:

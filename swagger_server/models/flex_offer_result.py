@@ -7,7 +7,6 @@ from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
 from swagger_server.models.day_offer_vector_euro_m_wh import DayOfferVectorEuroMWh  # noqa: F401,E501
-from swagger_server.models.flex_offer_result_expected_revenues import FlexOfferResultExpectedRevenues  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -16,30 +15,25 @@ class FlexOfferResult(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, reserve_market_offer_up: DayOfferVectorEuroMWh=None, reserve_market_offer_down: DayOfferVectorEuroMWh=None, expected_revenues: FlexOfferResultExpectedRevenues=None):  # noqa: E501
+    def __init__(self, reserve_market_offer_up: DayOfferVectorEuroMWh=None, reserve_market_offer_down: DayOfferVectorEuroMWh=None):  # noqa: E501
         """FlexOfferResult - a model defined in Swagger
 
         :param reserve_market_offer_up: The reserve_market_offer_up of this FlexOfferResult.  # noqa: E501
         :type reserve_market_offer_up: DayOfferVectorEuroMWh
         :param reserve_market_offer_down: The reserve_market_offer_down of this FlexOfferResult.  # noqa: E501
         :type reserve_market_offer_down: DayOfferVectorEuroMWh
-        :param expected_revenues: The expected_revenues of this FlexOfferResult.  # noqa: E501
-        :type expected_revenues: FlexOfferResultExpectedRevenues
         """
         self.swagger_types = {
             'reserve_market_offer_up': DayOfferVectorEuroMWh,
-            'reserve_market_offer_down': DayOfferVectorEuroMWh,
-            'expected_revenues': FlexOfferResultExpectedRevenues
+            'reserve_market_offer_down': DayOfferVectorEuroMWh
         }
 
         self.attribute_map = {
             'reserve_market_offer_up': 'reserve_market_offer_up',
-            'reserve_market_offer_down': 'reserve_market_offer_down',
-            'expected_revenues': 'expected_revenues'
+            'reserve_market_offer_down': 'reserve_market_offer_down'
         }
         self._reserve_market_offer_up = reserve_market_offer_up
         self._reserve_market_offer_down = reserve_market_offer_down
-        self._expected_revenues = expected_revenues
 
     @classmethod
     def from_dict(cls, dikt) -> 'FlexOfferResult':
@@ -93,24 +87,3 @@ class FlexOfferResult(Model):
         """
 
         self._reserve_market_offer_down = reserve_market_offer_down
-
-    @property
-    def expected_revenues(self) -> FlexOfferResultExpectedRevenues:
-        """Gets the expected_revenues of this FlexOfferResult.
-
-
-        :return: The expected_revenues of this FlexOfferResult.
-        :rtype: FlexOfferResultExpectedRevenues
-        """
-        return self._expected_revenues
-
-    @expected_revenues.setter
-    def expected_revenues(self, expected_revenues: FlexOfferResultExpectedRevenues):
-        """Sets the expected_revenues of this FlexOfferResult.
-
-
-        :param expected_revenues: The expected_revenues of this FlexOfferResult.
-        :type expected_revenues: FlexOfferResultExpectedRevenues
-        """
-
-        self._expected_revenues = expected_revenues
