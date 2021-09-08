@@ -39,6 +39,29 @@ class TestFlexOffersUCS43Controller(BaseTestCase):
                             "values": [{
                                 "price": 123,
                                 "volume": 39
+                            },{
+                                "price": 150,
+                                "volume": 45
+                            }]
+                        } for offset in range(24)]
+                    }
+                },
+                {
+                    "consumer_id": "asdf",
+                    "location": {"id": "DSO_AREA_1", "name": "string"},
+                    "reserve_market_offer_up": {
+                        "price_unit": "€/MWh",
+                        "volume_unit": "MWh",
+                        "values": [{
+                            "start_timestamp": (base_date + datetime.timedelta(
+                                hours=offset
+                            )).isoformat(),
+                            "end_timestamp": (base_date + datetime.timedelta(
+                                hours=(offset+1)
+                            )).isoformat(),
+                            "values": [{
+                                "price": 123,
+                                "volume": 11
                             }]
                         } for offset in range(24)]
                     }

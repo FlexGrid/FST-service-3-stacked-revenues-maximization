@@ -8,7 +8,6 @@ from typing import List, Dict  # noqa: F401
 from swagger_server.models.base_model_ import Model
 from swagger_server.models.flex_asset import FlexAsset  # noqa: F401,E501
 from swagger_server.models.flex_offer_params_time_granularity import FlexOfferParamsTimeGranularity  # noqa: F401,E501
-from swagger_server.models.location import Location  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -17,7 +16,7 @@ class FlexOfferParams(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, country: str=None, flex_assets: List[FlexAsset]=None, start_datetime: datetime=None, end_datetime: datetime=None, time_granularity: FlexOfferParamsTimeGranularity=None, location: Location=None, store_data: bool=None):  # noqa: E501
+    def __init__(self, country: str=None, flex_assets: List[FlexAsset]=None, start_datetime: datetime=None, end_datetime: datetime=None, time_granularity: FlexOfferParamsTimeGranularity=None, store_data: bool=None):  # noqa: E501
         """FlexOfferParams - a model defined in Swagger
 
         :param country: The country of this FlexOfferParams.  # noqa: E501
@@ -30,8 +29,6 @@ class FlexOfferParams(Model):
         :type end_datetime: datetime
         :param time_granularity: The time_granularity of this FlexOfferParams.  # noqa: E501
         :type time_granularity: FlexOfferParamsTimeGranularity
-        :param location: The location of this FlexOfferParams.  # noqa: E501
-        :type location: Location
         :param store_data: The store_data of this FlexOfferParams.  # noqa: E501
         :type store_data: bool
         """
@@ -41,7 +38,6 @@ class FlexOfferParams(Model):
             'start_datetime': datetime,
             'end_datetime': datetime,
             'time_granularity': FlexOfferParamsTimeGranularity,
-            'location': Location,
             'store_data': bool
         }
 
@@ -51,7 +47,6 @@ class FlexOfferParams(Model):
             'start_datetime': 'start_datetime',
             'end_datetime': 'end_datetime',
             'time_granularity': 'time_granularity',
-            'location': 'location',
             'store_data': 'store_data'
         }
         self._country = country
@@ -59,7 +54,6 @@ class FlexOfferParams(Model):
         self._start_datetime = start_datetime
         self._end_datetime = end_datetime
         self._time_granularity = time_granularity
-        self._location = location
         self._store_data = store_data
 
     @classmethod
@@ -177,27 +171,6 @@ class FlexOfferParams(Model):
         """
 
         self._time_granularity = time_granularity
-
-    @property
-    def location(self) -> Location:
-        """Gets the location of this FlexOfferParams.
-
-
-        :return: The location of this FlexOfferParams.
-        :rtype: Location
-        """
-        return self._location
-
-    @location.setter
-    def location(self, location: Location):
-        """Sets the location of this FlexOfferParams.
-
-
-        :param location: The location of this FlexOfferParams.
-        :type location: Location
-        """
-
-        self._location = location
 
     @property
     def store_data(self) -> bool:

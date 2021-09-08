@@ -381,37 +381,13 @@ components:
           format: date-time
         time_granularity:
           $ref: '#/components/schemas/FlexOfferParams_time_granularity'
-        location:
-          $ref: '#/components/schemas/Location'
         store_data:
           type: boolean
     FlexOfferResult:
-      type: object
-      properties:
-        reserve_market_offer_up:
-          $ref: '#/components/schemas/DayOfferVectorEuroMWh'
-        reserve_market_offer_down:
-          $ref: '#/components/schemas/DayOfferVectorEuroMWh'
-      example:
-        reserve_market_offer_down: null
-        expected_revenues:
-          currecy: currecy
-          revenue_vector:
-          - revenue: 0.8008281904610115
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-          - revenue: 0.8008281904610115
-            end_timestamp: 2000-01-23T04:56:07.000+00:00
-            start_timestamp: 2000-01-23T04:56:07.000+00:00
-        reserve_market_offer_up:
-          price_unit: €/MWh^2
-          volume_unit: MWh^2
-          values: null
-      anyOf:
-      - required:
-        - reserve_market_offer_up
-      - required:
-        - reserve_market_offer_down
+      type: array
+      minItems: 1
+      items:
+        $ref: '#/components/schemas/FlexAsset'
     PricingParams:
       type: object
       properties:
