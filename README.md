@@ -17,9 +17,9 @@
         name: Dimitros J. Vergados
         url: https://flexgrid-project.eu
       license:
-        name: BSD
-        url: https://github.com/pyeve/eve-swagger/blob/master/LICENSE
-      version: "1.0"
+        name: GNU
+        url: https://github.com/FlexGrid/FST-service-3-stacked-revenues-maximization/blob/master/LICENSE
+        version: "3.0"
     servers:
     - url: http://localhost:8080/
     tags:
