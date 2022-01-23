@@ -66,3 +66,4 @@ target/
 .vscode/
 .env
 testenv
+pricingvenv

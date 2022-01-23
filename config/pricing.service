@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI instance to serve atp_service
+After=network.target eveoauth2.service nginx.service
+
+[Service]
+User=dss
+Group=www-data
+WorkingDirectory=/home/dss/flexgrid/pricing
+Environment="PATH=/home/dss/flexgrid/pricing/pricingvenv/bin"
+ExecStart=/home/dss/flexgrid/pricing/pricingvenv/bin/uwsgi --ini pricing_service.ini
+
+[Install]
+WantedBy=multi-user.target
