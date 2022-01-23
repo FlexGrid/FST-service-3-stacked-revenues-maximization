@@ -30,7 +30,7 @@ paths:
         "400":
           description: bad request
       security:
-        - oAuth2: []
+        - oAuth2: [post_pricing]
       x-openapi-router-controller: swagger_server.controllers.pricing_ucs42_controller
   /pricing/{job_id}:
     get:
@@ -58,7 +58,7 @@ paths:
         "400":
           description: bad request
       security:
-        - oAuth2: []
+        - oAuth2: [post_pricing]
       x-openapi-router-controller: swagger_server.controllers.pricing_ucs42_controller
 components:
   requestBodies:
@@ -154,8 +154,10 @@ components:
           $ref: "#/components/schemas/PricingData"
         error:
           type: string
+          example: No module named 'scipy'
         traceback:
           type: string
+          example: "Traceback (most recent call last):\n  File \"/home/djvergad/ntua/flexgrid/pricing-api/testenv/lib/python3.8/site-packages/celery/app/trace.py\", line 451, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/home/djvergad/ntua/flexgrid/pricing-api/testenv/lib/python3.8/site-packages/celery/app/trace.py\", line 734, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/home/djvergad/ntua/flexgrid/pricing-api/workers/tasks.py\", line 224, in pricing\n    x, initial_x] = aggr_flex.Run_BRTP()\n  File \"/home/djvergad/ntua/flexgrid/pricing-api/BRTP/BRTP_portfolio.py\", line 52, in Run_BRTP\n    from scipy.optimize import minimize\nModuleNotFoundError: No module named 'scipy'\n"
     PricingData:
       required:
         - plots
@@ -618,8 +620,13 @@ components:
       flows:
         password:
           tokenUrl: https://db.flexgrid-project.eu/oauth/token
-          scopes: {}
+          scopes:
+            post_pricing: post a pricing scenario
+        clientCredentials:
+          tokenUrl: https://db.flexgrid-project.eu/oauth/token
+          scopes:
+            post_pricing: post a pricing scenario
       x-tokenInfoFunc: swagger_server.controllers.authorization_controller.check_oAuth2
       x-scopeValidateFunc: swagger_server.controllers.authorization_controller.check_oAuth2
 security:
-  - oAuth2: []
+  - oAuth2: [post_pricing]
