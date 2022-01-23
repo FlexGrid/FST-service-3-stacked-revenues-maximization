@@ -1,0 +1,625 @@
+openapi: 3.0.3
+info:
+  title: Flexgrid PRicing API
+  description: Interface for performing evaluations of pricing algorithms
+  contact:
+    name: Dimitros J. Vergados
+    url: https://flexgrid-project.eu
+  license:
+    name: GNU
+    url: https://github.com/FlexGrid/FST-service-3-stacked-revenues-maximization/blob/master/LICENSE
+  version: 1.0.1
+servers:
+  - url: https://pricing-api.flexgrid-project.eu/
+paths:
+  /pricing:
+    post:
+      tags:
+        - Pricing (UCS 4.2)
+      summary: Creates an evaluation of various pricing mechanisms
+      operationId: pricing_post
+      requestBody:
+        $ref: "#/components/requestBodies/PricingParams"
+      responses:
+        "201":
+          description: operation has been successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobSubmitted"
+        "400":
+          description: bad request
+      security:
+        - oAuth2: []
+      x-openapi-router-controller: swagger_server.controllers.pricing_ucs42_controller
+  /pricing/{job_id}:
+    get:
+      tags:
+        - Pricing (UCS 4.2)
+      summary: Retrieves information about a pricing job
+      operationId: pricing_get
+      parameters:
+        - name: job_id
+          in: path
+          description: The job ID
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+          example: 801713bc-31a7-46ae-97ed-a3668c2c666a
+      responses:
+        "200":
+          description: operation has been successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PricingJobResult"
+        "400":
+          description: bad request
+      security:
+        - oAuth2: []
+      x-openapi-router-controller: swagger_server.controllers.pricing_ucs42_controller
+components:
+  requestBodies:
+    PricingParams:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PricingParams"
+  schemas:
+    PricingParams:
+      required:
+        - dr_prosumers
+        - end_datetime
+        - flex_request
+        - gamma_values
+        - profit_margin
+        - start_datetime
+      type: object
+      properties:
+        start_datetime:
+          type: string
+          format: date-time
+          example: "2021-11-11T00:00:00Z"
+        end_datetime:
+          type: string
+          format: date-time
+          example: "2021-11-12T00:00:00Z"
+        dr_prosumers:
+          minItems: 1
+          type: array
+          items:
+            type: string
+          example: ["user_1_low", "user_3_high"]
+        flex_request:
+          type: string
+          example: "flex_request_1_Low"
+        gamma_values:
+          minItems: 1
+          type: array
+          items:
+            type: number
+          example: [0.0, 1.0]
+        profit_margin:
+          type: number
+          example: 0.2
+        callback:
+          type: object
+          required:
+            - url
+          properties:
+            url:
+              type: string
+              example: https://myservice.eu/post_results
+            headers:
+              type: object
+              additionalProperties:
+                type: string
+              example:
+                Authorization: Bearer O85XHy79Jz4H4Zir4C46MZexsmm7Ki'
+    JobSubmitted:
+      required:
+        - job_id
+        - href
+      type: object
+      properties:
+        job_id:
+          type: string
+          example: 801713bc-31a7-46ae-97ed-a3668c2c666a
+        href:
+          type: string
+          example: /pricing/801713bc-31a7-46ae-97ed-a3668c2c666a
+    PricingJobResult:
+      required:
+        - job_id
+        - status
+      type: object
+      properties:
+        job_id:
+          type: string
+          example: 801713bc-31a7-46ae-97ed-a3668c2c666a
+        status:
+          type: string
+          enum:
+            - PENDING
+            - SUCCESS
+            - FAILURE
+          example: SUCCESS
+        date_done:
+          type: string
+          format: date-time
+          example: "2022-01-23T09:30:24+00:00"
+        result:
+          $ref: "#/components/schemas/PricingData"
+        error:
+          type: string
+        traceback:
+          type: string
+    PricingData:
+      required:
+        - plots
+        - raw_data
+      type: object
+      properties:
+        plots:
+          $ref: "#/components/schemas/PricingData_plots"
+        raw_data:
+          $ref: "#/components/schemas/PricingData_raw_data"
+    PricingData_plots:
+      required:
+        - AUW_vs_GAMMA
+        - FINAL_ECC
+        - FLEX_QUANTITY
+        - FLEX_REVENUES
+        - UW_BAR
+      type: object
+      properties:
+        AUW_vs_GAMMA:
+          $ref: "#/components/schemas/Plot"
+        FINAL_ECC:
+          type: array
+          items:
+            $ref: "#/components/schemas/Plot"
+        FLEX_QUANTITY:
+          $ref: "#/components/schemas/Plot"
+        FLEX_REVENUES:
+          $ref: "#/components/schemas/Plot"
+        UW_BAR:
+          type: array
+          items:
+            $ref: "#/components/schemas/Plot"
+      example:
+        AUW_vs_GAMMA:
+          serries:
+            - xvalues:
+                - 0
+                - 1
+              yvalues:
+                - NaN
+                - Infinity
+          title: Ratio between AUW with B-RTP and AUW with RTP as a function of γ
+          xlabel: γ
+          ylabel: AUW with B-RTP(γ) / AUW with RTP (γ = 0)
+        FINAL_ECC:
+          - serries:
+              - xvalues:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                  - 6
+                  - 7
+                  - 8
+                  - 9
+                  - 10
+                  - 11
+                  - 12
+                  - 13
+                  - 14
+                  - 15
+                  - 16
+                  - 17
+                  - 18
+                  - 19
+                  - 20
+                  - 21
+                  - 22
+                  - 23
+                  - 24
+                yvalues:
+                  - 2.2648
+                  - 2.2648
+                  - 2.2648
+                  - 0.3795
+                  - 0.3795
+                  - 0.3795
+                  - 0.3795
+                  - 0.3795
+                  - 0.3795
+                  - 0.9813000000000001
+                  - 1.0216
+                  - 0.3795
+                  - 0.3795
+                  - 4.9078
+                  - 1.8787
+                  - 1.8787
+                  - 1.8787
+                  - 1.8787
+                  - 8.7898
+                  - 8.433499999999999
+                  - 4.6583
+                  - 2.7950999999999997
+                  - 1.2959
+                  - 1.2959
+              - xvalues:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                  - 6
+                  - 7
+                  - 8
+                  - 9
+                  - 10
+                  - 11
+                  - 12
+                  - 13
+                  - 14
+                  - 15
+                  - 16
+                  - 17
+                  - 18
+                  - 19
+                  - 20
+                  - 21
+                  - 22
+                  - 23
+                  - 24
+                yvalues:
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+                  - 0
+            title: Initial vs Final ECC (γ = 0.0)
+            xlabel: Time (h)
+            ylabel: Power Consumption (kW)
+          - serries:
+              - xvalues:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                  - 6
+                  - 7
+                  - 8
+                  - 9
+                  - 10
+                  - 11
+                  - 12
+                  - 13
+                  - 14
+                  - 15
+                  - 16
+                  - 17
+                  - 18
+                  - 19
+                  - 20
+                  - 21
+                  - 22
+                  - 23
+                  - 24
+                yvalues:
+                  - 2.2648
+                  - 2.2648
+                  - 2.2648
+                  - 0.3795
+                  - 0.3795
+                  - 0.3795
+                  - 0.3795
+                  - 0.3795
+                  - 0.3795
+                  - 0.9813000000000001
+                  - 1.0216
+                  - 0.3795
+                  - 0.3795
+                  - 4.9078
+                  - 1.8787
+                  - 1.8787
+                  - 1.8787
+                  - 1.8787
+                  - 8.7898
+                  - 8.433499999999999
+                  - 4.6583
+                  - 2.7950999999999997
+                  - 1.2959
+                  - 1.2959
+              - xvalues:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                  - 6
+                  - 7
+                  - 8
+                  - 9
+                  - 10
+                  - 11
+                  - 12
+                  - 13
+                  - 14
+                  - 15
+                  - 16
+                  - 17
+                  - 18
+                  - 19
+                  - 20
+                  - 21
+                  - 22
+                  - 23
+                  - 24
+                yvalues:
+                  - 2.2648000622256443
+                  - 2.264799974086186
+                  - 2.2647999636881675
+                  - 0.3795000000000007
+                  - 0.3795000000000003
+                  - 0.37950000000000034
+                  - 0.379500000000001
+                  - 0.37950000000000106
+                  - 0.3795000000000006
+                  - 0.9812999999999144
+                  - 1.0215999999998029
+                  - 0.37950000000004336
+                  - 0.37950000000004125
+                  - 4.907799999999956
+                  - 1.5980283918246228
+                  - 1.5639256859584676
+                  - 1.4995282503472125
+                  - 1.5800615660946327
+                  - 5.705270108226566
+                  - 5.362091251391749
+                  - 3.816834843223101
+                  - 2.4582235350599544
+                  - 2.406358280823049
+                  - 2.3915532924785285
+            title: Initial vs Final ECC (γ = 1.0)
+            xlabel: Time (h)
+            ylabel: Power Consumption (kW)
+        FLEX_QUANTITY:
+          serries:
+            - xvalues:
+                - 0
+                - 1
+              yvalues:
+                - 0
+                - 9.798959794453513
+          xlabel: γ
+          ylabel: Flexibility Quantity Delivered (kW)
+        FLEX_REVENUES:
+          serries:
+            - xvalues:
+                - 0
+                - 1
+              yvalues:
+                - 0
+                - 2.7666619450214673
+          xlabel: γ
+          ylabel: Flexibility Revenues (€)
+        UW_BAR:
+          - serries:
+              - xvalues:
+                  - 1
+                  - 2
+                yvalues:
+                  - NaN
+                  - NaN
+            xlabel: Users
+            ylabel: UW with B-RTP(γ)/UW with RTP
+          - serries:
+              - xvalues:
+                  - 1
+                  - 2
+                yvalues:
+                  - Infinity
+                  - Infinity
+            xlabel: Users
+            ylabel: UW with B-RTP(γ)/UW with RTP
+    Plot:
+      required:
+        - serries
+      type: object
+      properties:
+        serries:
+          type: array
+          items:
+            $ref: "#/components/schemas/Plot_serries"
+        title:
+          type: string
+          example: Ratio between AUW with B-RTP and AUW with RTP as a function of γ
+        xlabel:
+          type: string
+          example: γ
+        ylabel:
+          type: string
+          example: AUW with B-RTP(γ) / AUW with RTP (γ = 0)
+        plot_type:
+          type: string
+          enum:
+            - scatter
+            - bar
+          example: scatter
+    Plot_serries:
+      required:
+        - xvalues
+        - yvalues
+      type: object
+      properties:
+        xvalues:
+          type: array
+          items:
+            type: number
+          example:
+            - 0
+            - 1
+
+        yvalues:
+          type: array
+          items:
+            type: number
+          example:
+            - 0.0
+            - 9.798959794453513
+        legend:
+          type: string
+          example: "With RTP"
+    PricingData_raw_data:
+      required:
+        - AUW_BRTP
+        - BB_BRTP
+        - FINALCONS
+        - FLEX_Q
+        - FLEX_R
+        - TC_BRTP
+        - uw_bar_plot
+      type: object
+      properties:
+        AUW_BRTP:
+          type: array
+          items:
+            type: number
+          example:
+            - 0
+            - -5.764447663199395
+        BB_BRTP:
+          type: array
+          items:
+            type: number
+          example:
+            - 0
+            - -0.0004947952156664215
+        FINALCONS:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+          example:
+            - - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+              - 0
+            - - 2.2648000622256443
+              - 2.264799974086186
+              - 2.2647999636881675
+              - 0.3795000000000007
+              - 0.3795000000000003
+              - 0.37950000000000034
+              - 0.379500000000001
+              - 0.37950000000000106
+              - 0.3795000000000006
+              - 0.9812999999999144
+              - 1.0215999999998029
+              - 0.37950000000004336
+              - 0.37950000000004125
+              - 4.907799999999956
+              - 1.5980283918246228
+              - 1.5639256859584676
+              - 1.4995282503472125
+              - 1.5800615660946327
+              - 5.705270108226566
+              - 5.362091251391749
+              - 3.816834843223101
+              - 2.4582235350599544
+              - 2.406358280823049
+              - 2.3915532924785285
+
+        FLEX_Q:
+          type: array
+          items:
+            type: number
+          example:
+            - 0
+            - 9.798959794453513
+        FLEX_R:
+          type: array
+          items:
+            type: number
+          example:
+            - 0
+            - 2.7666619450214673
+        TC_BRTP:
+          type: array
+          items:
+            type: number
+          example:
+            - 0
+            - 4.374038463594205
+        uw_bar_plot:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+          example:
+            - - 0
+              - 0
+            - - -2.5292291315480346
+              - -3.23521853165136
+
+  securitySchemes:
+    oAuth2:
+      type: oauth2
+      description: oAuth2 password credentials.
+      flows:
+        password:
+          tokenUrl: https://db.flexgrid-project.eu/oauth/token
+          scopes: {}
+      x-tokenInfoFunc: swagger_server.controllers.authorization_controller.check_oAuth2
+      x-scopeValidateFunc: swagger_server.controllers.authorization_controller.check_oAuth2
+security:
+  - oAuth2: []
