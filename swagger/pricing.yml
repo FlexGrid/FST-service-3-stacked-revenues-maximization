@@ -631,10 +631,6 @@ components:
           tokenUrl: https://db.flexgrid-project.eu/oauth/token
           scopes:
             post_pricing: post a pricing scenario
-        clientCredentials:
-          tokenUrl: https://db.flexgrid-project.eu/oauth/token
-          scopes:
-            post_pricing: post a pricing scenario
       x-tokenInfoFunc: swagger_server.controllers.authorization_controller.check_oAuth2
       x-scopeValidateFunc: swagger_server.controllers.authorization_controller.check_oAuth2
 security:
