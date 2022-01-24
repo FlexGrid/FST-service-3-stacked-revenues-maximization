@@ -484,9 +484,8 @@ components:
         xvalues:
           type: array
           items:
-            type: 
-              - number
-              - null
+            type:  number
+            nullable: true
           example:
             - 0
             - 1
@@ -495,6 +494,7 @@ components:
           type: array
           items:
             type: number
+            nullable: true
           example:
             - 0.0
             - 9.798959794453513
@@ -516,6 +516,7 @@ components:
           type: array
           items:
             type: number
+            nullable: true
           example:
             - 0
             - -5.764447663199395
@@ -523,6 +524,7 @@ components:
           type: array
           items:
             type: number
+            nullable: true
           example:
             - 0
             - -0.0004947952156664215
@@ -532,6 +534,7 @@ components:
             type: array
             items:
               type: number
+              nullable: true
           example:
             - - 0
               - 0
@@ -586,6 +589,7 @@ components:
           type: array
           items:
             type: number
+            nullable: true
           example:
             - 0
             - 9.798959794453513
@@ -593,6 +597,7 @@ components:
           type: array
           items:
             type: number
+            nullable: true
           example:
             - 0
             - 2.7666619450214673
@@ -600,6 +605,7 @@ components:
           type: array
           items:
             type: number
+            nullable: true
           example:
             - 0
             - 4.374038463594205
@@ -609,6 +615,7 @@ components:
             type: array
             items:
               type: number
+              nullable: true
           example:
             - - 0
               - 0

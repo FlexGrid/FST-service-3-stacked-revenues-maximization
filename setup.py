@@ -17,10 +17,10 @@ REQUIRES = ["connexion"]
 setup(
     name=NAME,
     version=VERSION,
-    description="Flexgrid PRicing API",
+    description="Flexgrid Pricing API",
     author_email="",
     url="",
-    keywords=["Swagger", "Flexgrid PRicing API"],
+    keywords=["Swagger", "Flexgrid Pricing API"],
     install_requires=REQUIRES,
     packages=find_packages(),
     package_data={'': ['swagger/swagger.yaml']},
