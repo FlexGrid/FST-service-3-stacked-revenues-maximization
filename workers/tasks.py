@@ -3,6 +3,8 @@ import time
 from celery.result import AsyncResult
 from celery import Celery
 import numpy as np
+import simplejson
+import json
 
 from BRTP.BRTP_portfolio import dr_portfolio
 
@@ -262,7 +264,7 @@ def pricing(profit_margin, gamma_values, start_datetime, dr_prosumer_data, flex_
         plot_bars[i, :] = 1 + \
             np.divide(uw_bar_plot[0, :]-uw_bar_plot[i, :], uw_bar_plot[0, :])
 
-    result = {
+    result = json.loads(simplejson.dumps({
         'raw_data': {
             "AUW_BRTP": AUW_BRTP.tolist(),
             "TC_BRTP": TC_BRTP.tolist(),
@@ -311,6 +313,6 @@ def pricing(profit_margin, gamma_values, start_datetime, dr_prosumer_data, flex_
                              }]
             } for counter, gamma in enumerate(G_VALUES)]
         }
-    }
+    }, ignore_nan=True))
 
     return result

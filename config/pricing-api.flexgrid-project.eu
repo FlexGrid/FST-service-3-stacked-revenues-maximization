@@ -1,6 +1,10 @@
 server { 
     server_name pricing-api.flexgrid-project.eu;
 
+    location /swagger/ {
+      root /home/dss/flexgrid/pricing/;
+    }
+
     location / {
       include uwsgi_params;
       uwsgi_pass unix:/home/dss/flexgrid/pricing/pricing_service.sock;
