@@ -330,10 +330,13 @@ def pricing(profit_margin, gamma_values, start_datetime, dr_prosumer_data, flex_
 
     if callback_url is not None:
         try:
+            default_header = {
+                'Content-Type': 'application/vnd.api+json'
+            }
             post_result = requests.post(callback_url,
-                          data=json.dumps(result),
-                          headers=callback_headers)
-            result['callback_result'] = str(post_result)
+                                        data=json.dumps(result),
+                                        headers={**default_header, **callback_headers})
+            result['callback_result'] = f"status: {post_result.status_code}\n\n{post_result.text}",
         except requests.exceptions.RequestException as e:
             print(e)
             print(traceback.format_exc())
