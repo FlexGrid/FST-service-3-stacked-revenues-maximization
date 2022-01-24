@@ -5,7 +5,7 @@ info:
     \ credentials for the API are from the central DB can be obtained by the ICCS\
     \ team of the [FlexGrid project](https://flexgrid-project.eu)\n\nUse the central\
     \ DB api defined at [https://db.flexgrid-project.eu/swagger/](https://db.flexgrid-project.eu/swagger/)\
-    \ for otaining the objects for the requests (dr_prosumers, flex_request)\n"
+    \ for obtaining the objects for the requests (dr_prosumers, flex_request)"
   contact:
     name: Dimitros J. Vergados
     url: https://flexgrid-project.eu
@@ -31,7 +31,7 @@ paths:
         \nThe `flex_request` field contains the `name` field of the `flex_request`\
         \ that will be simulated.\nTo obtain the name use the central DB api defined\
         \ here: [https://db.flexgrid-project.eu/swagger/#/Flex_request/getflex_requests](hhttps://db.flexgrid-project.eu/swagger/#/Flex_request/getflex_requests)\n\
-        \nIf the `callback` object is defined, the sumulation results will be posted\
+        \nIf the `callback` object is defined, the simulation results will be posted\
         \ at the URL that is defined in it, with the request body encoded as JSON,\
         \ with the structure defined as `PricingData` in this document. You may also\
         \ pass HTTP headers that will be used for the callback post. The HTTP method\

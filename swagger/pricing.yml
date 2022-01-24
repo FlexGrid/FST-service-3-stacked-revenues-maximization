@@ -1,12 +1,12 @@
 openapi: 3.0.3
 info:
   title: Flexgrid Pricing API
-  description: |
+  description: |-
     Interface for performing evaluations of pricing algorithms
 
     The credentials for the API are from the central DB can be obtained by the ICCS team of the [FlexGrid project](https://flexgrid-project.eu)
 
-    Use the central DB api defined at [https://db.flexgrid-project.eu/swagger/](https://db.flexgrid-project.eu/swagger/) for otaining the objects for the requests (dr_prosumers, flex_request)
+    Use the central DB api defined at [https://db.flexgrid-project.eu/swagger/](https://db.flexgrid-project.eu/swagger/) for obtaining the objects for the requests (dr_prosumers, flex_request)
   contact:
     name: Dimitros J. Vergados
     url: https://flexgrid-project.eu
@@ -31,7 +31,7 @@ paths:
         The `flex_request` field contains the `name` field of the `flex_request` that will be simulated.
         To obtain the name use the central DB api defined here: [https://db.flexgrid-project.eu/swagger/#/Flex_request/getflex_requests](hhttps://db.flexgrid-project.eu/swagger/#/Flex_request/getflex_requests)
 
-        If the `callback` object is defined, the sumulation results will be posted at the URL that is defined in it, with the request body encoded as JSON, with the structure defined as `PricingData` in this document. You may also pass HTTP headers that will be used for the callback post. The HTTP method used will be `POST`.
+        If the `callback` object is defined, the simulation results will be posted at the URL that is defined in it, with the request body encoded as JSON, with the structure defined as `PricingData` in this document. You may also pass HTTP headers that will be used for the callback post. The HTTP method used will be `POST`.
 
         It returns the `job_id`, which can be used to query for the results, with the request defined at [https://pricing-api.flexgrid-project.eu/swagger/#/Pricing (UCS 4.2)/pricing_get](https://pricing-api.flexgrid-project.eu/swagger/#/Pricing%20(UCS%204.2)/pricing_get)
 
