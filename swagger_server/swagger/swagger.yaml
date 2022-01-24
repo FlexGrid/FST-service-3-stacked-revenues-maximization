@@ -51,7 +51,7 @@ paths:
         explode: false
         schema:
           type: string
-        example: 801713bc-31a7-46ae-97ed-a3668c2c666a
+        example: 4b7e25f5-c296-4880-8b91-55c28483f797
       responses:
         "200":
           description: operation has been successful
@@ -90,7 +90,7 @@ components:
           type: array
           example:
           - user_1_Low
-          - user_3_high
+          - user_3_High
           items:
             type: string
         flex_request:
@@ -117,13 +117,13 @@ components:
       properties:
         job_id:
           type: string
-          example: 801713bc-31a7-46ae-97ed-a3668c2c666a
+          example: 4b7e25f5-c296-4880-8b91-55c28483f797
         href:
           type: string
-          example: /pricing/801713bc-31a7-46ae-97ed-a3668c2c666a
+          example: /pricing/4b7e25f5-c296-4880-8b91-55c28483f797
       example:
-        job_id: 801713bc-31a7-46ae-97ed-a3668c2c666a
-        href: /pricing/801713bc-31a7-46ae-97ed-a3668c2c666a
+        job_id: 4b7e25f5-c296-4880-8b91-55c28483f797
+        href: /pricing/4b7e25f5-c296-4880-8b91-55c28483f797
     PricingJobResult:
       required:
       - job_id
@@ -132,7 +132,7 @@ components:
       properties:
         job_id:
           type: string
-          example: 801713bc-31a7-46ae-97ed-a3668c2c666a
+          example: 4b7e25f5-c296-4880-8b91-55c28483f797
         status:
           type: string
           example: SUCCESS
@@ -240,8 +240,8 @@ components:
                 - 0
                 - 1
                 yvalues:
-                - NaN
-                - Infinity
+                - null
+                - null
               title: Ratio between AUW with B-RTP and AUW with RTP as a function of
                 γ
               xlabel: γ
@@ -481,8 +481,8 @@ components:
                 - 1
                 - 2
                 yvalues:
-                - NaN
-                - NaN
+                - null
+                - null
               xlabel: Users
               ylabel: UW with B-RTP(γ)/UW with RTP
             - serries:
@@ -490,11 +490,11 @@ components:
                 - 1
                 - 2
                 yvalues:
-                - Infinity
-                - Infinity
+                - null
+                - null
               xlabel: Users
               ylabel: UW with B-RTP(γ)/UW with RTP
-        job_id: 801713bc-31a7-46ae-97ed-a3668c2c666a
+        job_id: 4b7e25f5-c296-4880-8b91-55c28483f797
         error: No module named 'scipy'
         traceback: "Traceback (most recent call last):\n  File \"/home/djvergad/ntua/flexgrid/pricing-api/testenv/lib/python3.8/site-packages/celery/app/trace.py\"\
           , line 451, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File\
@@ -593,8 +593,8 @@ components:
               - 0
               - 1
               yvalues:
-              - NaN
-              - Infinity
+              - null
+              - null
             title: Ratio between AUW with B-RTP and AUW with RTP as a function of
               γ
             xlabel: γ
@@ -834,8 +834,8 @@ components:
               - 1
               - 2
               yvalues:
-              - NaN
-              - NaN
+              - null
+              - null
             xlabel: Users
             ylabel: UW with B-RTP(γ)/UW with RTP
           - serries:
@@ -843,8 +843,8 @@ components:
               - 1
               - 2
               yvalues:
-              - Infinity
-              - Infinity
+              - null
+              - null
             xlabel: Users
             ylabel: UW with B-RTP(γ)/UW with RTP
     PricingData_plots:
@@ -877,8 +877,8 @@ components:
             - 0
             - 1
             yvalues:
-            - NaN
-            - Infinity
+            - null
+            - null
           title: Ratio between AUW with B-RTP and AUW with RTP as a function of γ
           xlabel: γ
           ylabel: AUW with B-RTP(γ) / AUW with RTP (γ = 0)
@@ -1117,8 +1117,8 @@ components:
             - 1
             - 2
             yvalues:
-            - NaN
-            - NaN
+            - null
+            - null
           xlabel: Users
           ylabel: UW with B-RTP(γ)/UW with RTP
         - serries:
@@ -1126,8 +1126,8 @@ components:
             - 1
             - 2
             yvalues:
-            - Infinity
-            - Infinity
+            - null
+            - null
           xlabel: Users
           ylabel: UW with B-RTP(γ)/UW with RTP
     Plot:

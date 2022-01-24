@@ -1,5 +1,6 @@
 import base64
 import json
+from itsdangerous import exc
 import requests
 import os
 from dotenv import load_dotenv
@@ -106,10 +107,13 @@ class CentralDBAdapter:
                 arr["load_entries"] = []
             arr["load_entries"] += [load]
 
-        dr_prosumer_names = {prosumer['name']
-            : prosumer for prosumer in dr_prosumers}
+        dr_prosumer_names = {prosumer['name']: prosumer for prosumer in dr_prosumers}
 
-        res = [ dr_prosumer_names[p] for p in prosumer_names]
+        res = []
+        for p in prosumer_names:
+            if p not in dr_prosumer_names:
+                abort(400, description=f"No data for dr_prosumer {p} at specified time range")
+            res.append(dr_prosumer_names[p])
         return res
 
     def get_flex_request(self, flex_request_name, start_timestamp, end_timestamp):
@@ -117,7 +121,7 @@ class CentralDBAdapter:
 
         if len(flex_requests) != 1:
             abort(
-                500, description=f"error obtaining data for flex_requestL: '{flex_request_name}, found: {len(flex_requests)}'")
+                400, description=f"error obtaining data for flex_requestL: '{flex_request_name}, found: {len(flex_requests)}'")
 
         flex_request = flex_requests[0]
 
