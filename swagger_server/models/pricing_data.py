@@ -16,25 +16,30 @@ class PricingData(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, plots: PricingDataPlots=None, raw_data: PricingDataRawData=None):  # noqa: E501
+    def __init__(self, plots: PricingDataPlots=None, raw_data: PricingDataRawData=None, callback_result: str=None):  # noqa: E501
         """PricingData - a model defined in Swagger
 
         :param plots: The plots of this PricingData.  # noqa: E501
         :type plots: PricingDataPlots
         :param raw_data: The raw_data of this PricingData.  # noqa: E501
         :type raw_data: PricingDataRawData
+        :param callback_result: The callback_result of this PricingData.  # noqa: E501
+        :type callback_result: str
         """
         self.swagger_types = {
             'plots': PricingDataPlots,
-            'raw_data': PricingDataRawData
+            'raw_data': PricingDataRawData,
+            'callback_result': str
         }
 
         self.attribute_map = {
             'plots': 'plots',
-            'raw_data': 'raw_data'
+            'raw_data': 'raw_data',
+            'callback_result': 'callback_result'
         }
         self._plots = plots
         self._raw_data = raw_data
+        self._callback_result = callback_result
 
     @classmethod
     def from_dict(cls, dikt) -> 'PricingData':
@@ -92,3 +97,24 @@ class PricingData(Model):
             raise ValueError("Invalid value for `raw_data`, must not be `None`")  # noqa: E501
 
         self._raw_data = raw_data
+
+    @property
+    def callback_result(self) -> str:
+        """Gets the callback_result of this PricingData.
+
+
+        :return: The callback_result of this PricingData.
+        :rtype: str
+        """
+        return self._callback_result
+
+    @callback_result.setter
+    def callback_result(self, callback_result: str):
+        """Sets the callback_result of this PricingData.
+
+
+        :param callback_result: The callback_result of this PricingData.
+        :type callback_result: str
+        """
+
+        self._callback_result = callback_result

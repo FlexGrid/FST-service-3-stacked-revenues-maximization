@@ -163,6 +163,7 @@ components:
       example:
         date_done: 2022-01-23T09:30:24Z
         result:
+          callback_result: callback_result
           raw_data:
             AUW_BRTP:
             - 0
@@ -515,7 +516,10 @@ components:
           $ref: '#/components/schemas/PricingData_plots'
         raw_data:
           $ref: '#/components/schemas/PricingData_raw_data'
+        callback_result:
+          type: string
       example:
+        callback_result: callback_result
         raw_data:
           AUW_BRTP:
           - 0

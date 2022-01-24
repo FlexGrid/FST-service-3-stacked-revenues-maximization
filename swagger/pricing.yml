@@ -168,6 +168,8 @@ components:
           $ref: "#/components/schemas/PricingData_plots"
         raw_data:
           $ref: "#/components/schemas/PricingData_raw_data"
+        callback_result:
+          type: string
     PricingData_plots:
       required:
         - AUW_vs_GAMMA
@@ -484,7 +486,7 @@ components:
         xvalues:
           type: array
           items:
-            type:  number
+            type: number
             nullable: true
           example:
             - 0

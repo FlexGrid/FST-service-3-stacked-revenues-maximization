@@ -5,6 +5,8 @@ from celery import Celery
 import numpy as np
 import simplejson
 import json
+import requests
+import traceback
 
 from BRTP.BRTP_portfolio import dr_portfolio
 
@@ -27,7 +29,7 @@ def get_task_info(hash):
 
 
 @app.task
-def pricing(profit_margin, gamma_values, start_datetime, dr_prosumer_data, flex_request_data):
+def pricing(profit_margin, gamma_values, start_datetime, dr_prosumer_data, flex_request_data, callback_url, callback_headers):
     auw_vs_gamma = 0
     uw_bar = 0
     flex_revenues = 0
@@ -280,39 +282,60 @@ def pricing(profit_margin, gamma_values, start_datetime, dr_prosumer_data, flex_
                 'xlabel': "γ",
                 'ylabel': "AUW with B-RTP(γ) / AUW with RTP (γ = 0)",
                 'serries': [{'xvalues': G_VALUES.tolist(),
-                             'yvalues': AUW_BRTP_x.tolist()}],
+                             'yvalues': AUW_BRTP_x.tolist(),
+                             'legend': f"γ = {G_VALUES[i]} {'(RTP)' if i == 0 else ''}"
+                             }],
+                'plot_type': 'scatter',
             },
             'UW_BAR': [{
                 'xlabel': 'Users',
                 'ylabel': 'UW with B-RTP(γ)/UW with RTP',
                 'serries': [{'xvalues': (np.arange(np.size(row))+1).tolist(),
-                             'yvalues': row.tolist()}]
+                             'yvalues': row.tolist()}],
+                'plot_type': 'bar',
+
             } for i, row in enumerate(plot_bars)],
             'FLEX_REVENUES': {
                 'xlabel': "γ",
                 'ylabel': 'Flexibility Revenues (€)',
                 'serries': [{'xvalues': G_VALUES.tolist(),
                              'yvalues': FLEX_R.tolist()}],
+                'plot_type': 'bar',
+
             },
             'FLEX_QUANTITY': {
                 'xlabel': "γ",
                 'ylabel': 'Flexibility Quantity Delivered (kW)',
                 'serries': [{'xvalues': G_VALUES.tolist(),
                              'yvalues': FLEX_Q.tolist()}],
+                'plot_type': 'bar',
+
             },
             'FINAL_ECC': [{
                 'title': "Initial vs Final ECC (γ = {})".format(gamma),
                 'xlabel': 'Time (h)',
                 'ylabel': 'Power Consumption (kW)',
                 'serries': [{'xvalues': (np.arange(T)+1).tolist(),
-                             'yvalues': np.sum(np.sum(initial_x, axis=0), axis=1).tolist()},
+                             'yvalues': np.sum(np.sum(initial_x, axis=0), axis=1).tolist(),
+                             'legend': "Initial ECC", },
                             {'xvalues': (np.arange(T)+1).tolist(),
-                             'yvalues':
-                                FINALCONS.tolist() if np.size(
-                                    G_VALUES) == 1 else FINALCONS[counter, :].tolist()
-                             }]
+                             'yvalues': FINALCONS.tolist() if np.size(
+                                G_VALUES) == 1 else FINALCONS[counter, :].tolist(),
+                             'legend': "Final ECC", }],
+                'plot_type': 'scatter',
+
             } for counter, gamma in enumerate(G_VALUES)]
         }
     }, ignore_nan=True))
 
+    if callback_url is not None:
+        try:
+            post_result = requests.post(callback_url,
+                          data=json.dumps(result),
+                          headers=callback_headers)
+            result['callback_result'] = str(post_result)
+        except requests.exceptions.RequestException as e:
+            print(e)
+            print(traceback.format_exc())
+            result['callback_result'] = str(e)
     return result

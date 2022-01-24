@@ -107,4 +107,9 @@ def run_algorithm(flex_offer_params):
             abort(500, description="Number of bid_steps is inconsistent")
 
     return pricing.delay(flex_offer_params.profit_margin,
-                         flex_offer_params.gamma_values, flex_offer_params.start_datetime, dr_prosumer_data, flex_request_data)
+                         flex_offer_params.gamma_values,
+                         flex_offer_params.start_datetime,
+                         dr_prosumer_data,
+                         flex_request_data,
+                         flex_offer_params.callback.url,
+                         flex_offer_params.callback.headers)
