@@ -28,6 +28,6 @@ setup(
     entry_points={
         'console_scripts': ['swagger_server=swagger_server.__main__:main']},
     long_description="""\
-    Interface for performing evaluations of pricing algorithms
+    Interface for performing evaluations of pricing algorithms  The credentials for the API are from the central DB can be obtained by the ICCS team of the [FlexGrid project](https://flexgrid-project.eu)  Use the central DB api defined at [https://db.flexgrid-project.eu/swagger/](https://db.flexgrid-project.eu/swagger/) for otaining the objects for the requests (dr_prosumers, flex_request)
     """
 )

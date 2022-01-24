@@ -1,7 +1,11 @@
 openapi: 3.0.3
 info:
   title: Flexgrid Pricing API
-  description: Interface for performing evaluations of pricing algorithms
+  description: "Interface for performing evaluations of pricing algorithms\n\nThe\
+    \ credentials for the API are from the central DB can be obtained by the ICCS\
+    \ team of the [FlexGrid project](https://flexgrid-project.eu)\n\nUse the central\
+    \ DB api defined at [https://db.flexgrid-project.eu/swagger/](https://db.flexgrid-project.eu/swagger/)\
+    \ for otaining the objects for the requests (dr_prosumers, flex_request)\n"
   contact:
     name: Dimitros J. Vergados
     url: https://flexgrid-project.eu
@@ -20,6 +24,20 @@ paths:
       tags:
       - Pricing (UCS 4.2)
       summary: Creates an evaluation of various pricing mechanisms
+      description: "This endpoint is for submitting a simulation for pricing mechanisms\n\
+        \nThe `dr_prosumers` field contains the `name` fields of the `dr_prosumers`\
+        \ that will be simulated.\nTo obtain the names use the central DB api defined\
+        \ here: [https://db.flexgrid-project.eu/swagger/#/Dr_prosumer/getdr_prosumers](https://db.flexgrid-project.eu/swagger/#/Dr_prosumer/getdr_prosumers)\n\
+        \nThe `flex_request` field contains the `name` field of the `flex_request`\
+        \ that will be simulated.\nTo obtain the name use the central DB api defined\
+        \ here: [https://db.flexgrid-project.eu/swagger/#/Flex_request/getflex_requests](hhttps://db.flexgrid-project.eu/swagger/#/Flex_request/getflex_requests)\n\
+        \nIf the `callback` object is defined, the sumulation results will be posted\
+        \ at the URL that is defined in it, with the request body encoded as JSON,\
+        \ with the structure defined as `PricingData` in this document. You may also\
+        \ pass HTTP headers that will be used for the callback post. The HTTP method\
+        \ used will be `POST`.\n\nIt returns the `job_id`, which can be used to query\
+        \ for the results, with the request defined at [https://pricing-api.flexgrid-project.eu/swagger/#/Pricing\
+        \ (UCS 4.2)/pricing_get](https://pricing-api.flexgrid-project.eu/swagger/#/Pricing%20(UCS%204.2)/pricing_get)\n"
       operationId: pricing_post
       requestBody:
         $ref: '#/components/requestBodies/PricingParams'
@@ -41,6 +59,10 @@ paths:
       tags:
       - Pricing (UCS 4.2)
       summary: Retrieves information about a pricing job
+      description: "This query is used for obtaining the simulation results that have\
+        \ been posted by the request defined at [https://pricing-api.flexgrid-project.eu/swagger/#/Pricing\
+        \ (UCS 4.2)/pricing_post](https://pricing-api.flexgrid-project.eu/swagger/#/Pricing%20(UCS%204.2)/pricing_post)\n\
+        \nThe `job_id` URL parameter is returned from the above mentioned request\n"
       operationId: pricing_get
       parameters:
       - name: job_id
