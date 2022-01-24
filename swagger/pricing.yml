@@ -47,7 +47,7 @@ paths:
           explode: false
           schema:
             type: string
-          example: 801713bc-31a7-46ae-97ed-a3668c2c666a
+          example: 4b7e25f5-c296-4880-8b91-55c28483f797
       responses:
         "200":
           description: operation has been successful
@@ -91,7 +91,7 @@ components:
           type: array
           items:
             type: string
-          example: ["user_1_Low", "user_3_high"]
+          example: ["user_1_Low", "user_3_High"]
         flex_request:
           type: string
           example: "flex_request_1_Low"
@@ -126,10 +126,10 @@ components:
       properties:
         job_id:
           type: string
-          example: 801713bc-31a7-46ae-97ed-a3668c2c666a
+          example: 4b7e25f5-c296-4880-8b91-55c28483f797
         href:
           type: string
-          example: /pricing/801713bc-31a7-46ae-97ed-a3668c2c666a
+          example: /pricing/4b7e25f5-c296-4880-8b91-55c28483f797
     PricingJobResult:
       required:
         - job_id
@@ -138,7 +138,7 @@ components:
       properties:
         job_id:
           type: string
-          example: 801713bc-31a7-46ae-97ed-a3668c2c666a
+          example: 4b7e25f5-c296-4880-8b91-55c28483f797
         status:
           type: string
           enum:
@@ -198,8 +198,8 @@ components:
                 - 0
                 - 1
               yvalues:
-                - NaN
-                - Infinity
+                - null
+                - null
           title: Ratio between AUW with B-RTP and AUW with RTP as a function of γ
           xlabel: γ
           ylabel: AUW with B-RTP(γ) / AUW with RTP (γ = 0)
@@ -438,8 +438,8 @@ components:
                   - 1
                   - 2
                 yvalues:
-                  - NaN
-                  - NaN
+                  - null
+                  - null
             xlabel: Users
             ylabel: UW with B-RTP(γ)/UW with RTP
           - serries:
@@ -447,8 +447,8 @@ components:
                   - 1
                   - 2
                 yvalues:
-                  - Infinity
-                  - Infinity
+                  - null
+                  - null
             xlabel: Users
             ylabel: UW with B-RTP(γ)/UW with RTP
     Plot:
