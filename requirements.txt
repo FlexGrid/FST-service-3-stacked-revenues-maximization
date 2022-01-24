@@ -1,4 +1,4 @@
-connexion == 2.6.0
+connexion == 2.10.0
 setuptools >= 21.0.0
 python-dotenv==0.19.2
 celery[redis]==5.2.3
