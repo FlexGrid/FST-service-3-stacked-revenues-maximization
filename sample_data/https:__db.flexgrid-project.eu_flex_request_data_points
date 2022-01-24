@@ -1,0 +1,866 @@
+[
+    {
+        "_id": "61e555af85575d81d075c942",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T00:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.5589672559022772,
+                "quantity_kw": 2.661748837629892
+            },
+            {
+                "price_euro_per_kw": 0.47911479077338043,
+                "quantity_kw": 5.323497675259784
+            },
+            {
+                "price_euro_per_kw": 0.3992623256444837,
+                "quantity_kw": 7.985246512889676
+            },
+            {
+                "price_euro_per_kw": 0.31940986051558695,
+                "quantity_kw": 10.646995350519568
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "dc2a3133930b0c0f42ac7efe6af12d90043a111c",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c942"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c943",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T01:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.5589672559022772,
+                "quantity_kw": 2.661748837629892
+            },
+            {
+                "price_euro_per_kw": 0.47911479077338043,
+                "quantity_kw": 5.323497675259784
+            },
+            {
+                "price_euro_per_kw": 0.3992623256444837,
+                "quantity_kw": 7.985246512889676
+            },
+            {
+                "price_euro_per_kw": 0.31940986051558695,
+                "quantity_kw": 10.646995350519568
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "9a587e67631319b2b0bc19bd23b6e2d407de26c4",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c943"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c944",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T02:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.5589672559022772,
+                "quantity_kw": 2.661748837629892
+            },
+            {
+                "price_euro_per_kw": 0.47911479077338043,
+                "quantity_kw": 5.323497675259784
+            },
+            {
+                "price_euro_per_kw": 0.3992623256444837,
+                "quantity_kw": 7.985246512889676
+            },
+            {
+                "price_euro_per_kw": 0.31940986051558695,
+                "quantity_kw": 10.646995350519568
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "5125aa4e532169a39d6b5122e308f5e5c783dcfe",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c944"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c945",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T03:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.16404675,
+                "quantity_kw": 0.781175
+            },
+            {
+                "price_euro_per_kw": 0.1406115,
+                "quantity_kw": 1.56235
+            },
+            {
+                "price_euro_per_kw": 0.11717624999999998,
+                "quantity_kw": 2.3435249999999996
+            },
+            {
+                "price_euro_per_kw": 0.09374099999999999,
+                "quantity_kw": 3.1247
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "fdd3b91b2cc0308a9196c8df7b38cc0bd6a3ee05",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c945"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c946",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T04:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.16404675,
+                "quantity_kw": 0.781175
+            },
+            {
+                "price_euro_per_kw": 0.1406115,
+                "quantity_kw": 1.56235
+            },
+            {
+                "price_euro_per_kw": 0.11717624999999998,
+                "quantity_kw": 2.3435249999999996
+            },
+            {
+                "price_euro_per_kw": 0.09374099999999999,
+                "quantity_kw": 3.1247
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "46fa499c1746d115713e890895bd4d4ae2085e43",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c946"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c947",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T05:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.16404675,
+                "quantity_kw": 0.781175
+            },
+            {
+                "price_euro_per_kw": 0.1406115,
+                "quantity_kw": 1.56235
+            },
+            {
+                "price_euro_per_kw": 0.11717624999999998,
+                "quantity_kw": 2.3435249999999996
+            },
+            {
+                "price_euro_per_kw": 0.09374099999999999,
+                "quantity_kw": 3.1247
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "8a470ee03a479f520a28146ce98d10737f25b001",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c947"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c948",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T06:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.16404675,
+                "quantity_kw": 0.781175
+            },
+            {
+                "price_euro_per_kw": 0.1406115,
+                "quantity_kw": 1.56235
+            },
+            {
+                "price_euro_per_kw": 0.11717624999999998,
+                "quantity_kw": 2.3435249999999996
+            },
+            {
+                "price_euro_per_kw": 0.09374099999999999,
+                "quantity_kw": 3.1247
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "c12f80fa9723dd7bc7573066251953f31f451442",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c948"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c949",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T07:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.16404675,
+                "quantity_kw": 0.781175
+            },
+            {
+                "price_euro_per_kw": 0.1406115,
+                "quantity_kw": 1.56235
+            },
+            {
+                "price_euro_per_kw": 0.11717624999999998,
+                "quantity_kw": 2.3435249999999996
+            },
+            {
+                "price_euro_per_kw": 0.09374099999999999,
+                "quantity_kw": 3.1247
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "344712d296c6fb02e491beac1ac43203bb9704fc",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c949"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c94a",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T08:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.23697735374263962,
+                "quantity_kw": 1.128463589250665
+            },
+            {
+                "price_euro_per_kw": 0.20312344606511967,
+                "quantity_kw": 2.25692717850133
+            },
+            {
+                "price_euro_per_kw": 0.16926953838759973,
+                "quantity_kw": 3.3853907677519945
+            },
+            {
+                "price_euro_per_kw": 0.13541563071007978,
+                "quantity_kw": 4.51385435700266
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "e9e8aff2be1d2c3a0fa81ee6282f9014f853e2fc",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c94a"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c94b",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T09:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.3640692630387177,
+                "quantity_kw": 1.7336631573272274
+            },
+            {
+                "price_euro_per_kw": 0.3120593683189009,
+                "quantity_kw": 3.467326314654455
+            },
+            {
+                "price_euro_per_kw": 0.26004947359908415,
+                "quantity_kw": 5.200989471981682
+            },
+            {
+                "price_euro_per_kw": 0.20803957887926727,
+                "quantity_kw": 6.93465262930891
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "3c134e179bb43819e7881d096c8f729ce227b498",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c94b"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c94c",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T10:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.3473693079277269,
+                "quantity_kw": 1.6541395615606045
+            },
+            {
+                "price_euro_per_kw": 0.2977451210809088,
+                "quantity_kw": 3.308279123121209
+            },
+            {
+                "price_euro_per_kw": 0.24812093423409065,
+                "quantity_kw": 4.962418684681813
+            },
+            {
+                "price_euro_per_kw": 0.19849674738727252,
+                "quantity_kw": 6.616558246242418
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "b605f1267eb0dcb7d6a3717adc88c9626690f1e1",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c94c"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c94d",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T11:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.41023646953721765,
+                "quantity_kw": 1.9535069977962747
+            },
+            {
+                "price_euro_per_kw": 0.3516312596033294,
+                "quantity_kw": 3.9070139955925494
+            },
+            {
+                "price_euro_per_kw": 0.2930260496694412,
+                "quantity_kw": 5.860520993388824
+            },
+            {
+                "price_euro_per_kw": 0.23442083973555292,
+                "quantity_kw": 7.814027991185099
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "b95f48f0367e4a2365490e4b6482b440e808df7f",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c94d"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c94e",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T12:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.795457754091622,
+                "quantity_kw": 3.7878940671029624
+            },
+            {
+                "price_euro_per_kw": 0.6818209320785331,
+                "quantity_kw": 7.575788134205925
+            },
+            {
+                "price_euro_per_kw": 0.5681841100654442,
+                "quantity_kw": 11.363682201308887
+            },
+            {
+                "price_euro_per_kw": 0.45454728805235545,
+                "quantity_kw": 15.15157626841185
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "74130ebeb1f29706663cd0897e672261e43e16a2",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c94e"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c94f",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T13:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.8898622413193933,
+                "quantity_kw": 4.237439244378064
+            },
+            {
+                "price_euro_per_kw": 0.7627390639880514,
+                "quantity_kw": 8.474878488756127
+            },
+            {
+                "price_euro_per_kw": 0.6356158866567094,
+                "quantity_kw": 12.712317733134192
+            },
+            {
+                "price_euro_per_kw": 0.5084927093253676,
+                "quantity_kw": 16.949756977512255
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "188e41d76de8bb736d52ae0618402d44e955dc04",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c94f"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c950",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T14:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.793382318723139,
+                "quantity_kw": 3.7780110415387576
+            },
+            {
+                "price_euro_per_kw": 0.6800419874769762,
+                "quantity_kw": 7.556022083077515
+            },
+            {
+                "price_euro_per_kw": 0.5667016562308135,
+                "quantity_kw": 11.334033124616273
+            },
+            {
+                "price_euro_per_kw": 0.4533613249846508,
+                "quantity_kw": 15.11204416615503
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "7c8cc46c8b98a037db49e8ed810fada9118a4bcf",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c950"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c951",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T15:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.9520291787344942,
+                "quantity_kw": 4.533472279688068
+            },
+            {
+                "price_euro_per_kw": 0.8160250103438522,
+                "quantity_kw": 9.066944559376136
+            },
+            {
+                "price_euro_per_kw": 0.6800208419532102,
+                "quantity_kw": 13.600416839064204
+            },
+            {
+                "price_euro_per_kw": 0.5440166735625681,
+                "quantity_kw": 18.133889118752272
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "eb33954713e0252ae501ace18d163e80a79e2d29",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c951"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c952",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T16:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.6166020000000001,
+                "quantity_kw": 2.9362000000000004
+            },
+            {
+                "price_euro_per_kw": 0.5285160000000002,
+                "quantity_kw": 5.872400000000001
+            },
+            {
+                "price_euro_per_kw": 0.44043,
+                "quantity_kw": 8.808600000000002
+            },
+            {
+                "price_euro_per_kw": 0.35234400000000016,
+                "quantity_kw": 11.744800000000001
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "ed4b434719174832548ef06d19cba5dd5b239e9e",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c952"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c953",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T17:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.9192636676749856,
+                "quantity_kw": 4.37744603654755
+            },
+            {
+                "price_euro_per_kw": 0.7879402865785591,
+                "quantity_kw": 8.7548920730951
+            },
+            {
+                "price_euro_per_kw": 0.6566169054821325,
+                "quantity_kw": 13.13233810964265
+            },
+            {
+                "price_euro_per_kw": 0.5252935243857061,
+                "quantity_kw": 17.5097841461902
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "90ecf4805785f624f5c6cc5efae2cee0ccd14e71",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c953"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c954",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T18:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 1.8652852635577124,
+                "quantity_kw": 8.88231077884625
+            },
+            {
+                "price_euro_per_kw": 1.598815940192325,
+                "quantity_kw": 17.7646215576925
+            },
+            {
+                "price_euro_per_kw": 1.3323466168269373,
+                "quantity_kw": 26.64693233653875
+            },
+            {
+                "price_euro_per_kw": 1.06587729346155,
+                "quantity_kw": 35.529243115385
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "d1f8eb3683665208e2e159f7e6ed6edde4664f81",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c954"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c955",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T19:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 1.9347327443432334,
+                "quantity_kw": 9.213013068301112
+            },
+            {
+                "price_euro_per_kw": 1.6583423522942,
+                "quantity_kw": 18.426026136602225
+            },
+            {
+                "price_euro_per_kw": 1.3819519602451666,
+                "quantity_kw": 27.639039204903337
+            },
+            {
+                "price_euro_per_kw": 1.1055615681961335,
+                "quantity_kw": 36.85205227320445
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "6f7a9d5b446943cc6c9000aaf9ea6d257e7f3bd0",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c955"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c956",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T20:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 1.4577527389472307,
+                "quantity_kw": 6.941679709272527
+            },
+            {
+                "price_euro_per_kw": 1.2495023476690548,
+                "quantity_kw": 13.883359418545053
+            },
+            {
+                "price_euro_per_kw": 1.0412519563908793,
+                "quantity_kw": 20.82503912781758
+            },
+            {
+                "price_euro_per_kw": 0.8330015651127032,
+                "quantity_kw": 27.766718837090107
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "d992189d822038442e08a7ec91eede19235aae79",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c956"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c957",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T21:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 1.1303618412710232,
+                "quantity_kw": 5.38267543462392
+            },
+            {
+                "price_euro_per_kw": 0.9688815782323057,
+                "quantity_kw": 10.76535086924784
+            },
+            {
+                "price_euro_per_kw": 0.807401315193588,
+                "quantity_kw": 16.14802630387176
+            },
+            {
+                "price_euro_per_kw": 0.6459210521548705,
+                "quantity_kw": 21.53070173849568
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "368b282cf4f5992a2ea234a7942ae4d48b53d626",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c957"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c958",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T22:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.4789207499999999,
+                "quantity_kw": 2.280575
+            },
+            {
+                "price_euro_per_kw": 0.41050349999999985,
+                "quantity_kw": 4.56115
+            },
+            {
+                "price_euro_per_kw": 0.34208625,
+                "quantity_kw": 6.841724999999999
+            },
+            {
+                "price_euro_per_kw": 0.2736689999999999,
+                "quantity_kw": 9.1223
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "90332b3d4c0280172ec3106554c71576585b1de5",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c958"
+            }
+        }
+    },
+    {
+        "_id": "61e555af85575d81d075c959",
+        "flex_request_id": "61e555ae85575d81d075c911",
+        "timestamp": "2021-11-11T23:00:00Z",
+        "flexibility": [
+            {
+                "price_euro_per_kw": 0.0,
+                "quantity_kw": 0.0
+            },
+            {
+                "price_euro_per_kw": 0.4789207499999999,
+                "quantity_kw": 2.280575
+            },
+            {
+                "price_euro_per_kw": 0.41050349999999985,
+                "quantity_kw": 4.56115
+            },
+            {
+                "price_euro_per_kw": 0.34208625,
+                "quantity_kw": 6.841724999999999
+            },
+            {
+                "price_euro_per_kw": 0.2736689999999999,
+                "quantity_kw": 9.1223
+            }
+        ],
+        "_updated": "2022-01-17T11:40:30",
+        "_created": "2022-01-17T11:40:30",
+        "_etag": "920740670f8796d63121cc30e5a97b32c8569c15",
+        "_links": {
+            "self": {
+                "title": "Flex_request_data_point",
+                "href": "flex_request_data_points/61e555af85575d81d075c959"
+            }
+        }
+    }
+]

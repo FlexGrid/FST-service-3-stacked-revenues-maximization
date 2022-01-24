@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from flask import abort
+import codecs
 
 
 class CentralDBAdapter:
@@ -14,7 +15,8 @@ class CentralDBAdapter:
 
     def __init__(self):
         load_dotenv()
-        self.base_url = os.getenv("CENTRAL_DB_BASE_URL")
+        self.base_url = os.getenv(
+            "CENTRAL_DB_BASE_URL") or 'https://db.flexgrid-project.eu'
         self.token = None
 
     def get_token(self):
@@ -35,6 +37,9 @@ class CentralDBAdapter:
 
     def auth_headers(self):
 
+        if os.environ.get("SAMPLE_DATA"):
+            return {'Authorization': f"Bearer XXXXXXX"}
+
         if not self.have_valid_token():
             self.get_token()
 
@@ -43,7 +48,14 @@ class CentralDBAdapter:
     def get_collection(self, collection, where_params):
         url = f"{self.base_url}/{collection}"
 
+        if os.environ.get("SET_SAMPLE_DATA") or os.environ.get("SAMPLE_DATA"):
+            file_path = f"./sample_data/{url.replace('/', '_')}"
+
         headers = self.auth_headers()
+
+        if os.environ.get("SAMPLE_DATA"):
+            with open(file_path, "rb") as infile:
+                return json.load(infile)
 
         result = []
         params = {'where': json.dumps(where_params)}
@@ -58,11 +70,19 @@ class CentralDBAdapter:
                                         params=params)
 
             # print(response.text)
+            response.raise_for_status()
             resp_json = json.loads(response.text)
             result.extend(resp_json["_items"])
             if not 'next' in resp_json['_links']:
                 break
             url = f"{self.base_url}/{resp_json['_links']['next']['href']}"
+            params = {}
+
+        if os.environ.get("SET_SAMPLE_DATA"):
+            with open(file_path, "wb") as outfile:
+                json.dump(result, codecs.getwriter('utf-8')
+                          (outfile), ensure_ascii=False,  indent=4)
+
         return result
 
     def get_load_entries(self, prosumer_ids, start_timestamp, end_timestamp):
@@ -112,7 +132,8 @@ class CentralDBAdapter:
         res = []
         for p in prosumer_names:
             if p not in dr_prosumer_names:
-                abort(400, description=f"No data for dr_prosumer {p} at specified time range")
+                abort(
+                    400, description=f"No data for dr_prosumer {p} at specified time range")
             res.append(dr_prosumer_names[p])
         return res
 
