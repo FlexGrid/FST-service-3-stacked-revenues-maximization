@@ -12,14 +12,14 @@ from workers.tasks import pricing, get_task_info
 def get_pricing_adapter(job_id):
     task = get_task_info(job_id)
 
-    return PricingJobResult.from_dict({
+    return {
         'job_id': job_id,
         'status': task.status,
         'date_done': task.date_done.strftime('%Y-%m-%dT%H:%M:%SZ') if task.date_done else None,
         'result': task.result if task.status == "SUCCESS" else None,
         'error': str(task.result) if task.status == "FAILURE" else None,
         'traceback': task.traceback,
-    })
+    }
 
 
 def post_pricing_adapter(pricing_params):
@@ -111,5 +111,5 @@ def run_algorithm(flex_offer_params):
                          flex_offer_params.start_datetime,
                          dr_prosumer_data,
                          flex_request_data,
-                         flex_offer_params.callback.url,
-                         flex_offer_params.callback.headers)
+                         flex_offer_params.callback.url if flex_offer_params.callback else None,
+                         flex_offer_params.callback.headers if flex_offer_params.callback else None)

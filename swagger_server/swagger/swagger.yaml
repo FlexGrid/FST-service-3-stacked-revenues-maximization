@@ -126,8 +126,10 @@ components:
           - 1.0
           items:
             type: number
+            nullable: true
         profit_margin:
           type: number
+          nullable: true
           example: 0.2
         callback:
           $ref: '#/components/schemas/PricingParams_callback'
@@ -170,9 +172,11 @@ components:
           $ref: '#/components/schemas/PricingData'
         error:
           type: string
+          nullable: true
           example: No module named 'scipy'
         traceback:
           type: string
+          nullable: true
           example: "Traceback (most recent call last):\n  File \"/home/djvergad/ntua/flexgrid/pricing-api/testenv/lib/python3.8/site-packages/celery/app/trace.py\"\
             , line 451, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File\
             \ \"/home/djvergad/ntua/flexgrid/pricing-api/testenv/lib/python3.8/site-packages/celery/app/trace.py\"\
@@ -1409,6 +1413,7 @@ components:
             type: string
           example:
             Authorization: Bearer O85XHy79Jz4H4Zir4C46MZexsmm7Ki'
+      example: null
   requestBodies:
     PricingParams:
       content:

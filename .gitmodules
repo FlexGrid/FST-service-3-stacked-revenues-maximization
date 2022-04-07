@@ -1,3 +1,6 @@
 [submodule "BRTP"]
 	path = BRTP
 	url = git@github.com:FlexGrid/BRTP.git
+[submodule "swagger-codegen"]
+	path = swagger-codegen
+	url = https://github.com/swagger-api/swagger-codegen.git

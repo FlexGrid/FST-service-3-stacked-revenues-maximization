@@ -123,9 +123,11 @@ components:
           type: array
           items:
             type: number
+            nullable: true
           example: [0.0, 1.0]
         profit_margin:
           type: number
+          nullable: true
           example: 0.2
         callback:
           type: object
@@ -177,9 +179,11 @@ components:
           $ref: "#/components/schemas/PricingData"
         error:
           type: string
+          nullable: true
           example: No module named 'scipy'
         traceback:
           type: string
+          nullable: true
           example: "Traceback (most recent call last):\n  File \"/home/djvergad/ntua/flexgrid/pricing-api/testenv/lib/python3.8/site-packages/celery/app/trace.py\", line 451, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File \"/home/djvergad/ntua/flexgrid/pricing-api/testenv/lib/python3.8/site-packages/celery/app/trace.py\", line 734, in __protected_call__\n    return self.run(*args, **kwargs)\n  File \"/home/djvergad/ntua/flexgrid/pricing-api/workers/tasks.py\", line 224, in pricing\n    x, initial_x] = aggr_flex.Run_BRTP()\n  File \"/home/djvergad/ntua/flexgrid/pricing-api/BRTP/BRTP_portfolio.py\", line 52, in Run_BRTP\n    from scipy.optimize import minimize\nModuleNotFoundError: No module named 'scipy'\n"
     PricingData:
       required:
