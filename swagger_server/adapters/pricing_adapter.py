@@ -108,6 +108,9 @@ def run_algorithm(flex_offer_params):
         elif bid_nsteps != len(bid_data_point['flexibility']):
             abort(500, description="Number of bid_steps is inconsistent")
 
+    if not 0 in flex_offer_params.gamma_values:
+        flex_offer_params.gamma_values = [0] + flex_offer_params.gamma_values
+
     return pricing.delay(flex_offer_params.profit_margin,
                          flex_offer_params.gamma_values,
                          flex_offer_params.start_datetime,
