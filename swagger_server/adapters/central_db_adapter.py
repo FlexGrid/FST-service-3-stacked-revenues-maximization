@@ -134,6 +134,13 @@ class CentralDBAdapter:
             if p not in dr_prosumer_names:
                 abort(
                     400, description=f"No data for dr_prosumer {p} at specified time range")
+
+            for dev in dr_prosumer_names[p]['shiftable_devices']:
+                if not 'load_entries' in dev:
+                    dev['load_entries'] = []
+            for ev in dr_prosumer_names[p]['EVs']:
+                if not 'load_entries' in ev:
+                    ev['load_entries'] = []
             res.append(dr_prosumer_names[p])
         return res
 

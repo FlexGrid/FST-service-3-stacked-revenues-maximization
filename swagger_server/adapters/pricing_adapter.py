@@ -12,14 +12,14 @@ from workers.tasks import pricing, get_task_info
 def get_pricing_adapter(job_id):
     task = get_task_info(job_id)
 
-    return {
+    return PricingJobResult.from_dict({
         'job_id': job_id,
         'status': task.status,
         'date_done': task.date_done.strftime('%Y-%m-%dT%H:%M:%SZ') if task.date_done else None,
         'result': task.result if task.status == "SUCCESS" else None,
         'error': str(task.result) if task.status == "FAILURE" else None,
         'traceback': task.traceback,
-    }
+    })
 
 
 def post_pricing_adapter(pricing_params):
@@ -48,6 +48,8 @@ def run_algorithm(flex_offer_params):
     dr_prosumer_data = db_adapter.get_dr_prosumers(flex_offer_params.dr_prosumers,
                                                    flex_offer_params.start_datetime, flex_offer_params.end_datetime)
     # dr_prosumer_data = CentralDBClient().get_dr_prosumers(prosumers,
+
+    print(json.dumps(dr_prosumer_data, indent=4, sort_keys=True))
 
     if len(dr_prosumer_data) != len(flex_offer_params.dr_prosumers):
         # raise  ValueError("Missing prosumer")
