@@ -1,27 +1,30 @@
 openapi: 3.0.3
 info:
-  title: Flexgrid Pricing API
+  title: Flexgrid Flex Offer API
   description: |-
-    Interface for performing evaluations of pricing algorithms
+    Interface for aggregating multiple Flex Offers into a single
+    aggregated offer.
 
-    The credentials for the API are from the central DB can be obtained by the ICCS team of the [FlexGrid project](https://flexgrid-project.eu)
+    The credentials for the API are from the central DB can be obtained
+    by the ICCS team of the [FlexGrid project](https://flexgrid-project.eu)
 
-    Use the central DB api defined at [https://db.flexgrid-project.eu/swagger/](https://db.flexgrid-project.eu/swagger/) for obtaining the objects for the requests (dr_prosumers, flex_request)
+    Use the central DB api defined at
+    [https://db.flexgrid-project.eu/swagger/](https://db.flexgrid-project.eu/swagger/)
+    for obtaining the objects for the requests (dr_prosumers, flex_request)
   contact:
     name: Dimitros J. Vergados
     url: https://flexgrid-project.eu
   license:
     name: GNU
-    url: https://github.com/FlexGrid/FST-service-3-stacked-revenues-maximization/blob/master/LICENSE
   version: 1.0.1
 servers:
-  - url: https://pricing-api.flexgrid-project.eu/
+  - url: https://flexoffers.flexgrid-project.eu/
 paths:
-  /pricing:
+  /flex-offers:
     post:
       tags:
-        - Pricing (UCS 4.2)
-      summary: Creates an evaluation of various pricing mechanisms
+        - Flex Offers (UCS 4.3)
+      summary: Aggragates several Flex offers into a single offer
       description: |
         This endpoint is for submitting a simulation for pricing mechanisms
 
@@ -35,54 +38,21 @@ paths:
 
         It returns the `job_id`, which can be used to query for the results, with the request defined at [https://pricing-api.flexgrid-project.eu/swagger/#/Pricing (UCS 4.2)/pricing_get](https://pricing-api.flexgrid-project.eu/swagger/#/Pricing%20(UCS%204.2)/pricing_get)
 
-      operationId: pricing_post
-      requestBody:
-        $ref: "#/components/requestBodies/PricingParams"
-      responses:
-        "201":
-          description: operation has been successful
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/JobSubmitted"
-        "400":
-          description: bad request
-      security:
-        - oAuth2: [post_pricing]
-      x-openapi-router-controller: swagger_server.controllers.pricing_ucs42_controller
-  /pricing/{job_id}:
-    get:
-      tags:
-        - Pricing (UCS 4.2)
-      summary: Retrieves information about a pricing job
-      description: |
-        This query is used for obtaining the simulation results that have been posted by the request defined at [https://pricing-api.flexgrid-project.eu/swagger/#/Pricing (UCS 4.2)/pricing_post](https://pricing-api.flexgrid-project.eu/swagger/#/Pricing%20(UCS%204.2)/pricing_post)
-
-        The `job_id` URL parameter is returned from the above mentioned request
-
-      operationId: pricing_get
-      parameters:
-        - name: job_id
-          in: path
-          description: The job ID
-          required: true
-          style: simple
-          explode: false
-          schema:
-            type: string
-          example: 4b7e25f5-c296-4880-8b91-55c28483f797
-      responses:
-        "200":
-          description: operation has been successful
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PricingJobResult"
-        "400":
-          description: bad request
-      security:
-        - oAuth2: [post_pricing]
-      x-openapi-router-controller: swagger_server.controllers.pricing_ucs42_controller
+      operationId: flex_offers_post                                             
+      requestBody:                                                              
+        $ref: '#/components/requestBodies/FlexOfferParams'                      
+      responses:                                                                
+        "201":                                                                  
+          description: operation has been successful                            
+          content:                                                              
+            application/json:                                                   
+              schema:                                                           
+                $ref: '#/components/schemas/FlexOfferResult'                    
+        "400":                                                                  
+          description: bad request                                              
+      security:                                                                 
+      - MyTokenAuth: []                                                         
+      x-openapi-router-controller: swagger_server.controllers.flex_offers_ucs43_controller
 components:
   requestBodies:
     PricingParams:
