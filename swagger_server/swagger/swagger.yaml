@@ -1,101 +1,58 @@
 openapi: 3.0.3
 info:
-  title: Flexgrid Pricing API
-  description: "Interface for performing evaluations of pricing algorithms\n\nThe\
-    \ credentials for the API are from the central DB can be obtained by the ICCS\
-    \ team of the [FlexGrid project](https://flexgrid-project.eu)\n\nUse the central\
-    \ DB api defined at [https://db.flexgrid-project.eu/swagger/](https://db.flexgrid-project.eu/swagger/)\
-    \ for obtaining the objects for the requests (dr_prosumers, flex_request)"
+  title: Flexgrid Flex Offer API
+  description: "Interface for aggregating multiple Flex Offers into a single\naggregated\
+    \ offer.\n\nThe credentials for the API are from the central DB can be obtained\n\
+    by the ICCS team of the [FlexGrid project](https://flexgrid-project.eu)\n\nUse\
+    \ the central DB api defined at\n[https://db.flexgrid-project.eu/swagger/](https://db.flexgrid-project.eu/swagger/)\n\
+    for obtaining the objects for the requests (dr_prosumers, flex_request)"
   contact:
     name: Dimitros J. Vergados
     url: https://flexgrid-project.eu
   license:
     name: GNU
-    url: https://github.com/FlexGrid/FST-service-3-stacked-revenues-maximization/blob/master/LICENSE
   version: 1.0.1
 servers:
-- url: https://pricing-api.flexgrid-project.eu/
+- url: https://flexoffers.flexgrid-project.eu/
 security:
 - oAuth2:
-  - post_pricing
+  - post_flex_offers
 paths:
-  /pricing:
+  /flex-offers:
     post:
       tags:
-      - Pricing (UCS 4.2)
-      summary: Creates an evaluation of various pricing mechanisms
-      description: "This endpoint is for submitting a simulation for pricing mechanisms\n\
-        \nThe `dr_prosumers` field contains the `name` fields of the `dr_prosumers`\
-        \ that will be simulated.\nTo obtain the names use the central DB api defined\
-        \ here: [https://db.flexgrid-project.eu/swagger/#/Dr_prosumer/getdr_prosumers](https://db.flexgrid-project.eu/swagger/#/Dr_prosumer/getdr_prosumers)\n\
+      - Flex Offers (UCS 4.3)
+      summary: Aggragates several Flex offers into a single offer
+      description: "This endpoint is for aggregating flex offers\n\nThe `flex_offers`\
+        \ field contains the `name` fields of the `flex_offers` that will be aggregated.\n\
+        To obtain the names use the central DB api defined here: [https://db.flexgrid-project.eu/swagger/#/Dr_prosumer/getflex_offers](https://db.flexgrid-project.eu/swagger/#/Dr_prosumer/getflex_offers)\n\
         \nThe `flex_request` field contains the `name` field of the `flex_request`\
-        \ that will be simulated.\nTo obtain the name use the central DB api defined\
-        \ here: [https://db.flexgrid-project.eu/swagger/#/Flex_request/getflex_requests](hhttps://db.flexgrid-project.eu/swagger/#/Flex_request/getflex_requests)\n\
-        \nIf the `callback` object is defined, the simulation results will be posted\
-        \ at the URL that is defined in it, with the request body encoded as JSON,\
-        \ with the structure defined as `PricingData` in this document. You may also\
-        \ pass HTTP headers that will be used for the callback post. The HTTP method\
-        \ used will be `POST`.\n\nIt returns the `job_id`, which can be used to query\
-        \ for the results, with the request defined at [https://pricing-api.flexgrid-project.eu/swagger/#/Pricing\
-        \ (UCS 4.2)/pricing_get](https://pricing-api.flexgrid-project.eu/swagger/#/Pricing%20(UCS%204.2)/pricing_get)\n"
-      operationId: pricing_post
+        \ that will be used for calculating the resulting revenues and quantities.\n\
+        To obtain the name use the central DB api defined here: [https://db.flexgrid-project.eu/swagger/#/Flex_request/getflex_requests](hhttps://db.flexgrid-project.eu/swagger/#/Flex_request/getflex_requests)\n\
+        \nIt returns the an aggregated offer, and the expected cleance quantities\
+        \ and prices \n"
+      operationId: flex_offers_post
       requestBody:
-        $ref: '#/components/requestBodies/PricingParams'
+        $ref: '#/components/requestBodies/FlexOfferParams'
       responses:
         "201":
           description: operation has been successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/JobSubmitted'
+                $ref: '#/components/schemas/FlexOfferResult'
         "400":
           description: bad request
       security:
-      - oAuth2:
-        - post_pricing
-      x-openapi-router-controller: swagger_server.controllers.pricing_ucs42_controller
-  /pricing/{job_id}:
-    get:
-      tags:
-      - Pricing (UCS 4.2)
-      summary: Retrieves information about a pricing job
-      description: "This query is used for obtaining the simulation results that have\
-        \ been posted by the request defined at [https://pricing-api.flexgrid-project.eu/swagger/#/Pricing\
-        \ (UCS 4.2)/pricing_post](https://pricing-api.flexgrid-project.eu/swagger/#/Pricing%20(UCS%204.2)/pricing_post)\n\
-        \nThe `job_id` URL parameter is returned from the above mentioned request\n"
-      operationId: pricing_get
-      parameters:
-      - name: job_id
-        in: path
-        description: The job ID
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: 4b7e25f5-c296-4880-8b91-55c28483f797
-      responses:
-        "200":
-          description: operation has been successful
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PricingJobResult'
-        "400":
-          description: bad request
-      security:
-      - oAuth2:
-        - post_pricing
-      x-openapi-router-controller: swagger_server.controllers.pricing_ucs42_controller
+      - oAuth2: []
+      x-openapi-router-controller: swagger_server.controllers.flex_offers_ucs43_controller
 components:
   schemas:
-    PricingParams:
+    FlexOfferParams:
       required:
-      - dr_prosumers
       - end_datetime
+      - flex_offers
       - flex_request
-      - gamma_values
-      - profit_margin
       - start_datetime
       type: object
       properties:
@@ -107,1319 +64,161 @@ components:
           type: string
           format: date-time
           example: 2021-11-12T00:00:00Z
-        dr_prosumers:
+        flex_offers:
           minItems: 1
           type: array
           example:
-          - user_1_Low
-          - user_3_High
+          - flex_offer_0
+          - flex_offer_0
           items:
             type: string
         flex_request:
           type: string
-          example: flex_request_1_Low
-        gamma_values:
-          minItems: 1
+          example: flex_request_1_Low_Large
+    FlexOfferResult:
+      type: object
+      properties:
+        aggr_flex_offer:
+          $ref: '#/components/schemas/FlexOfferResult_aggr_flex_offer'
+        expected_result:
           type: array
-          example:
-          - 0.0
-          - 1.0
           items:
-            type: number
-            nullable: true
-        profit_margin:
+            $ref: '#/components/schemas/FlexOfferResult_expected_result'
+      example:
+        aggr_flex_offer:
+          country: country
+          data_points:
+          - flexibility:
+            - minquantity: 1.4658129805029452
+              price_euro_per_kw: 0.8008281904610115
+              quantity_kw: 6.027456183070403
+              direction: direction
+            - minquantity: 1.4658129805029452
+              price_euro_per_kw: 0.8008281904610115
+              quantity_kw: 6.027456183070403
+              direction: direction
+            timestamp: timestamp
+          - flexibility:
+            - minquantity: 1.4658129805029452
+              price_euro_per_kw: 0.8008281904610115
+              quantity_kw: 6.027456183070403
+              direction: direction
+            - minquantity: 1.4658129805029452
+              price_euro_per_kw: 0.8008281904610115
+              quantity_kw: 6.027456183070403
+              direction: direction
+            timestamp: timestamp
+          name: name
+          location:
+            name: name
+        expected_result:
+        - price_euro_per_kw: 5.637376656633329
+          quantity_kw: 5.962133916683182
+          timestamp: timestamp
+        - price_euro_per_kw: 5.637376656633329
+          quantity_kw: 5.962133916683182
+          timestamp: timestamp
+    FlexOfferDataPoint:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        flexibility:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlexOfferDataPoint_flexibility'
+      example:
+        flexibility:
+        - minquantity: 1.4658129805029452
+          price_euro_per_kw: 0.8008281904610115
+          quantity_kw: 6.027456183070403
+          direction: direction
+        - minquantity: 1.4658129805029452
+          price_euro_per_kw: 0.8008281904610115
+          quantity_kw: 6.027456183070403
+          direction: direction
+        timestamp: timestamp
+    FlexOfferResult_aggr_flex_offer_location:
+      type: object
+      properties:
+        name:
+          type: string
+      example:
+        name: name
+    FlexOfferResult_aggr_flex_offer:
+      type: object
+      properties:
+        name:
+          type: string
+        country:
+          type: string
+        location:
+          $ref: '#/components/schemas/FlexOfferResult_aggr_flex_offer_location'
+        data_points:
+          type: array
+          items:
+            $ref: '#/components/schemas/FlexOfferDataPoint'
+      example:
+        country: country
+        data_points:
+        - flexibility:
+          - minquantity: 1.4658129805029452
+            price_euro_per_kw: 0.8008281904610115
+            quantity_kw: 6.027456183070403
+            direction: direction
+          - minquantity: 1.4658129805029452
+            price_euro_per_kw: 0.8008281904610115
+            quantity_kw: 6.027456183070403
+            direction: direction
+          timestamp: timestamp
+        - flexibility:
+          - minquantity: 1.4658129805029452
+            price_euro_per_kw: 0.8008281904610115
+            quantity_kw: 6.027456183070403
+            direction: direction
+          - minquantity: 1.4658129805029452
+            price_euro_per_kw: 0.8008281904610115
+            quantity_kw: 6.027456183070403
+            direction: direction
+          timestamp: timestamp
+        name: name
+        location:
+          name: name
+    FlexOfferResult_expected_result:
+      type: object
+      properties:
+        timestamp:
+          type: string
+        quantity_kw:
           type: number
-          nullable: true
-          example: 0.2
-        callback:
-          $ref: '#/components/schemas/PricingParams_callback'
-    JobSubmitted:
-      required:
-      - href
-      - job_id
-      type: object
-      properties:
-        job_id:
-          type: string
-          example: 4b7e25f5-c296-4880-8b91-55c28483f797
-        href:
-          type: string
-          example: /pricing/4b7e25f5-c296-4880-8b91-55c28483f797
+        price_euro_per_kw:
+          type: number
       example:
-        job_id: 4b7e25f5-c296-4880-8b91-55c28483f797
-        href: /pricing/4b7e25f5-c296-4880-8b91-55c28483f797
-    PricingJobResult:
-      required:
-      - job_id
-      - status
+        price_euro_per_kw: 5.637376656633329
+        quantity_kw: 5.962133916683182
+        timestamp: timestamp
+    FlexOfferDataPoint_flexibility:
       type: object
       properties:
-        job_id:
+        price_euro_per_kw:
+          type: number
+        quantity_kw:
+          type: number
+        direction:
           type: string
-          example: 4b7e25f5-c296-4880-8b91-55c28483f797
-        status:
-          type: string
-          example: SUCCESS
-          enum:
-          - PENDING
-          - SUCCESS
-          - FAILURE
-        date_done:
-          type: string
-          format: date-time
-          example: 2022-01-23T09:30:24Z
-        result:
-          $ref: '#/components/schemas/PricingData'
-        error:
-          type: string
-          nullable: true
-          example: No module named 'scipy'
-        traceback:
-          type: string
-          nullable: true
-          example: "Traceback (most recent call last):\n  File \"/home/djvergad/ntua/flexgrid/pricing-api/testenv/lib/python3.8/site-packages/celery/app/trace.py\"\
-            , line 451, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File\
-            \ \"/home/djvergad/ntua/flexgrid/pricing-api/testenv/lib/python3.8/site-packages/celery/app/trace.py\"\
-            , line 734, in __protected_call__\n    return self.run(*args, **kwargs)\n\
-            \  File \"/home/djvergad/ntua/flexgrid/pricing-api/workers/tasks.py\"\
-            , line 224, in pricing\n    x, initial_x] = aggr_flex.Run_BRTP()\n  File\
-            \ \"/home/djvergad/ntua/flexgrid/pricing-api/BRTP/BRTP_portfolio.py\"\
-            , line 52, in Run_BRTP\n    from scipy.optimize import minimize\nModuleNotFoundError:\
-            \ No module named 'scipy'\n"
+        minquantity:
+          type: number
       example:
-        date_done: 2022-01-23T09:30:24Z
-        result:
-          callback_result: callback_result
-          raw_data:
-            AUW_BRTP:
-            - 0
-            - -5.764447663199395
-            TC_BRTP:
-            - 0
-            - 4.374038463594205
-            FLEX_Q:
-            - 0
-            - 9.798959794453513
-            FINALCONS:
-            - - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-            - - 2.2648000622256443
-              - 2.264799974086186
-              - 2.2647999636881675
-              - 0.3795000000000007
-              - 0.3795000000000003
-              - 0.37950000000000034
-              - 0.379500000000001
-              - 0.37950000000000106
-              - 0.3795000000000006
-              - 0.9812999999999144
-              - 1.0215999999998029
-              - 0.37950000000004336
-              - 0.37950000000004125
-              - 4.907799999999956
-              - 1.5980283918246228
-              - 1.5639256859584676
-              - 1.4995282503472125
-              - 1.5800615660946327
-              - 5.705270108226566
-              - 5.362091251391749
-              - 3.816834843223101
-              - 2.4582235350599544
-              - 2.406358280823049
-              - 2.3915532924785285
-            BB_BRTP:
-            - 0
-            - -4.947952156664215E-4
-            FLEX_R:
-            - 0
-            - 2.7666619450214673
-            uw_bar_plot:
-            - - 0
-              - 0
-            - - -2.5292291315480346
-              - -3.23521853165136
-          plots:
-            AUW_vs_GAMMA:
-              serries:
-              - xvalues:
-                - 0
-                - 1
-                yvalues:
-                - null
-                - null
-              title: Ratio between AUW with B-RTP and AUW with RTP as a function of
-                γ
-              xlabel: γ
-              ylabel: AUW with B-RTP(γ) / AUW with RTP (γ = 0)
-            FINAL_ECC:
-            - serries:
-              - xvalues:
-                - 1
-                - 2
-                - 3
-                - 4
-                - 5
-                - 6
-                - 7
-                - 8
-                - 9
-                - 10
-                - 11
-                - 12
-                - 13
-                - 14
-                - 15
-                - 16
-                - 17
-                - 18
-                - 19
-                - 20
-                - 21
-                - 22
-                - 23
-                - 24
-                yvalues:
-                - 2.2648
-                - 2.2648
-                - 2.2648
-                - 0.3795
-                - 0.3795
-                - 0.3795
-                - 0.3795
-                - 0.3795
-                - 0.3795
-                - 0.9813000000000001
-                - 1.0216
-                - 0.3795
-                - 0.3795
-                - 4.9078
-                - 1.8787
-                - 1.8787
-                - 1.8787
-                - 1.8787
-                - 8.7898
-                - 8.433499999999999
-                - 4.6583
-                - 2.7950999999999997
-                - 1.2959
-                - 1.2959
-              - xvalues:
-                - 1
-                - 2
-                - 3
-                - 4
-                - 5
-                - 6
-                - 7
-                - 8
-                - 9
-                - 10
-                - 11
-                - 12
-                - 13
-                - 14
-                - 15
-                - 16
-                - 17
-                - 18
-                - 19
-                - 20
-                - 21
-                - 22
-                - 23
-                - 24
-                yvalues:
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-                - 0
-              title: Initial vs Final ECC (γ = 0.0)
-              xlabel: Time (h)
-              ylabel: Power Consumption (kW)
-            - serries:
-              - xvalues:
-                - 1
-                - 2
-                - 3
-                - 4
-                - 5
-                - 6
-                - 7
-                - 8
-                - 9
-                - 10
-                - 11
-                - 12
-                - 13
-                - 14
-                - 15
-                - 16
-                - 17
-                - 18
-                - 19
-                - 20
-                - 21
-                - 22
-                - 23
-                - 24
-                yvalues:
-                - 2.2648
-                - 2.2648
-                - 2.2648
-                - 0.3795
-                - 0.3795
-                - 0.3795
-                - 0.3795
-                - 0.3795
-                - 0.3795
-                - 0.9813000000000001
-                - 1.0216
-                - 0.3795
-                - 0.3795
-                - 4.9078
-                - 1.8787
-                - 1.8787
-                - 1.8787
-                - 1.8787
-                - 8.7898
-                - 8.433499999999999
-                - 4.6583
-                - 2.7950999999999997
-                - 1.2959
-                - 1.2959
-              - xvalues:
-                - 1
-                - 2
-                - 3
-                - 4
-                - 5
-                - 6
-                - 7
-                - 8
-                - 9
-                - 10
-                - 11
-                - 12
-                - 13
-                - 14
-                - 15
-                - 16
-                - 17
-                - 18
-                - 19
-                - 20
-                - 21
-                - 22
-                - 23
-                - 24
-                yvalues:
-                - 2.2648000622256443
-                - 2.264799974086186
-                - 2.2647999636881675
-                - 0.3795000000000007
-                - 0.3795000000000003
-                - 0.37950000000000034
-                - 0.379500000000001
-                - 0.37950000000000106
-                - 0.3795000000000006
-                - 0.9812999999999144
-                - 1.0215999999998029
-                - 0.37950000000004336
-                - 0.37950000000004125
-                - 4.907799999999956
-                - 1.5980283918246228
-                - 1.5639256859584676
-                - 1.4995282503472125
-                - 1.5800615660946327
-                - 5.705270108226566
-                - 5.362091251391749
-                - 3.816834843223101
-                - 2.4582235350599544
-                - 2.406358280823049
-                - 2.3915532924785285
-              title: Initial vs Final ECC (γ = 1.0)
-              xlabel: Time (h)
-              ylabel: Power Consumption (kW)
-            FLEX_QUANTITY:
-              serries:
-              - xvalues:
-                - 0
-                - 1
-                yvalues:
-                - 0
-                - 9.798959794453513
-              xlabel: γ
-              ylabel: Flexibility Quantity Delivered (kW)
-            FLEX_REVENUES:
-              serries:
-              - xvalues:
-                - 0
-                - 1
-                yvalues:
-                - 0
-                - 2.7666619450214673
-              xlabel: γ
-              ylabel: Flexibility Revenues (€)
-            UW_BAR:
-            - serries:
-              - xvalues:
-                - 1
-                - 2
-                yvalues:
-                - null
-                - null
-              xlabel: Users
-              ylabel: UW with B-RTP(γ)/UW with RTP
-            - serries:
-              - xvalues:
-                - 1
-                - 2
-                yvalues:
-                - null
-                - null
-              xlabel: Users
-              ylabel: UW with B-RTP(γ)/UW with RTP
-        job_id: 4b7e25f5-c296-4880-8b91-55c28483f797
-        error: No module named 'scipy'
-        traceback: "Traceback (most recent call last):\n  File \"/home/djvergad/ntua/flexgrid/pricing-api/testenv/lib/python3.8/site-packages/celery/app/trace.py\"\
-          , line 451, in trace_task\n    R = retval = fun(*args, **kwargs)\n  File\
-          \ \"/home/djvergad/ntua/flexgrid/pricing-api/testenv/lib/python3.8/site-packages/celery/app/trace.py\"\
-          , line 734, in __protected_call__\n    return self.run(*args, **kwargs)\n\
-          \  File \"/home/djvergad/ntua/flexgrid/pricing-api/workers/tasks.py\", line\
-          \ 224, in pricing\n    x, initial_x] = aggr_flex.Run_BRTP()\n  File \"/home/djvergad/ntua/flexgrid/pricing-api/BRTP/BRTP_portfolio.py\"\
-          , line 52, in Run_BRTP\n    from scipy.optimize import minimize\nModuleNotFoundError:\
-          \ No module named 'scipy'\n"
-        status: SUCCESS
-    PricingData:
-      required:
-      - plots
-      - raw_data
-      type: object
-      properties:
-        plots:
-          $ref: '#/components/schemas/PricingData_plots'
-        raw_data:
-          $ref: '#/components/schemas/PricingData_raw_data'
-        callback_result:
-          type: string
-      example:
-        callback_result: callback_result
-        raw_data:
-          AUW_BRTP:
-          - 0
-          - -5.764447663199395
-          TC_BRTP:
-          - 0
-          - 4.374038463594205
-          FLEX_Q:
-          - 0
-          - 9.798959794453513
-          FINALCONS:
-          - - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-          - - 2.2648000622256443
-            - 2.264799974086186
-            - 2.2647999636881675
-            - 0.3795000000000007
-            - 0.3795000000000003
-            - 0.37950000000000034
-            - 0.379500000000001
-            - 0.37950000000000106
-            - 0.3795000000000006
-            - 0.9812999999999144
-            - 1.0215999999998029
-            - 0.37950000000004336
-            - 0.37950000000004125
-            - 4.907799999999956
-            - 1.5980283918246228
-            - 1.5639256859584676
-            - 1.4995282503472125
-            - 1.5800615660946327
-            - 5.705270108226566
-            - 5.362091251391749
-            - 3.816834843223101
-            - 2.4582235350599544
-            - 2.406358280823049
-            - 2.3915532924785285
-          BB_BRTP:
-          - 0
-          - -4.947952156664215E-4
-          FLEX_R:
-          - 0
-          - 2.7666619450214673
-          uw_bar_plot:
-          - - 0
-            - 0
-          - - -2.5292291315480346
-            - -3.23521853165136
-        plots:
-          AUW_vs_GAMMA:
-            serries:
-            - xvalues:
-              - 0
-              - 1
-              yvalues:
-              - null
-              - null
-            title: Ratio between AUW with B-RTP and AUW with RTP as a function of
-              γ
-            xlabel: γ
-            ylabel: AUW with B-RTP(γ) / AUW with RTP (γ = 0)
-          FINAL_ECC:
-          - serries:
-            - xvalues:
-              - 1
-              - 2
-              - 3
-              - 4
-              - 5
-              - 6
-              - 7
-              - 8
-              - 9
-              - 10
-              - 11
-              - 12
-              - 13
-              - 14
-              - 15
-              - 16
-              - 17
-              - 18
-              - 19
-              - 20
-              - 21
-              - 22
-              - 23
-              - 24
-              yvalues:
-              - 2.2648
-              - 2.2648
-              - 2.2648
-              - 0.3795
-              - 0.3795
-              - 0.3795
-              - 0.3795
-              - 0.3795
-              - 0.3795
-              - 0.9813000000000001
-              - 1.0216
-              - 0.3795
-              - 0.3795
-              - 4.9078
-              - 1.8787
-              - 1.8787
-              - 1.8787
-              - 1.8787
-              - 8.7898
-              - 8.433499999999999
-              - 4.6583
-              - 2.7950999999999997
-              - 1.2959
-              - 1.2959
-            - xvalues:
-              - 1
-              - 2
-              - 3
-              - 4
-              - 5
-              - 6
-              - 7
-              - 8
-              - 9
-              - 10
-              - 11
-              - 12
-              - 13
-              - 14
-              - 15
-              - 16
-              - 17
-              - 18
-              - 19
-              - 20
-              - 21
-              - 22
-              - 23
-              - 24
-              yvalues:
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-              - 0
-            title: Initial vs Final ECC (γ = 0.0)
-            xlabel: Time (h)
-            ylabel: Power Consumption (kW)
-          - serries:
-            - xvalues:
-              - 1
-              - 2
-              - 3
-              - 4
-              - 5
-              - 6
-              - 7
-              - 8
-              - 9
-              - 10
-              - 11
-              - 12
-              - 13
-              - 14
-              - 15
-              - 16
-              - 17
-              - 18
-              - 19
-              - 20
-              - 21
-              - 22
-              - 23
-              - 24
-              yvalues:
-              - 2.2648
-              - 2.2648
-              - 2.2648
-              - 0.3795
-              - 0.3795
-              - 0.3795
-              - 0.3795
-              - 0.3795
-              - 0.3795
-              - 0.9813000000000001
-              - 1.0216
-              - 0.3795
-              - 0.3795
-              - 4.9078
-              - 1.8787
-              - 1.8787
-              - 1.8787
-              - 1.8787
-              - 8.7898
-              - 8.433499999999999
-              - 4.6583
-              - 2.7950999999999997
-              - 1.2959
-              - 1.2959
-            - xvalues:
-              - 1
-              - 2
-              - 3
-              - 4
-              - 5
-              - 6
-              - 7
-              - 8
-              - 9
-              - 10
-              - 11
-              - 12
-              - 13
-              - 14
-              - 15
-              - 16
-              - 17
-              - 18
-              - 19
-              - 20
-              - 21
-              - 22
-              - 23
-              - 24
-              yvalues:
-              - 2.2648000622256443
-              - 2.264799974086186
-              - 2.2647999636881675
-              - 0.3795000000000007
-              - 0.3795000000000003
-              - 0.37950000000000034
-              - 0.379500000000001
-              - 0.37950000000000106
-              - 0.3795000000000006
-              - 0.9812999999999144
-              - 1.0215999999998029
-              - 0.37950000000004336
-              - 0.37950000000004125
-              - 4.907799999999956
-              - 1.5980283918246228
-              - 1.5639256859584676
-              - 1.4995282503472125
-              - 1.5800615660946327
-              - 5.705270108226566
-              - 5.362091251391749
-              - 3.816834843223101
-              - 2.4582235350599544
-              - 2.406358280823049
-              - 2.3915532924785285
-            title: Initial vs Final ECC (γ = 1.0)
-            xlabel: Time (h)
-            ylabel: Power Consumption (kW)
-          FLEX_QUANTITY:
-            serries:
-            - xvalues:
-              - 0
-              - 1
-              yvalues:
-              - 0
-              - 9.798959794453513
-            xlabel: γ
-            ylabel: Flexibility Quantity Delivered (kW)
-          FLEX_REVENUES:
-            serries:
-            - xvalues:
-              - 0
-              - 1
-              yvalues:
-              - 0
-              - 2.7666619450214673
-            xlabel: γ
-            ylabel: Flexibility Revenues (€)
-          UW_BAR:
-          - serries:
-            - xvalues:
-              - 1
-              - 2
-              yvalues:
-              - null
-              - null
-            xlabel: Users
-            ylabel: UW with B-RTP(γ)/UW with RTP
-          - serries:
-            - xvalues:
-              - 1
-              - 2
-              yvalues:
-              - null
-              - null
-            xlabel: Users
-            ylabel: UW with B-RTP(γ)/UW with RTP
-    PricingData_plots:
-      required:
-      - AUW_vs_GAMMA
-      - FINAL_ECC
-      - FLEX_QUANTITY
-      - FLEX_REVENUES
-      - UW_BAR
-      type: object
-      properties:
-        AUW_vs_GAMMA:
-          $ref: '#/components/schemas/Plot'
-        FINAL_ECC:
-          type: array
-          items:
-            $ref: '#/components/schemas/Plot'
-        FLEX_QUANTITY:
-          $ref: '#/components/schemas/Plot'
-        FLEX_REVENUES:
-          $ref: '#/components/schemas/Plot'
-        UW_BAR:
-          type: array
-          items:
-            $ref: '#/components/schemas/Plot'
-      example:
-        AUW_vs_GAMMA:
-          serries:
-          - xvalues:
-            - 0
-            - 1
-            yvalues:
-            - null
-            - null
-          title: Ratio between AUW with B-RTP and AUW with RTP as a function of γ
-          xlabel: γ
-          ylabel: AUW with B-RTP(γ) / AUW with RTP (γ = 0)
-        FINAL_ECC:
-        - serries:
-          - xvalues:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-            - 7
-            - 8
-            - 9
-            - 10
-            - 11
-            - 12
-            - 13
-            - 14
-            - 15
-            - 16
-            - 17
-            - 18
-            - 19
-            - 20
-            - 21
-            - 22
-            - 23
-            - 24
-            yvalues:
-            - 2.2648
-            - 2.2648
-            - 2.2648
-            - 0.3795
-            - 0.3795
-            - 0.3795
-            - 0.3795
-            - 0.3795
-            - 0.3795
-            - 0.9813000000000001
-            - 1.0216
-            - 0.3795
-            - 0.3795
-            - 4.9078
-            - 1.8787
-            - 1.8787
-            - 1.8787
-            - 1.8787
-            - 8.7898
-            - 8.433499999999999
-            - 4.6583
-            - 2.7950999999999997
-            - 1.2959
-            - 1.2959
-          - xvalues:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-            - 7
-            - 8
-            - 9
-            - 10
-            - 11
-            - 12
-            - 13
-            - 14
-            - 15
-            - 16
-            - 17
-            - 18
-            - 19
-            - 20
-            - 21
-            - 22
-            - 23
-            - 24
-            yvalues:
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-          title: Initial vs Final ECC (γ = 0.0)
-          xlabel: Time (h)
-          ylabel: Power Consumption (kW)
-        - serries:
-          - xvalues:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-            - 7
-            - 8
-            - 9
-            - 10
-            - 11
-            - 12
-            - 13
-            - 14
-            - 15
-            - 16
-            - 17
-            - 18
-            - 19
-            - 20
-            - 21
-            - 22
-            - 23
-            - 24
-            yvalues:
-            - 2.2648
-            - 2.2648
-            - 2.2648
-            - 0.3795
-            - 0.3795
-            - 0.3795
-            - 0.3795
-            - 0.3795
-            - 0.3795
-            - 0.9813000000000001
-            - 1.0216
-            - 0.3795
-            - 0.3795
-            - 4.9078
-            - 1.8787
-            - 1.8787
-            - 1.8787
-            - 1.8787
-            - 8.7898
-            - 8.433499999999999
-            - 4.6583
-            - 2.7950999999999997
-            - 1.2959
-            - 1.2959
-          - xvalues:
-            - 1
-            - 2
-            - 3
-            - 4
-            - 5
-            - 6
-            - 7
-            - 8
-            - 9
-            - 10
-            - 11
-            - 12
-            - 13
-            - 14
-            - 15
-            - 16
-            - 17
-            - 18
-            - 19
-            - 20
-            - 21
-            - 22
-            - 23
-            - 24
-            yvalues:
-            - 2.2648000622256443
-            - 2.264799974086186
-            - 2.2647999636881675
-            - 0.3795000000000007
-            - 0.3795000000000003
-            - 0.37950000000000034
-            - 0.379500000000001
-            - 0.37950000000000106
-            - 0.3795000000000006
-            - 0.9812999999999144
-            - 1.0215999999998029
-            - 0.37950000000004336
-            - 0.37950000000004125
-            - 4.907799999999956
-            - 1.5980283918246228
-            - 1.5639256859584676
-            - 1.4995282503472125
-            - 1.5800615660946327
-            - 5.705270108226566
-            - 5.362091251391749
-            - 3.816834843223101
-            - 2.4582235350599544
-            - 2.406358280823049
-            - 2.3915532924785285
-          title: Initial vs Final ECC (γ = 1.0)
-          xlabel: Time (h)
-          ylabel: Power Consumption (kW)
-        FLEX_QUANTITY:
-          serries:
-          - xvalues:
-            - 0
-            - 1
-            yvalues:
-            - 0
-            - 9.798959794453513
-          xlabel: γ
-          ylabel: Flexibility Quantity Delivered (kW)
-        FLEX_REVENUES:
-          serries:
-          - xvalues:
-            - 0
-            - 1
-            yvalues:
-            - 0
-            - 2.7666619450214673
-          xlabel: γ
-          ylabel: Flexibility Revenues (€)
-        UW_BAR:
-        - serries:
-          - xvalues:
-            - 1
-            - 2
-            yvalues:
-            - null
-            - null
-          xlabel: Users
-          ylabel: UW with B-RTP(γ)/UW with RTP
-        - serries:
-          - xvalues:
-            - 1
-            - 2
-            yvalues:
-            - null
-            - null
-          xlabel: Users
-          ylabel: UW with B-RTP(γ)/UW with RTP
-    Plot:
-      required:
-      - serries
-      type: object
-      properties:
-        serries:
-          type: array
-          items:
-            $ref: '#/components/schemas/Plot_serries'
-        title:
-          type: string
-          example: Ratio between AUW with B-RTP and AUW with RTP as a function of
-            γ
-        xlabel:
-          type: string
-          example: γ
-        ylabel:
-          type: string
-          example: AUW with B-RTP(γ) / AUW with RTP (γ = 0)
-        plot_type:
-          type: string
-          example: scatter
-          enum:
-          - scatter
-          - bar
-    Plot_serries:
-      required:
-      - xvalues
-      - yvalues
-      type: object
-      properties:
-        xvalues:
-          type: array
-          example:
-          - 0
-          - 1
-          items:
-            type: number
-            nullable: true
-        yvalues:
-          type: array
-          example:
-          - 0.0
-          - 9.798959794453513
-          items:
-            type: number
-            nullable: true
-        legend:
-          type: string
-          example: With RTP
-    PricingData_raw_data:
-      required:
-      - AUW_BRTP
-      - BB_BRTP
-      - FINALCONS
-      - FLEX_Q
-      - FLEX_R
-      - TC_BRTP
-      - uw_bar_plot
-      type: object
-      properties:
-        AUW_BRTP:
-          type: array
-          example:
-          - 0
-          - -5.764447663199395
-          items:
-            type: number
-            nullable: true
-        BB_BRTP:
-          type: array
-          example:
-          - 0
-          - -4.947952156664215E-4
-          items:
-            type: number
-            nullable: true
-        FINALCONS:
-          type: array
-          example:
-          - - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
-          - - 2.2648000622256443
-            - 2.264799974086186
-            - 2.2647999636881675
-            - 0.3795000000000007
-            - 0.3795000000000003
-            - 0.37950000000000034
-            - 0.379500000000001
-            - 0.37950000000000106
-            - 0.3795000000000006
-            - 0.9812999999999144
-            - 1.0215999999998029
-            - 0.37950000000004336
-            - 0.37950000000004125
-            - 4.907799999999956
-            - 1.5980283918246228
-            - 1.5639256859584676
-            - 1.4995282503472125
-            - 1.5800615660946327
-            - 5.705270108226566
-            - 5.362091251391749
-            - 3.816834843223101
-            - 2.4582235350599544
-            - 2.406358280823049
-            - 2.3915532924785285
-          items:
-            type: array
-            items:
-              type: number
-              nullable: true
-        FLEX_Q:
-          type: array
-          example:
-          - 0
-          - 9.798959794453513
-          items:
-            type: number
-            nullable: true
-        FLEX_R:
-          type: array
-          example:
-          - 0
-          - 2.7666619450214673
-          items:
-            type: number
-            nullable: true
-        TC_BRTP:
-          type: array
-          example:
-          - 0
-          - 4.374038463594205
-          items:
-            type: number
-            nullable: true
-        uw_bar_plot:
-          type: array
-          example:
-          - - 0
-            - 0
-          - - -2.5292291315480346
-            - -3.23521853165136
-          items:
-            type: array
-            items:
-              type: number
-              nullable: true
-      example:
-        AUW_BRTP:
-        - 0
-        - -5.764447663199395
-        TC_BRTP:
-        - 0
-        - 4.374038463594205
-        FLEX_Q:
-        - 0
-        - 9.798959794453513
-        FINALCONS:
-        - - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-          - 0
-        - - 2.2648000622256443
-          - 2.264799974086186
-          - 2.2647999636881675
-          - 0.3795000000000007
-          - 0.3795000000000003
-          - 0.37950000000000034
-          - 0.379500000000001
-          - 0.37950000000000106
-          - 0.3795000000000006
-          - 0.9812999999999144
-          - 1.0215999999998029
-          - 0.37950000000004336
-          - 0.37950000000004125
-          - 4.907799999999956
-          - 1.5980283918246228
-          - 1.5639256859584676
-          - 1.4995282503472125
-          - 1.5800615660946327
-          - 5.705270108226566
-          - 5.362091251391749
-          - 3.816834843223101
-          - 2.4582235350599544
-          - 2.406358280823049
-          - 2.3915532924785285
-        BB_BRTP:
-        - 0
-        - -4.947952156664215E-4
-        FLEX_R:
-        - 0
-        - 2.7666619450214673
-        uw_bar_plot:
-        - - 0
-          - 0
-        - - -2.5292291315480346
-          - -3.23521853165136
-    PricingParams_callback:
-      required:
-      - url
-      type: object
-      properties:
-        url:
-          type: string
-          example: https://myservice.eu/post_results
-        headers:
-          type: object
-          additionalProperties:
-            type: string
-          example:
-            Authorization: Bearer O85XHy79Jz4H4Zir4C46MZexsmm7Ki'
-      example: null
+        minquantity: 1.4658129805029452
+        price_euro_per_kw: 0.8008281904610115
+        quantity_kw: 6.027456183070403
+        direction: direction
   requestBodies:
-    PricingParams:
+    FlexOfferParams:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/PricingParams'
+            $ref: '#/components/schemas/FlexOfferParams'
   securitySchemes:
     oAuth2:
       type: oauth2
@@ -1428,7 +227,7 @@ components:
         password:
           tokenUrl: https://db.flexgrid-project.eu/oauth/token
           scopes:
-            post_pricing: post a pricing scenario
+            post_flex_offers: post a flex offer scenario
       x-tokenInfoFunc: swagger_server.controllers.authorization_controller.check_oAuth2
       x-scopeValidateFunc: swagger_server.controllers.authorization_controller.validate_scope_oAuth2
 

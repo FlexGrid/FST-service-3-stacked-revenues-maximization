@@ -16,7 +16,7 @@ def check_oAuth2(token):
         print("auth", )
         if auth != b"OK":
             return None
-    return {'scopes': ['post_pricing'], 'uid': 'test_value'}
+    return {'scopes': ['post_flex_offers'], 'uid': 'test_value'}
 
 def validate_scope_oAuth2(required_scopes, token_scopes):
     return set(required_scopes).issubset(set(token_scopes))

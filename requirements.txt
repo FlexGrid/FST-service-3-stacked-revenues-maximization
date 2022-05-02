@@ -1,7 +1,6 @@
 connexion == 2.10.0
 setuptools >= 21.0.0
 python-dotenv==0.19.2
-celery[redis]==5.2.3
 numpy==1.21.4
 python-dateutil==2.8.1
 uWSGI==2.0.20

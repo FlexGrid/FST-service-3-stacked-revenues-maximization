@@ -26,17 +26,15 @@ paths:
         - Flex Offers (UCS 4.3)
       summary: Aggragates several Flex offers into a single offer
       description: |
-        This endpoint is for submitting a simulation for pricing mechanisms
+        This endpoint is for aggregating flex offers
 
-        The `dr_prosumers` field contains the `name` fields of the `dr_prosumers` that will be simulated.
-        To obtain the names use the central DB api defined here: [https://db.flexgrid-project.eu/swagger/#/Dr_prosumer/getdr_prosumers](https://db.flexgrid-project.eu/swagger/#/Dr_prosumer/getdr_prosumers)
+        The `flex_offers` field contains the `name` fields of the `flex_offers` that will be aggregated.
+        To obtain the names use the central DB api defined here: [https://db.flexgrid-project.eu/swagger/#/Dr_prosumer/getflex_offers](https://db.flexgrid-project.eu/swagger/#/Dr_prosumer/getflex_offers)
 
-        The `flex_request` field contains the `name` field of the `flex_request` that will be simulated.
+        The `flex_request` field contains the `name` field of the `flex_request` that will be used for calculating the resulting revenues and quantities.
         To obtain the name use the central DB api defined here: [https://db.flexgrid-project.eu/swagger/#/Flex_request/getflex_requests](hhttps://db.flexgrid-project.eu/swagger/#/Flex_request/getflex_requests)
 
-        If the `callback` object is defined, the simulation results will be posted at the URL that is defined in it, with the request body encoded as JSON, with the structure defined as `PricingData` in this document. You may also pass HTTP headers that will be used for the callback post. The HTTP method used will be `POST`.
-
-        It returns the `job_id`, which can be used to query for the results, with the request defined at [https://pricing-api.flexgrid-project.eu/swagger/#/Pricing (UCS 4.2)/pricing_get](https://pricing-api.flexgrid-project.eu/swagger/#/Pricing%20(UCS%204.2)/pricing_get)
+        It returns the an aggregated offer, and the expected cleance quantities and prices 
 
       operationId: flex_offers_post
       requestBody:
@@ -193,7 +191,7 @@ components:
         password:
           tokenUrl: https://db.flexgrid-project.eu/oauth/token
           scopes:
-            post_pricing: post a pricing scenario
+            post_flex_offers: post a flex offer scenario
       x-tokenInfoFunc: swagger_server.controllers.authorization_controller.check_oAuth2
       x-scopeValidateFunc: swagger_server.controllers.authorization_controller.check_oAuth2
 security:
