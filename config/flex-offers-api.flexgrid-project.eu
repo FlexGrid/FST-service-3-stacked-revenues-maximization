@@ -10,7 +10,6 @@ server {
       uwsgi_pass unix:/home/dss/flexgrid/flex-offers/flex_offers_service.sock;
     }
 
-
     listen 443 ssl; # managed by Certbot
     ssl_certificate /etc/letsencrypt/live/flex-offers-api.flexgrid-project.eu/fullchain.pem; # managed by Certbot
     ssl_certificate_key /etc/letsencrypt/live/flex-offers-api.flexgrid-project.eu/privkey.pem; # managed by Certbot
