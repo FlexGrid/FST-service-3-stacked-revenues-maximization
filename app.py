@@ -8,7 +8,7 @@ app = connexion.App(__name__, specification_dir='./swagger_server/swagger/')
 
 app.app.json_encoder = JSONEncoder
  #   app.add_api('swagger.yaml', arguments={'title': 'Flexgrid ATP API'}, pythonic_params=True)
-app.add_api('swagger.yaml', arguments={'title': 'Flexgrid Ppicing API'}, pythonic_params=True,strict_validation=True, validate_responses=True)
+app.add_api('swagger.yaml', arguments={'title': 'Flexgrid Flex Offer API'}, pythonic_params=True,strict_validation=True, validate_responses=True)
 
 # set the WSGI application callable to allow using uWSGI:
 # uwsgi --http :8080 -w app

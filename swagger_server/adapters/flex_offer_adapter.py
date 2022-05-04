@@ -106,6 +106,7 @@ def clear_market(flex_offer, flex_request):
             aggr_o = {}
             sum_o = {}
             for dir in ['Up', 'Down']:
+                print("timestamp  = ", fr_dp['timestamp'], " direction ", dir)
                 aggr_r[dir] = {}
                 sum_r[dir] = 0
                 for fr_fl in sorted(fr_dp['flexibility'], key=lambda x: x['price_euro_per_kw'], reverse=True):
@@ -140,6 +141,7 @@ def clear_market(flex_offer, flex_request):
                     } for price, volume in aggr_o[dir].items()
                 ], key=lambda x: x['volume'])
 
+                print(json.dumps(graph, indent=4, sort_keys=True))
                 best = {
                     'R': {
                         'volume': 0,
@@ -161,10 +163,12 @@ def clear_market(flex_offer, flex_request):
                         'volume': row['volume'],
                         'price': row['price'],
                     }
+                    print("row, ", row)
+                    print("best,", best)
                 result += [{
                     'timestamp': fr_dp['timestamp'],
                     'quantity_kw': min(best['O']['volume'], best['R']['volume']),
                     'direction': dir,
-                    'price_euro_per_kw':  min(best['O']['price'], best['R']['price'])
+                    'price_euro_per_kw':  max(best['O']['price'], best['R']['price'])
                 }]
-    return result
+    return [r for r in result if r["quantity_kw"] > 0]

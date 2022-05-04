@@ -66,4 +66,4 @@ target/
 .vscode/
 .env
 testenv
-pricingvenv
+flex-offersvenv
