@@ -88,12 +88,12 @@ def deserialize_datetime(string):
     :return: datetime.
     :rtype: datetime
     """
-    from dateutil.parser import _parser
+    # from dateutil.parser import _parser
     from flask import abort
     try:
         from dateutil.parser import parse
         return parse(string)
-    except _parser.ParserError as e:
+    except ValueError as e:
         abort(400, description=f"Invalid value for `end_datetime`: {e}")  # noqa: E501
     except ImportError:
         return string

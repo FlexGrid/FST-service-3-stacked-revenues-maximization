@@ -61,7 +61,7 @@ class CentralDBAdapter:
         params = {'where': json.dumps(where_params)}
         while True:
             print("url", url)
-            print("params", params)
+            # print("params", params)
             # print("where_params", where_params)
 
             response = requests.request("GET",
@@ -96,6 +96,9 @@ class CentralDBAdapter:
     def get_flex_request_data_points(self, flex_request_id, start_timestamp, end_timestamp):
         return self.get_collection('flex_request_data_points', {"flex_request_id": flex_request_id,
                                                                 "timestamp": {"$gte": start_timestamp, "$lt": end_timestamp}})
+    def get_flex_offer_data_points(self, flex_offer_id, start_timestamp, end_timestamp):
+        return self.get_collection('flex_offer_data_points', {"flex_offer_id": flex_offer_id,
+                                                                "timestamp": {"$gte": start_timestamp, "$lt": end_timestamp}})
 
     def get_objects(self, collection, names):
         return self.get_collection(collection, {"name": {"$in": names}})
@@ -105,14 +108,14 @@ class CentralDBAdapter:
 
         dr_prosumer_ids = {prosumer['_id']
             : prosumer for prosumer in dr_prosumers}
-        print(dr_prosumer_ids)
+        # print(dr_prosumer_ids)
         curtailable_loads = self.get_curtailable_loads(list(dr_prosumer_ids.keys()), start_timestamp.strftime(
             '%Y-%m-%dT%H:%M:%SZ'), end_timestamp.strftime('%Y-%m-%dT%H:%M:%SZ'))
 
-        print(curtailable_loads)
+        # print(curtailable_loads)
         load_entries = self.get_load_entries(list(dr_prosumer_ids.keys()), start_timestamp.strftime(
             '%Y-%m-%dT%H:%M:%SZ'), end_timestamp.strftime('%Y-%m-%dT%H:%M:%SZ'))
-        print(load_entries)
+        # print(load_entries)
 
         for load in curtailable_loads:
             prosumer = dr_prosumer_ids[load["prosumer_id"]]
@@ -157,3 +160,17 @@ class CentralDBAdapter:
             '%Y-%m-%dT%H:%M:%SZ'), end_timestamp.strftime('%Y-%m-%dT%H:%M:%SZ'))
 
         return flex_request
+
+    def get_flex_offer(self, flex_offer_name, start_timestamp, end_timestamp):
+        flex_offers = self.get_objects('flex_offers', [flex_offer_name])
+
+        if len(flex_offers) != 1:
+            abort(
+                400, description=f"error obtaining data for flex_offers: '{flex_offer_name}, found: {len(flex_offers)}'")
+
+        flex_offer = flex_offers[0]
+
+        flex_offer['data_points'] = self.get_flex_offer_data_points(flex_offer['_id'], start_timestamp.strftime(
+            '%Y-%m-%dT%H:%M:%SZ'), end_timestamp.strftime('%Y-%m-%dT%H:%M:%SZ'))
+
+        return flex_offer

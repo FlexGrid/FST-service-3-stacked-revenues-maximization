@@ -1,41 +1,20 @@
-from swagger_server.models.job_submitted import JobSubmitted
-from swagger_server.models.pricing_data import PricingData
-from swagger_server.models.pricing_job_result import PricingJobResult
-from swagger_server.models.pricing_params import PricingParams
-from swagger_server.adapters.central_db_adapter import CentralDBAdapter
 import json
+from sqlite3 import Timestamp
 from flask import abort, url_for
-
-from workers.tasks import pricing, get_task_info
-
-
-def get_pricing_adapter(job_id):
-    task = get_task_info(job_id)
-
-    return PricingJobResult.from_dict({
-        'job_id': job_id,
-        'status': task.status,
-        'date_done': task.date_done.strftime('%Y-%m-%dT%H:%M:%SZ') if task.date_done else None,
-        'result': task.result if task.status == "SUCCESS" else None,
-        'error': str(task.result) if task.status == "FAILURE" else None,
-        'traceback': task.traceback,
-    })
+from swagger_server.models.flex_offer_params import FlexOfferParams
+from swagger_server.models.flex_offer_result import FlexOfferResult
+from swagger_server.adapters.central_db_adapter import CentralDBAdapter
+import math
 
 
-def post_pricing_adapter(pricing_params):
-    assert isinstance(pricing_params, PricingParams)
+def post_flex_offers_adapter(flex_offer_params):
+    assert isinstance(flex_offer_params, FlexOfferParams)
 
-    print(f"The object is {pricing_params}")
+    print(f"The object is {flex_offer_params}")
 
-    result = run_algorithm(pricing_params)
+    result = run_algorithm(flex_offer_params)
 
-    return JobSubmitted.from_dict({
-        "job_id": result.id,
-        'href': url_for(
-            '.swagger_server_controllers_pricing_ucs42_controller_pricing_get',
-            job_id=result.id
-        )
-    })
+    return FlexOfferResult.from_dict(result)
 
 
 def run_algorithm(flex_offer_params):
@@ -45,76 +24,147 @@ def run_algorithm(flex_offer_params):
     #     prosumers += [ f'user_{i+1}_Low', f'user_{i+1}_Medium', f'user_{i+1}_High']
 
     db_adapter = CentralDBAdapter()
-    dr_prosumer_data = db_adapter.get_dr_prosumers(flex_offer_params.dr_prosumers,
-                                                   flex_offer_params.start_datetime, flex_offer_params.end_datetime)
-    # dr_prosumer_data = CentralDBClient().get_dr_prosumers(prosumers,
+    flex_offer_data = [db_adapter.get_flex_offer(fo,
+                                                 flex_offer_params.start_datetime, flex_offer_params.end_datetime)
+                       for fo in flex_offer_params.flex_offers]
 
-    print(json.dumps(dr_prosumer_data, indent=4, sort_keys=True))
+    # print("AAAAAAAAAAAAAAAAAAAAAAAAAAAA", len(flex_offer_data))
+    # print(json.dumps(flex_offer_data, indent=4, sort_keys=True))
 
-    if len(dr_prosumer_data) != len(flex_offer_params.dr_prosumers):
+    if len(flex_offer_data) != len(flex_offer_params.flex_offers):
         # raise  ValueError("Missing prosumer")
-        abort(500, description="Missing data for at least one prosumer in centrail db")
-
-    offer_nsteps = -1
-    T = -1
-    delta_shift = {}
-    delta_ev = {}
-    for idx_prosumer, prosumer in enumerate(dr_prosumer_data):
-        if T < 0:
-            T = len(prosumer["curtailable_loads"])
-        elif T != len(prosumer["curtailable_loads"]):
-            abort(500, description="Number of datapoints for each prosumer is different")
-
-        for load in prosumer["curtailable_loads"]:
-            n = len(load["flexibility"])
-            if n > 0:
-                if offer_nsteps < 0:
-                    offer_nsteps = n
-                elif offer_nsteps != n:
-                    abort(
-                        500, description="Number of bid curve points for each curtailable load timestamp is different")
-
-        for idx_device, device in enumerate(prosumer['shiftable_devices']):
-            for load_entry in device['load_entries']:
-                if not (idx_prosumer, idx_device) in delta_shift:
-                    delta_shift[idx_prosumer,
-                                idx_device] = load_entry['price_euro_per_kw']
-
-                if delta_shift[idx_prosumer, idx_device] != load_entry['price_euro_per_kw']:
-                    abort(
-                        500, description=f"price should be constant for each device prosumer: {prosumer['name']} device: {device['name']}")
-
-        for idx_ev, ev in enumerate(prosumer['EVs']):
-            for load_entry in ev['load_entries']:
-                if not (idx_prosumer, idx_ev) in delta_ev:
-                    delta_ev[idx_prosumer,
-                             idx_ev] = load_entry['price_euro_per_kw']
-
-                if delta_ev[idx_prosumer, idx_ev] != load_entry['price_euro_per_kw']:
-                    abort(
-                        500, description=f"price should be constant for each ev. prosumer: {prosumer['name']} ev: {ev['name']}")
+        abort(500, description="Missing data for at least one flex_offer in centrail db")
 
     flex_request_data = db_adapter.get_flex_request(flex_offer_params.flex_request,
                                                     flex_offer_params.start_datetime, flex_offer_params.end_datetime)
 
-    if len(flex_request_data['data_points']) != T:
+    print(json.dumps(flex_request_data, indent=4, sort_keys=True))
+
+    aggregate = merge_flex_offers(
+        flex_offer_data, flex_request_data['location']['name'], flex_request_data['time_granurality_sec'])
+
+    return {'aggr_flex_offer': aggregate, 'expected_result': clear_market(aggregate, flex_request_data)}
+
+
+def merge_flex_offers(flex_offers, location_name, time_granurality_sec):
+
+    flex_offers = [fo for fo in flex_offers if (fo['country'] ==
+                   location_name or fo['location']['name'] == location_name) and
+                   fo['time_granurality_sec'] == time_granurality_sec]
+
+    if len(flex_offers) == 0:
         abort(
-            500, description=f"Number of datapoints in flex_request_data is {len(flex_request_data['data_points'])} but T = {T}")
+            500, description=f"No flex_offers match location {location_name} at granularity {time_granurality_sec} sec")
 
-    bid_nsteps = -1
-    for bid_data_point in flex_request_data['data_points']:
-        if bid_nsteps < 0:
-            bid_nsteps = len(bid_data_point['flexibility'])
-        elif bid_nsteps != len(bid_data_point['flexibility']):
-            abort(500, description="Number of bid_steps is inconsistent")
+    aggregate = {
+        'name': 'aggregate_fo',
+        'country': flex_offers[0]['country'],
+        'location': {'name': location_name},
+        'data_points': [],
+    }
 
-    if not 0 in flex_offer_params.gamma_values:
-        flex_offer_params.gamma_values = [0] + flex_offer_params.gamma_values
+    merge_hash = {}
+    for fo in flex_offers:
+        for dp in fo['data_points']:
+            if dp['timestamp'] not in merge_hash:
+                merge_hash[dp['timestamp']] = {}
 
-    return pricing.delay(flex_offer_params.profit_margin,
-                         flex_offer_params.gamma_values,
-                         flex_offer_params.start_datetime,
-                         dr_prosumer_data,
-                         flex_request_data,
-                         flex_offer_params.callback.url if flex_offer_params.callback else None,
-                         flex_offer_params.callback.headers if flex_offer_params.callback else None)
+            for f in dp['flexibility']:
+                if (f['price_euro_per_kw'], f['direction'], f['minquantity']) not in merge_hash[dp['timestamp']]:
+                    merge_hash[dp['timestamp']][(
+                        f['price_euro_per_kw'], f['direction'], f['minquantity'])] = 0
+                merge_hash[dp['timestamp']][(
+                    f['price_euro_per_kw'], f['direction'], f['minquantity'])] += f['quantity_kw']
+
+    for timestamp, data_point in merge_hash.items():
+        aggregate['data_points'] += sorted([{
+            'timestamp': timestamp,
+            'flexibility': sorted([{
+                "direction": d,
+                "minquantity": m,
+                "price_euro_per_kw": p,
+                "quantity_kw": q
+
+            } for (p, d, m), q in data_point.items()], key=lambda x: x['price_euro_per_kw'])
+        }], key=lambda x: x['timestamp'])
+
+    print(json.dumps(aggregate, indent=4, sort_keys=True))
+
+    return aggregate
+
+
+def clear_market(flex_offer, flex_request):
+
+    result = []
+    for fr_dp in flex_request['data_points']:
+        for fo_dp in flex_offer['data_points']:
+            if fr_dp['timestamp'] != fo_dp['timestamp']:
+                continue
+
+            aggr_r = {}
+            sum_r = {}
+            aggr_o = {}
+            sum_o = {}
+            for dir in ['Up', 'Down']:
+                aggr_r[dir] = {}
+                sum_r[dir] = 0
+                for fr_fl in sorted(fr_dp['flexibility'], key=lambda x: x['price_euro_per_kw'], reverse=True):
+                    if fr_fl['direction'] == dir:
+                        sum_r[dir] += fr_fl['quantity_kw']
+                        price = fr_fl['price_euro_per_kw']
+                        if price not in aggr_r[dir]:
+                            aggr_r[dir][price] = 0
+                        aggr_r[dir][price] = sum_r[dir]
+
+                aggr_o[dir] = {}
+                sum_o[dir] = 0
+                for fo_fl in sorted(fo_dp['flexibility'], key=lambda x: x['price_euro_per_kw'], reverse=False):
+                    if fo_fl['direction'] == dir:
+                        sum_o[dir] += fo_fl['quantity_kw']
+                        price = fo_fl['price_euro_per_kw']
+                        if price not in aggr_o[dir]:
+                            aggr_o[dir][price] = 0
+                        aggr_o[dir][price] = sum_o[dir]
+
+                graph = sorted([
+                    {
+                        'volume': volume,
+                        'type': 'R',
+                        'price': price,
+                    } for price, volume in aggr_r[dir].items()
+                ] + [
+                    {
+                        'volume': volume,
+                        'type': 'O',
+                        'price': price,
+                    } for price, volume in aggr_o[dir].items()
+                ], key=lambda x: x['volume'])
+
+                best = {
+                    'R': {
+                        'volume': 0,
+                        'price': 0,
+                    },
+                    'O': {
+                        'volume': 0,
+                        'price': math.inf,
+                    },
+                }
+                for row in graph:
+                    if row['type'] == 'R':
+                        if row['price'] > best['O']['price']:
+                            break
+                    if row['type'] == 'O':
+                        if row['price'] < best['R']['price']:
+                            break
+                    best[row['type']] = {
+                        'volume': row['volume'],
+                        'price': row['price'],
+                    }
+                result += [{
+                    'timestamp': fr_dp['timestamp'],
+                    'quantity_kw': min(best['O']['volume'], best['R']['volume']),
+                    'direction': dir,
+                    'price_euro_per_kw':  min(best['O']['price'], best['R']['price'])
+                }]
+    return result

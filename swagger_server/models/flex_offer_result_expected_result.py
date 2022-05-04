@@ -14,7 +14,7 @@ class FlexOfferResultExpectedResult(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, timestamp: str=None, quantity_kw: float=None, price_euro_per_kw: float=None):  # noqa: E501
+    def __init__(self, timestamp: str=None, quantity_kw: float=None, price_euro_per_kw: float=None, direction: str=None):  # noqa: E501
         """FlexOfferResultExpectedResult - a model defined in Swagger
 
         :param timestamp: The timestamp of this FlexOfferResultExpectedResult.  # noqa: E501
@@ -23,21 +23,26 @@ class FlexOfferResultExpectedResult(Model):
         :type quantity_kw: float
         :param price_euro_per_kw: The price_euro_per_kw of this FlexOfferResultExpectedResult.  # noqa: E501
         :type price_euro_per_kw: float
+        :param direction: The direction of this FlexOfferResultExpectedResult.  # noqa: E501
+        :type direction: str
         """
         self.swagger_types = {
             'timestamp': str,
             'quantity_kw': float,
-            'price_euro_per_kw': float
+            'price_euro_per_kw': float,
+            'direction': str
         }
 
         self.attribute_map = {
             'timestamp': 'timestamp',
             'quantity_kw': 'quantity_kw',
-            'price_euro_per_kw': 'price_euro_per_kw'
+            'price_euro_per_kw': 'price_euro_per_kw',
+            'direction': 'direction'
         }
         self._timestamp = timestamp
         self._quantity_kw = quantity_kw
         self._price_euro_per_kw = price_euro_per_kw
+        self._direction = direction
 
     @classmethod
     def from_dict(cls, dikt) -> 'FlexOfferResultExpectedResult':
@@ -112,3 +117,24 @@ class FlexOfferResultExpectedResult(Model):
         """
 
         self._price_euro_per_kw = price_euro_per_kw
+
+    @property
+    def direction(self) -> str:
+        """Gets the direction of this FlexOfferResultExpectedResult.
+
+
+        :return: The direction of this FlexOfferResultExpectedResult.
+        :rtype: str
+        """
+        return self._direction
+
+    @direction.setter
+    def direction(self, direction: str):
+        """Sets the direction of this FlexOfferResultExpectedResult.
+
+
+        :param direction: The direction of this FlexOfferResultExpectedResult.
+        :type direction: str
+        """
+
+        self._direction = direction

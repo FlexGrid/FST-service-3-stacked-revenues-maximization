@@ -115,9 +115,11 @@ components:
         - price_euro_per_kw: 5.637376656633329
           quantity_kw: 5.962133916683182
           timestamp: timestamp
+          direction: direction
         - price_euro_per_kw: 5.637376656633329
           quantity_kw: 5.962133916683182
           timestamp: timestamp
+          direction: direction
     FlexOfferDataPoint:
       type: object
       properties:
@@ -193,10 +195,13 @@ components:
           type: number
         price_euro_per_kw:
           type: number
+        direction:
+          type: string
       example:
         price_euro_per_kw: 5.637376656633329
         quantity_kw: 5.962133916683182
         timestamp: timestamp
+        direction: direction
     FlexOfferDataPoint_flexibility:
       type: object
       properties:

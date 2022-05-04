@@ -114,6 +114,8 @@ components:
                 type: number
               price_euro_per_kw:
                 type: number
+              direction:
+                type: string
     FlexOfferDataPoint:
       type: object
       properties:

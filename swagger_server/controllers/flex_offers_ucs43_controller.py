@@ -3,7 +3,12 @@ import six
 
 from swagger_server.models.flex_offer_params import FlexOfferParams  # noqa: E501
 from swagger_server.models.flex_offer_result import FlexOfferResult  # noqa: E501
+from swagger_server.adapters.flex_offer_adapter import post_flex_offers_adapter
 from swagger_server import util
+
+import traceback
+from werkzeug.exceptions import HTTPException
+from flask import abort
 
 
 def flex_offers_post(body=None):  # noqa: E501
@@ -17,5 +22,13 @@ def flex_offers_post(body=None):  # noqa: E501
     :rtype: FlexOfferResult
     """
     if connexion.request.is_json:
-        body = FlexOfferParams.from_dict(connexion.request.get_json())  # noqa: E501
-    return 'do some magic!'
+        try:
+            body = FlexOfferParams.from_dict(connexion.request.get_json())  # noqa: E501
+            result = post_flex_offers_adapter(body)
+            return result
+        except HTTPException as e:
+            raise(e)
+        except Exception as e:
+            abort(500, description=traceback.format_exc())
+
+    return "Expecting JSON content type", 400
