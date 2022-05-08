@@ -8,6 +8,7 @@ from typing import List, Dict  # noqa: F401
 from swagger_server.models.base_model_ import Model
 from swagger_server.models.flex_offer_result_aggr_flex_offer import FlexOfferResultAggrFlexOffer  # noqa: F401,E501
 from swagger_server.models.flex_offer_result_expected_result import FlexOfferResultExpectedResult  # noqa: F401,E501
+from swagger_server.models.flex_offer_result_plots import FlexOfferResultPlots  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -16,25 +17,30 @@ class FlexOfferResult(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, aggr_flex_offer: FlexOfferResultAggrFlexOffer=None, expected_result: List[FlexOfferResultExpectedResult]=None):  # noqa: E501
+    def __init__(self, aggr_flex_offer: FlexOfferResultAggrFlexOffer=None, expected_result: List[FlexOfferResultExpectedResult]=None, plots: FlexOfferResultPlots=None):  # noqa: E501
         """FlexOfferResult - a model defined in Swagger
 
         :param aggr_flex_offer: The aggr_flex_offer of this FlexOfferResult.  # noqa: E501
         :type aggr_flex_offer: FlexOfferResultAggrFlexOffer
         :param expected_result: The expected_result of this FlexOfferResult.  # noqa: E501
         :type expected_result: List[FlexOfferResultExpectedResult]
+        :param plots: The plots of this FlexOfferResult.  # noqa: E501
+        :type plots: FlexOfferResultPlots
         """
         self.swagger_types = {
             'aggr_flex_offer': FlexOfferResultAggrFlexOffer,
-            'expected_result': List[FlexOfferResultExpectedResult]
+            'expected_result': List[FlexOfferResultExpectedResult],
+            'plots': FlexOfferResultPlots
         }
 
         self.attribute_map = {
             'aggr_flex_offer': 'aggr_flex_offer',
-            'expected_result': 'expected_result'
+            'expected_result': 'expected_result',
+            'plots': 'plots'
         }
         self._aggr_flex_offer = aggr_flex_offer
         self._expected_result = expected_result
+        self._plots = plots
 
     @classmethod
     def from_dict(cls, dikt) -> 'FlexOfferResult':
@@ -88,3 +94,24 @@ class FlexOfferResult(Model):
         """
 
         self._expected_result = expected_result
+
+    @property
+    def plots(self) -> FlexOfferResultPlots:
+        """Gets the plots of this FlexOfferResult.
+
+
+        :return: The plots of this FlexOfferResult.
+        :rtype: FlexOfferResultPlots
+        """
+        return self._plots
+
+    @plots.setter
+    def plots(self, plots: FlexOfferResultPlots):
+        """Sets the plots of this FlexOfferResult.
+
+
+        :param plots: The plots of this FlexOfferResult.
+        :type plots: FlexOfferResultPlots
+        """
+
+        self._plots = plots

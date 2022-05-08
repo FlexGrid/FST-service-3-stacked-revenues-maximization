@@ -84,6 +84,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/FlexOfferResult_expected_result'
+        plots:
+          $ref: '#/components/schemas/FlexOfferResult_plots'
       example:
         aggr_flex_offer:
           country: country
@@ -120,6 +122,30 @@ components:
           quantity_kw: 5.962133916683182
           timestamp: timestamp
           direction: direction
+        plots:
+          quantity_vs_time:
+            ylabel: AUW with B-RTP(γ) / AUW with RTP (γ = 0)
+            serries:
+            - legend: legend
+              xvalues:
+              - 0
+              - 1
+              yvalues:
+              - 0.0
+              - 9.798959794453513
+            - legend: legend
+              xvalues:
+              - 0
+              - 1
+              yvalues:
+              - 0.0
+              - 9.798959794453513
+            xlabel: γ
+            title: Ratio between AUW with B-RTP and AUW with RTP as a function of
+              γ
+            plot_type: scatter
+          expected_revenues_vs_time: null
+          quantity_vs_price: null
     FlexOfferDataPoint:
       type: object
       properties:
@@ -140,6 +166,83 @@ components:
           quantity_kw: 6.027456183070403
           direction: direction
         timestamp: timestamp
+    Plot:
+      required:
+      - serries
+      type: object
+      properties:
+        serries:
+          type: array
+          items:
+            $ref: '#/components/schemas/Plot_serries'
+        title:
+          type: string
+          example: Ratio between AUW with B-RTP and AUW with RTP as a function of
+            γ
+        xlabel:
+          type: string
+          example: γ
+        ylabel:
+          type: string
+          example: AUW with B-RTP(γ) / AUW with RTP (γ = 0)
+        plot_type:
+          type: string
+          example: scatter
+          enum:
+          - scatter
+          - bar
+      example:
+        ylabel: AUW with B-RTP(γ) / AUW with RTP (γ = 0)
+        serries:
+        - legend: legend
+          xvalues:
+          - 0
+          - 1
+          yvalues:
+          - 0.0
+          - 9.798959794453513
+        - legend: legend
+          xvalues:
+          - 0
+          - 1
+          yvalues:
+          - 0.0
+          - 9.798959794453513
+        xlabel: γ
+        title: Ratio between AUW with B-RTP and AUW with RTP as a function of γ
+        plot_type: scatter
+    Plot_serries:
+      required:
+      - xvalues
+      - yvalues
+      type: object
+      properties:
+        xvalues:
+          type: array
+          example:
+          - 0
+          - 1
+          items:
+            type: number
+            nullable: true
+        yvalues:
+          type: array
+          example:
+          - 0.0
+          - 9.798959794453513
+          items:
+            type: number
+            nullable: true
+        legend:
+          type: string
+      example:
+        legend: legend
+        xvalues:
+        - 0
+        - 1
+        yvalues:
+        - 0.0
+        - 9.798959794453513
     FlexOfferResult_aggr_flex_offer_location:
       type: object
       properties:
@@ -202,6 +305,38 @@ components:
         quantity_kw: 5.962133916683182
         timestamp: timestamp
         direction: direction
+    FlexOfferResult_plots:
+      type: object
+      properties:
+        quantity_vs_time:
+          $ref: '#/components/schemas/Plot'
+        quantity_vs_price:
+          $ref: '#/components/schemas/Plot'
+        expected_revenues_vs_time:
+          $ref: '#/components/schemas/Plot'
+      example:
+        quantity_vs_time:
+          ylabel: AUW with B-RTP(γ) / AUW with RTP (γ = 0)
+          serries:
+          - legend: legend
+            xvalues:
+            - 0
+            - 1
+            yvalues:
+            - 0.0
+            - 9.798959794453513
+          - legend: legend
+            xvalues:
+            - 0
+            - 1
+            yvalues:
+            - 0.0
+            - 9.798959794453513
+          xlabel: γ
+          title: Ratio between AUW with B-RTP and AUW with RTP as a function of γ
+          plot_type: scatter
+        expected_revenues_vs_time: null
+        quantity_vs_price: null
     FlexOfferDataPoint_flexibility:
       type: object
       properties:

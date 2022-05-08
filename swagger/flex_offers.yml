@@ -116,6 +116,16 @@ components:
                 type: number
               direction:
                 type: string
+        plots:
+          type: object
+          properties:
+            quantity_vs_time:
+              $ref: "#/components/schemas/Plot"
+            quantity_vs_price:
+              $ref: "#/components/schemas/Plot"
+            expected_revenues_vs_time:
+              $ref: "#/components/schemas/Plot"
+
     FlexOfferDataPoint:
       type: object
       properties:
@@ -134,55 +144,55 @@ components:
                 type: string
               minquantity:
                 type: number
-    # Plot:
-    #   required:
-    #     - serries
-    #   type: object
-    #   properties:
-    #     serries:
-    #       type: array
-    #       items:
-    #         $ref: "#/components/schemas/Plot_serries"
-    #     title:
-    #       type: string
-    #       example: Ratio between AUW with B-RTP and AUW with RTP as a function of γ
-    #     xlabel:
-    #       type: string
-    #       example: γ
-    #     ylabel:
-    #       type: string
-    #       example: AUW with B-RTP(γ) / AUW with RTP (γ = 0)
-    #     plot_type:
-    #       type: string
-    #       enum:
-    #         - scatter
-    #         - bar
-    #       example: scatter
-    # Plot_serries:
-    #   required:
-    #     - xvalues
-    #     - yvalues
-    #   type: object
-    #   properties:
-    #     xvalues:
-    #       type: array
-    #       items:
-    #         type: number
-    #         nullable: true
-    #       example:
-    #         - 0
-    #         - 1
+    Plot:
+      required:
+        - serries
+      type: object
+      properties:
+        serries:
+          type: array
+          items:
+            $ref: "#/components/schemas/Plot_serries"
+        title:
+          type: string
+          example: Ratio between AUW with B-RTP and AUW with RTP as a function of γ
+        xlabel:
+          type: string
+          example: γ
+        ylabel:
+          type: string
+          example: AUW with B-RTP(γ) / AUW with RTP (γ = 0)
+        plot_type:
+          type: string
+          enum:
+            - scatter
+            - bar
+          example: scatter
+    Plot_serries:
+      required:
+        - xvalues
+        - yvalues
+      type: object
+      properties:
+        xvalues:
+          type: array
+          items:
+            type: number
+            nullable: true
+          example:
+            - 0
+            - 1
 
-    #     yvalues:
-    #       type: array
-    #       items:
-    #         type: number
-    #         nullable: true
-    #       example:
-    #         - 0.0
-    #         - 9.798959794453513
-    #     legend:
-    #       type: string
+        yvalues:
+          type: array
+          items:
+            type: number
+            nullable: true
+          example:
+            - 0.0
+            - 9.798959794453513
+        legend:
+          type: string
     #       example: "With RTP"
 
   securitySchemes:

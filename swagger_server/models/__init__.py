@@ -10,3 +10,6 @@ from swagger_server.models.flex_offer_result import FlexOfferResult
 from swagger_server.models.flex_offer_result_aggr_flex_offer import FlexOfferResultAggrFlexOffer
 from swagger_server.models.flex_offer_result_aggr_flex_offer_location import FlexOfferResultAggrFlexOfferLocation
 from swagger_server.models.flex_offer_result_expected_result import FlexOfferResultExpectedResult
+from swagger_server.models.flex_offer_result_plots import FlexOfferResultPlots
+from swagger_server.models.plot import Plot
+from swagger_server.models.plot_serries import PlotSerries
