@@ -177,8 +177,10 @@ components:
         xvalues:
           type: array
           items:
-            type: number
-            nullable: true
+              oneOf:
+                - type: number
+                  nullable: true
+                - type: string
           example:
             - 0
             - 1

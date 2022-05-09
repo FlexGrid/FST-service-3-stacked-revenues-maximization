@@ -223,8 +223,10 @@ components:
           - 0
           - 1
           items:
-            type: number
-            nullable: true
+            oneOf:
+            - type: number
+              nullable: true
+            - type: string
         yvalues:
           type: array
           example:

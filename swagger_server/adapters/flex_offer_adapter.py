@@ -43,7 +43,18 @@ def run_algorithm(flex_offer_params):
     aggregate = merge_flex_offers(
         flex_offer_data, flex_request_data['location']['name'], flex_request_data['time_granurality_sec'])
 
-    return {'aggr_flex_offer': aggregate, 'expected_result': clear_market(aggregate, flex_request_data)}
+    expected_result = clear_market(aggregate, flex_request_data)
+
+    return {
+        'aggr_flex_offer': aggregate,
+        'expected_result': expected_result,
+        'plots': {
+            'quantity_vs_time': create_quantity_vs_time(aggregate),
+            'quantity_vs_price': create_quantity_vs_price(aggregate),
+            'expected_revenues_vs_time': create_expected_revenues_vs_time(expected_result),
+        }
+
+    }
 
 
 def merge_flex_offers(flex_offers, location_name, time_granurality_sec):
@@ -172,3 +183,78 @@ def clear_market(flex_offer, flex_request):
                     'price_euro_per_kw':  max(best['O']['price'], best['R']['price'])
                 }]
     return [r for r in result if r["quantity_kw"] > 0]
+
+
+def create_quantity_vs_time(aggregate):
+
+    prices = []
+    for d in aggregate['data_points']:
+        for fl in d['flexibility']:
+            prices += [fl['price_euro_per_kw']]
+
+    prices.sort()
+
+    plots = {p: {} for p in prices}
+
+    for d in aggregate['data_points']:
+        for fl in d['flexibility']:
+            for p in prices:
+                if p > fl['price_euro_per_kw']:
+                    break
+                if d['timestamp'] not in plots[p]:
+                    plots[p][d['timestamp']] = 0
+                plots[p][d['timestamp']] += fl['quantity_kw']
+
+    return {
+        'title': "Aggregate offer, quantity vs time for a given price",
+        'xlabel': "Time",
+        'ylabel': "Quantity (kWη)",
+        'serries': [
+            {
+                'xvalues': [t for t in plots[p]],
+                'yvalues': [v for v in plots[p].values()],
+                'legend': f"price = {p}"
+            }
+            for p in plots
+        ],
+        'plot_type': 'scatter',
+    }
+
+
+def create_quantity_vs_price(aggregate):
+    serries = []
+    for d in aggregate['data_points']:
+        q_sum = 0
+        s = {
+            'xvalues': [],
+            'yvalues': [],
+            'legend': f"time = {d['timestamp']}"
+        }
+        for fl in d['flexibility']:
+            q_sum += fl['quantity_kw']
+            s['xvalues'] += [fl['price_euro_per_kw']]
+            s['yvalues'] += [q_sum]
+
+        serries += [s]
+
+    return {
+        'title': "Aggregate offer, quantity vs price for a given time",
+        'xlabel': "Price (€/kWη)",
+        'ylabel': "Quantity (kWη)",
+        'serries': serries,
+        'plot_type': 'scatter',
+    }
+
+
+def create_expected_revenues_vs_time(expected_result):
+    return {
+        'title': "Expected revenue vs time",
+        'xlabel': "Time",
+        'ylabel': "Revenue (€)",
+        'serries': [{
+            'xvalues': [r['timestamp'] for r in expected_result],
+            'yvalues': [r['quantity_kw'] * r['price_euro_per_kw'] for r in expected_result],
+            'legend': "revenue"
+        }],
+        'plot_type': 'scatter',
+    }

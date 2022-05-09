@@ -11,5 +11,6 @@ from swagger_server.models.flex_offer_result_aggr_flex_offer import FlexOfferRes
 from swagger_server.models.flex_offer_result_aggr_flex_offer_location import FlexOfferResultAggrFlexOfferLocation
 from swagger_server.models.flex_offer_result_expected_result import FlexOfferResultExpectedResult
 from swagger_server.models.flex_offer_result_plots import FlexOfferResultPlots
+from swagger_server.models.one_of_plot_serries_xvalues_items import OneOfPlotSerriesXvaluesItems
 from swagger_server.models.plot import Plot
 from swagger_server.models.plot_serries import PlotSerries

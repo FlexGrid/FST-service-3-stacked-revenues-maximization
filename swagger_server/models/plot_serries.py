@@ -6,6 +6,7 @@ from datetime import date, datetime  # noqa: F401
 from typing import List, Dict  # noqa: F401
 
 from swagger_server.models.base_model_ import Model
+from swagger_server.models.one_of_plot_serries_xvalues_items import OneOfPlotSerriesXvaluesItems  # noqa: F401,E501
 from swagger_server import util
 
 
@@ -14,18 +15,18 @@ class PlotSerries(Model):
 
     Do not edit the class manually.
     """
-    def __init__(self, xvalues: List[float]=None, yvalues: List[float]=None, legend: str=None):  # noqa: E501
+    def __init__(self, xvalues: List[OneOfPlotSerriesXvaluesItems]=None, yvalues: List[float]=None, legend: str=None):  # noqa: E501
         """PlotSerries - a model defined in Swagger
 
         :param xvalues: The xvalues of this PlotSerries.  # noqa: E501
-        :type xvalues: List[float]
+        :type xvalues: List[OneOfPlotSerriesXvaluesItems]
         :param yvalues: The yvalues of this PlotSerries.  # noqa: E501
         :type yvalues: List[float]
         :param legend: The legend of this PlotSerries.  # noqa: E501
         :type legend: str
         """
         self.swagger_types = {
-            'xvalues': List[float],
+            'xvalues': List[OneOfPlotSerriesXvaluesItems],
             'yvalues': List[float],
             'legend': str
         }
@@ -51,22 +52,22 @@ class PlotSerries(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def xvalues(self) -> List[float]:
+    def xvalues(self) -> List[OneOfPlotSerriesXvaluesItems]:
         """Gets the xvalues of this PlotSerries.
 
 
         :return: The xvalues of this PlotSerries.
-        :rtype: List[float]
+        :rtype: List[OneOfPlotSerriesXvaluesItems]
         """
         return self._xvalues
 
     @xvalues.setter
-    def xvalues(self, xvalues: List[float]):
+    def xvalues(self, xvalues: List[OneOfPlotSerriesXvaluesItems]):
         """Sets the xvalues of this PlotSerries.
 
 
         :param xvalues: The xvalues of this PlotSerries.
-        :type xvalues: List[float]
+        :type xvalues: List[OneOfPlotSerriesXvaluesItems]
         """
         if xvalues is None:
             raise ValueError("Invalid value for `xvalues`, must not be `None`")  # noqa: E501
