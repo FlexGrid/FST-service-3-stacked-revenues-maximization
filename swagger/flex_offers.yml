@@ -18,7 +18,7 @@ info:
     name: GNU
   version: 1.0.1
 servers:
-  - url: https://flex-offers.flexgrid-project.eu/
+  - url: https://flex-offers-api.flexgrid-project.eu/
 paths:
   /flex-offers:
     post:
