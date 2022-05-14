@@ -18,7 +18,7 @@ info:
     name: GNU
   version: 1.0.1
 servers:
-  - url: https://flexoffers.flexgrid-project.eu/
+  - url: https://flex-offers.flexgrid-project.eu/
 paths:
   /flex-offers:
     post:
@@ -80,10 +80,10 @@ components:
           type: array
           items:
             type: string
-          example: ["flex_offer_0", "flex_offer_0"]
+          example: ["flex_offer_0", "flex_offer_1", "flex_offer_6", "flex_offer_13"]
         flex_request:
           type: string
-          example: "flex_request_1_Low_Large"
+          example: "flex_request_1_Low_Large_Up"
     FlexOfferResult:
       type: object
       properties:
