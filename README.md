@@ -1,447 +1,3190 @@
-# Flexgrid Pricing API server
+# OpenAPI server for the FLEXGRID System
 
-This project is the implementation of the API server for the Use Case 4.2 of the
-[FlexGrid project](https://flexgrid-project.eu).
+## 1. Design your API using swagger editor
 
-The project provides two endpoints, one for submitting a simulation of pricing
-algorithm, and one for retrieving the results. The definition of the API may be
-found at
-[https://pricing-api.flexgrid-project.eu/swagger/](https://pricing-api.flexgrid-project.eu/swagger/).
+1. Use the online tool at https://editor.swagger.io/ to create the API
+   definition.
 
-## Updating the swagger definition file
+2. As a starting point, use the swagger file like the one at [swagger/stacked-revenues.yml](swagger/stacked-revenues.yml)
 
-In order to make changes to this project, you can edit the the swagger
-definition file, located in the path
-[./swagger/pricing.yml](./swagger/pricing.yml). After editing the file, use the
-script at [./regenerate.sh](./regenerate.sh) to update the server files. The
-procedure is a follows:
 
-1. Make sure that any changes are either committed or staged in `git`. Otherwise
-   they risk being overwritten by the script.
+3. Adapt the API to meet the goals of your endpoint
 
-2. Run `./regenerate.sh`.
+## 2. Connect to FLEXGRID Central Database
 
-3. Inspect the changes that are made with `git diff`.
+In order for your API endpoint to connect to use the FLEXGRID Central Database
+authorization system, you need to perform the following:
 
-4. For all the changes that are shown, you should decide which to keep and which
-   to remove. Use `git checkout path/to/file` to use the original version of the
-   file, or `git add path/to/file` to use the new version. If you run
-   `./regenerate.sh checkout` the script will checkout the most common thinks
-   that should bot be changed by the script.
+1. Contact `prodromosmakris@mail.ntua.gr` to ask for client credentials for
+   testing your API.
 
-5. In addition you will need to manually edit the controller files. If you
-   haven't changed the any controller methods in the swagger file, you can keep
-   your version with `git checkout swagger_server/controllers/controller_name.py`. Otherwise, you will need to
-   merge the new definitions with the implementations from the codegen tool.
+   You need to obtain:
 
-## Running the server locally for development
+   - `client_id`
+   - `username`
+   - `password`
 
-1. Checkout the project with the submodules, use:
+2. Next step is to obtain a token. Post a curl request as follows:
 
    ```bash
-   git clone --recurse-submodules https://github.com/FlexGrid/pricing
+   curl --location --request POST 'https://db.flexgrid-project.eu/oauth/token' \
+   --form 'client_id="CLIENT_ID"' \
+   --form 'grant_type="password"' \
+   --form 'username="USERNAME"' \
+   --form 'password="PASSWORD"'
    ```
 
-   If you already checked it without the submodules, use:
+   where `CLIENT_ID`, `USERNAME`, and `PASSWORD` are the credentials obtained in
+   the previous step
 
-   ```bash
-   git submodule init
-   git submodule update
-   ```
-
-2. Create a python3 virtual environment (This only needs to be done the first
-   time):
-
-   ```bash
-   python3 -m venv testenv
-   ```
-
-3. Activate the python virtual environment with:
-
-   ```bash
-   source testenv/bin/activate
-   ```
-
-   You should now see `(testenv)` before your username on the command line, To
-   exit the environment run `deactivate` or close the terminal.
-
-4. Install the dependencies with `pip`. If `pip` is not installed follow the
-   instructions from
-   [https://pip.pypa.io/en/stable/installation/](https://pip.pypa.io/en/stable/installation/).
-
-   Afterwards install the dependencies from `requirements.txt` for the main
-   project and the dependencies with
-
-   ```bash
-   pip install -r requirements.txt
-   cd BRTP/
-   pip install -r requirements.txt
-   cd ..
-   ```
-
-5. To run the server using local data, without connecting the central database,
-   use:
-
-   ```bash
-   FLASK_ENV=development SAMPLE_DATA=1 python -m swagger_server
-   ```
-
-6. Run the `celery` program to execute the background tasks. From the project's
-   root directory, and after the `testenv` virtual environment has been loaded,
-   run
-
-   ```bash
-   celery -A workers.tasks worker --loglevel=INFO
-   ```
-
-7. Submit a new job with:
-
-   ```bash
-   curl --location --request POST 'http://0.0.0.0:8080/pricing' \
-   --header 'Content-Type: application/vnd.api+json' \
-   --header 'Authorization: Bearer XXXX' \
-   --data-raw '{
-       "start_datetime": "2021-11-11T00:00:00Z",
-       "end_datetime": "2021-11-12T00:00:00Z",
-       "dr_prosumers": [ "user_1_High","user_2_High"],
-       "flex_request": "flex_request_1_High",
-       "profit_margin": 34.4,
-       "gamma_values": [0, 1.0],
-       "callback": {
-           "url": "http://localhost:8080/pricing",
-           "headers": {
-               "Authorization": "Bearer O85XHy79Jz4H4Zir4C46MZexsmm7Ki",
-               "Content-Type": "application/vnd.api+json"
-           }
-       }
-   }
-   '
-   ```
-
-   When using the sample data, the the allowed values for the `dr_prosumers`
-   attributes are the following:
-
-   ```json
-   [
-     "user_1_Low",
-     "user_2_Low",
-     "user_3_Low",
-     "user_4_Low",
-     "user_5_Low",
-     "user_6_Low",
-     "user_7_Low",
-     "user_8_Low",
-     "user_9_Low",
-     "user_10_Low",
-     "user_1_Medium",
-     "user_2_Medium",
-     "user_3_Medium",
-     "user_4_Medium",
-     "user_5_Medium",
-     "user_6_Medium",
-     "user_7_Medium",
-     "user_8_Medium",
-     "user_9_Medium",
-     "user_10_Medium",
-     "user_1_High",
-     "user_2_High",
-     "user_3_High",
-     "user_4_High",
-     "user_5_High",
-     "user_6_High",
-     "user_7_High",
-     "user_8_High",
-     "user_9_High",
-     "user_10_High"
-   ]
-   ```
-
-   Also, when using the sample data, the allowed value for the `flex_request`
-   parameter is `"flex_request_1_High"`
-
-   You should see new output in the window running the server, and also some
-   output in the window running celery.
-
-   The server will return a `job_id` value, that will be used for querying the
-   status and the results of the simulation run.
-
-   The definition of the API for this may be found at
-   [https://pricing-api.flexgrid-project.eu/swagger/](https://pricing-api.flexgrid-project.eu/swagger/).
-
-8. Get the result of the simulation using the previously obtained `job_id`.
-
-   ```bash
-   curl --location --request GET 'http://0.0.0.0:8080/pricing/d465eafa-0f5b-478c-b138-fd7098e5457a' \
-   --header 'Content-Type: application/vnd.api+json' \
-   --header 'Authorization: Bearer XXXX' \
-   ```
-
-   Once the simulation has been completed, you will results like:
+   You should get a response like:
 
    ```json
    {
-     "date_done": "2022-01-24T14:08:09+00:00",
-     "job_id": "b3597ec4-b131-4fdc-ab2a-a0f557637a2f",
-     "result": {
-       "callback_result": "['status: 400\\n\\n{\\n  \"detail\": \"\\'dr_prosumers\\' is a required property\",\\n  \"status\": 400,\\n  \"title\": \"Bad Request\",\\n  \"type\": \"about:blank\"\\n}\\n']",
-       "plots": {
-         "AUW_vs_GAMMA": {
-           "plot_type": "scatter",
-           "serries": [
-             {
-               "legend": "γ = 1.0 ",
-               "xvalues": [0.0, 1.0],
-               "yvalues": [null, null]
-             }
-           ],
-           "title": "Ratio between AUW with B-RTP and AUW with RTP as a function of γ",
-           "xlabel": "γ",
-           "ylabel": "AUW with B-RTP(γ) / AUW with RTP (γ = 0)"
-         },
-         "FINAL_ECC": [
-           {
-             "plot_type": "scatter",
-             "serries": [
-               {
-                 "legend": "Initial ECC",
-                 "xvalues": [
-                   1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0,
-                   12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0,
-                   22.0, 23.0, 24.0
-                 ],
-                 "yvalues": [
-                   2.0814, 2.0814, 2.0814, 0.1961, 0.1961, 0.1961, 0.1961,
-                   0.1961, 0.1961, 0.7979, 0.1961, 0.1961, 0.1961, 2.3413,
-                   0.8053999999999999, 0.8053999999999999, 0.8053999999999999,
-                   0.8053999999999999, 5.3648, 1.2332999999999998,
-                   1.2332999999999998, 1.2332999999999998, 0.624, 0.624
-                 ]
-               },
-               {
-                 "legend": "Final ECC",
-                 "xvalues": [
-                   1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0,
-                   12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0,
-                   22.0, 23.0, 24.0
-                 ],
-                 "yvalues": [
-                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
-                 ]
-               }
-             ],
-             "title": "Initial vs Final ECC (γ = 0.0)",
-             "xlabel": "Time (h)",
-             "ylabel": "Power Consumption (kW)"
-           },
-           {
-             "plot_type": "scatter",
-             "serries": [
-               {
-                 "legend": "Initial ECC",
-                 "xvalues": [
-                   1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0,
-                   12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0,
-                   22.0, 23.0, 24.0
-                 ],
-                 "yvalues": [
-                   2.0814, 2.0814, 2.0814, 0.1961, 0.1961, 0.1961, 0.1961,
-                   0.1961, 0.1961, 0.7979, 0.1961, 0.1961, 0.1961, 2.3413,
-                   0.8053999999999999, 0.8053999999999999, 0.8053999999999999,
-                   0.8053999999999999, 5.3648, 1.2332999999999998,
-                   1.2332999999999998, 1.2332999999999998, 0.624, 0.624
-                 ]
-               },
-               {
-                 "legend": "Final ECC",
-                 "xvalues": [
-                   1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0,
-                   12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0,
-                   22.0, 23.0, 24.0
-                 ],
-                 "yvalues": [
-                   1.3752118391908537, 1.3752118391908292, 1.3752118222612801,
-                   1.269611142650799, 1.2411533567061659, 0.1961, 0.1961,
-                   0.1961, 0.1961, 0.7978999999999901, 0.19610000000001104,
-                   0.19610000000002384, 0.1961, 1.3074487589939092,
-                   1.0381015562299152, 0.977275674674156, 0.6003953672813509,
-                   0.6230941045615795, 2.06334292173531, 1.9222210624136888,
-                   1.8882235073618179, 0.9220902391291911, 0.47034225742803887,
-                   0.47009282777022365
-                 ]
-               }
-             ],
-             "title": "Initial vs Final ECC (γ = 1.0)",
-             "xlabel": "Time (h)",
-             "ylabel": "Power Consumption (kW)"
-           }
-         ],
-         "FLEX_QUANTITY": {
-           "plot_type": "bar",
-           "serries": [
-             {
-               "xvalues": [0.0, 1.0],
-               "yvalues": [0.0, 9.344611916256792]
-             }
-           ],
-           "xlabel": "γ",
-           "ylabel": "Flexibility Quantity Delivered (kW)"
-         },
-         "FLEX_REVENUES": {
-           "plot_type": "bar",
-           "serries": [
-             {
-               "xvalues": [0.0, 1.0],
-               "yvalues": [0.0, 30.952882518717516]
-             }
-           ],
-           "xlabel": "γ",
-           "ylabel": "Flexibility Revenues (€)"
-         },
-         "UW_BAR": [
-           {
-             "plot_type": "bar",
-             "serries": [
-               {
-                 "xvalues": [1.0],
-                 "yvalues": [null]
-               }
-             ],
-             "xlabel": "Users",
-             "ylabel": "UW with B-RTP(γ)/UW with RTP"
-           },
-           {
-             "plot_type": "bar",
-             "serries": [
-               {
-                 "xvalues": [1.0],
-                 "yvalues": [null]
-               }
-             ],
-             "xlabel": "Users",
-             "ylabel": "UW with B-RTP(γ)/UW with RTP"
-           }
-         ]
-       },
-       "raw_data": {
-         "AUW_BRTP": [0.0, -36.2351327661877],
-         "BB_BRTP": [0.0, -30.078507306324365],
-         "FINALCONS": [
-           [
-             0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-             0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
-           ],
-           [
-             1.3752118391908537, 1.3752118391908292, 1.3752118222612801,
-             1.269611142650799, 1.2411533567061659, 0.1961, 0.1961, 0.1961,
-             0.1961, 0.7978999999999901, 0.19610000000001104,
-             0.19610000000002384, 0.1961, 1.3074487589939092,
-             1.0381015562299152, 0.977275674674156, 0.6003953672813509,
-             0.6230941045615795, 2.06334292173531, 1.9222210624136888,
-             1.8882235073618179, 0.9220902391291911, 0.47034225742803887,
-             0.47009282777022365
-           ]
-         ],
-         "FLEX_Q": [0.0, 9.344611916256792],
-         "FLEX_R": [0.0, 30.952882518717516],
-         "TC_BRTP": [0.0, 0.8109857642068504],
-         "uw_bar_plot": [[0.0], [-36.2351327661877]]
-       }
-     },
-     "status": "SUCCESS"
+     "access_token": "THE_TOKEN",
+     "expires_in": 3600,
+     "token_type": "Bearer",
+     "scope": "",
+     "refresh_token": "THE_REFRESH_TOKEN"
    }
    ```
 
-## Connect to the central database
+   where the value in `THE_TOKEN` is the token you need to test your API service
 
-In production the [central FlexGrid
-database](https://db.flexgrid-project.eu/swagger/) will be used for obtaining
-the simulation data.
+## 3. Test server locally
 
-You will need credentials to connect to the database server, which may be
-obtained from the ICCS team from the [FlexGrid
-project](https://flexgrid-project.eu)
+1. Visit https://editor.swagger.io/, and from the top menu select `Generate Server` --> `python-flask
 
-The credentials needed will be:
+   A file named `python-flask-server-generated.zip` should be downloaded by the
+   browser
 
-- The `CLIENT_ID`
-- The `USERNAME`
-- The `PASSWORD`
+2. Unzip the file in a directory of your choice, and `cd` to it
 
-These credentials should be placed in a file name `.env` in the project's root
-directory.
+3. Ensure that `python3` and `pip3` are installed
 
-The file will look like this:
+4. Due to [this
+   bug](https://github.com/zalando/connexion/issues/739#issuecomment-514198578),
+   you must enable make the following changes to file `./swagger_server/util.py`
+
+   Replace
+
+   ```python
+   elif type(klass) == typing.GenericMeta:
+     if klass.__extra__ == list:
+         return _deserialize_list(data, klass.__args__[0])
+     if klass.__extra__ == dict:
+         return _deserialize_dict(data, klass.__args__[1])
+   ```
+
+   with
+
+   ```python
+   elif hasattr(klass, '__origin__'):
+     if klass.__origin__ == list:
+         return _deserialize_list(data, klass.__args__[0])
+     if klass.__origin__ == dict:
+         return _deserialize_dict(data, klass.__args__[1])
+   ```
+
+5. **Important** Replace the file
+   `swagger_server/controllers/authorization_controller.py` with the
+   corresponding one from this repository. The change is to add
+
+   ```python
+   import requests
+   ```
+
+   to the top, and
+
+   ```python
+    from typing import List
+    import requests
+    import os
+
+    """
+    controller generated to handled auth operation described at:
+    https://connexion.readthedocs.io/en/latest/security.html
+    """
+    def check_MyTokenAuth(token):
+        if not os.environ.get("SAMPLE_DATA"):
+            auth = requests.get('https://db.flexgrid-project.eu/authorization/', params={
+                'token': token,
+                'resource': 'atp',
+                'method': 'post',
+            }).content
+            if auth != b"OK":
+                return None
+        return {'scopes': ['read:pets', 'write:pets'], 'uid': 'test_value'}
+
+    def validate_scope_MyTokenAuth(required_scopes, token_scopes):
+        return set(required_scopes).issubset(set(token_scopes))
+
+
+
+   ```
+
+   in the beggining of `check_MyTokenAuth(token)` method
+
+6. Add the logic for responding to each request, by editing the file controller
+   files under `swagger_server/controllers/`. For example below we see a sample
+   controller:
+
+   ```python
+   def scenarios_post(body):  # noqa: E501
+       """Initiates a simulation scenario
+
+       # noqa: E501
+
+       :param body:
+       :type body: list | bytes
+
+       :rtype: ScenarioResult
+       """
+       if connexion.request.is_json:
+           try:
+               body = [ScenarioParamsInner.from_dict(d) for d in connexion.request.get_json()]  # noqa: E501
+
+               result = [ScenarioResultInner.from_dict(
+                   {
+                       "date": str(p.sdate),
+                       "countries": [],
+                   }) for p in body]
+
+               return result
+           except Exception as e:
+               logging.error(traceback.format_exc())
+               return {'error_message': traceback.format_exc()}, 400
+
+       return "Expecting JSON content type", 400
+   ```
+
+7. Configure the server to validate the types of the requests/responses.
+
+   In file `swagger_server/__main__.py`, and replace the line
+
+   ```python
+   app.add_api('swagger.yaml', arguments={'title': 'Your title'}, pythonic_params=True)
+   ```
+
+   with
+
+   ```python
+   app.add_api('swagger.yaml',
+               arguments={'title': 'Your title'},
+               pythonic_params=True,
+               strict_validation=True,
+               validate_responses=True)
+   ```
+
+8. Install the required dependencies
+
+   ```basd
+   pip3 install -r requirements.txt
+   ```
+
+9. Run the server locally
+
+   ```basd
+   python3 -m swagger_server
+   ```
+
+10. You should be able to access protected resources using `curl`, with a
+    request like
+
+    ```bash
+    curl --location --request POST 'http://localhost:8080/stacked_revenues' \
+    --header 'Content-Type: application/vnd.api+json' \
+    --header 'Authorization: Bearer THE_TOKEN' \
+    --data-raw '{"sdate": "2020-10-16",
+                "country": "GR",
+                "markets": ["DAM", "BM"],
+                "storage_units": [
+                    {
+                        "power_capacity_KW": 50,
+                        "energy_capacity_KWh": 100,
+                        "inefficiency_rate_per_cent": 0.999,
+                        "initial_SoC_per_cent": 0.5,
+                        "final_SoC_per_cent": 0.5,
+                        "location": {
+                            "id": "DSO_AREA_1",
+                            "name": "string"
+                        }
+                    },
+                                    {
+                        "power_capacity_KW": 50,
+                        "energy_capacity_KWh": 100,
+                        "inefficiency_rate_per_cent": 0.999,
+                        "initial_SoC_per_cent": 0.5,
+                        "final_SoC_per_cent": 0.5,
+                        "location": {
+                            "id": "DSO_AREA_2",
+                            "name": "string"
+                        }
+                    }
+                ]}
+    '
+    ```
+
+    where `THE_TOKEN` should be replaced with the one you got from step 2, and
+    the URL and content of the message should be adapted to your endpoint.
+
+## 4. Deploy on your server
+
+This procedure is based on
+https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uswgi-and-nginx-on-ubuntu-18-04
+
+It assumes os is Ubuntu 18.04, and outside facing web server is `nginx`.
+
+We will use `uWSGi` as the application server for our application, which will
+only be accessible through nginx.
+
+1. Install required packages:
+
+   ```bash
+   sudo apt update
+   sudo apt install python3-pip python3-dev build-essential libssl-dev libffi-dev python3-setuptools
+
+   ```
+
+2. Clone the projects repository, and the create a virtual environment for
+   python
+
+   ```bash
+   git clone "REPOSITORY URL"
+   cd project_dir/
+   sudo apt install python3-venv
+   python3 -m venv atpvenv
+   source atpvenv/bin/activate
+   ```
+
+3. With the `venv` **activated**, run
+
+   ```bash
+   pip install wheel
+   pip install uwsgi flask
+   pip install -r requirements.txt
+   ```
+
+4. Add the files for usgi deployment
+
+   File `app.py`
+
+   ```python
+   #!/usr/bin/env python3
+
+   import connexion
+
+   from swagger_server.encoder import JSONEncoder
+
+   app = connexion.App(__name__, specification_dir='./swagger_server/swagger/')
+
+   app.app.json_encoder = JSONEncoder
+   #   app.add_api('swagger.yaml', arguments={'title': 'Flexgrid ATP API'}, pythonic_params=True)
+   app.add_api('swagger.yaml',
+                     arguments={'title': 'Your title'},
+                     pythonic_params=True,
+                     strict_validation=True,
+                     validate_responses=True)
+
+   # set the WSGI application callable to allow using uWSGI:
+   # uwsgi --http :8080 -w app
+   application = app.app
+
+   if __name__ == '__main__':
+       # run our standalone gevent server
+       app.run(port=8080)
+   ```
+
+   File `wsgi.py`
+
+   ```python
+   from app import application
+
+   if __name__ == "__main__":
+     appplication.run()
+   ```
+
+5. Test that the server can start with `wsgi`
+
+   ```bash
+   uwsgi --socket 127.0.0.1:5000 --protocol=http -w wsgi:application
+   ```
+
+   You can then test that it is responding on `localhost:5000`
+
+6. Deactivate the venv
+
+   ```bash
+   deactivate
+   ```
+
+7. Create uwsgi configuration file as below:
+
+   ```ini
+   [uwsgi]
+   module = wsgi:application
+
+   master = true
+   processes = 5
+
+   socket = atp_service.sock
+   chmod-socket = 660
+   vacuum =true
+
+   die-on-term = true
+   ```
+
+8. Add systemd configuration to automatically run the service:
+
+    ```ini
+    [Unit]
+    Description=uWSGI instance to serve atp_service
+    After=network.target eveoauth2.service nginx.service
+
+    [Service]
+    User=dss
+    Group=www-data
+    WorkingDirectory=/home/dss/flexgrid/atp_service
+    Environment="PATH=/home/dss/flexgrid/atp_service/atpvenv/bin"
+    ExecStart=/home/dss/flexgrid/atp_service/atpvenv/bin/uwsgi --ini atp_service.ini
+
+    [Install]
+    WantedBy=multi-user.target
+    ```
+
+    ```bash
+    sudo systemctl daemon-reload
+    sudo systemctl start atp.service
+    sudo systemctl enable atp.service
+    ```
+
+9. Create nginx configuration as below, and the relevant certificates with certbot:
+
+   ```nginx
+   server {
+       server_name atp.flexgrid-project.eu;
+
+       location / {
+         if ($request_method = 'OPTIONS') {
+           add_header 'Access-Control-Allow-Origin' 'https://editor.swagger.io';
+           add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+           #
+           # Custom headers and headers various browsers *should* be OK with but aren't
+           #
+           add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization';
+           #
+           # Tell client that this pre-flight info is valid for 20 days
+           #
+           add_header 'Access-Control-Max-Age' 1728000;
+           add_header 'Content-Type' 'text/plain; charset=utf-8';
+           add_header 'Content-Length' 0;
+           return 204;
+         }
+         if ($request_method = 'POST') {
+           add_header 'Access-Control-Allow-Origin' 'https://editor.swagger.io';
+           add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+           add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization';
+           add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
+         }
+         if ($request_method = 'GET') {
+           add_header 'Access-Control-Allow-Origin' 'https://editor.swagger.io';
+           add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+           add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization';
+           add_header 'Access-Control-Expose-Headers' 'Content-Length,Content-Range';
+         }
+
+         include uwsgi_params;
+         uwsgi_pass unix:/home/dss/flexgrid/atp_service/atp_service.sock;
+       }
+
+
+
+       listen 443 ssl; # managed by Certbot
+       ssl_certificate /etc/letsencrypt/live/atp.flexgrid-project.eu/fullchain.pem; # managed by Certbot
+       ssl_certificate_key /etc/letsencrypt/live/atp.flexgrid-project.eu/privkey.pem; # managed by Certbot
+       include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+       ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+   }
+
+   server {
+       if ($host = atp.flexgrid-project.eu) {
+           return 301 https://$host$request_uri;
+       } # managed by Certbot
+
+
+       listen 80;
+       server_name atp.flexgrid-project.eu;
+       return 404; # managed by Certbot
+   }
+   ```
+
+9. Validate that the service is working:
+
+   ```bash
+   curl --location --request POST 'https://atp.flexgrid-project.eu/scenarios' \
+   --header 'Content-Type: application/json' \
+   --header 'Authorization: Bearer THE_TOKEN' \
+   --data-raw '[
+
+   ]'
+   ```
+
+## Implementation of the algorithm
+
+The algorithm that has been imported in this example is found in this
+repo:
+https://github.com/FlexGrid/stacked_revenues
+
+In order to integrate the algorithm you can add your repo as a git
+submodule. The command for adding a submodule is:
 
 ```bash
-CENTRAL_DB_BASE_URL=https://db.flexgrid-project.eu
-CENTRAL_DB_CLIENT_ID=uBik...
-CENTRAL_DB_USERNAME=myuser
-CENTRAL_DB_PASSWORD=dsfafjnskdfn
+git submodule add https://github.com/namespace/repository
 ```
 
-Then you will be able to run the server without the `SAMPLE_DATA=1` environment
-variable, and the real data will be used. Follow the same steps as before, but
-this time use
+Then you can call the submodule code from the controller that was
+generated by codegen.
+
+The following code is the example for calling the example submodule:
+
+Controller:
+
+```python
+import connexion
+import six
+
+from swagger_server.models.stacked_revenues_params import StackedRevenuesParams  # noqa: E501
+from swagger_server.models.stacked_revenues_result import StackedRevenuesResult  # noqa: E501
+from swagger_server import util
+from swagger_server.adapters.stacked_revenues_adapter import stacked_revenues_adapter
+
+import logging
+import traceback
+
+
+def stacked_revenues_post(body):  # noqa: E501
+    """Initiates a simulation scenario for Stacked Revenues maximization
+
+     # noqa: E501
+
+    :param body: 
+    :type body: dict | bytes
+
+    :rtype: StackedRevenuesResult
+    """
+    if connexion.request.is_json:
+        try:
+            body = StackedRevenuesParams.from_dict(connexion.request.get_json())  # noqa: E501
+    
+            result = stacked_revenues_adapter(body)
+
+            return result
+        except Exception as e:
+            logging.error(traceback.format_exc())
+            return {'error_message': traceback.format_exc()}, 400
+
+    return "Expecting JSON content type", 400
+```
+
+The `stacked_revenues_adapter` function is defined in its own file:
+
+```python
+from swagger_server.models.stacked_revenues_params import StackedRevenuesParams  # noqa: E501
+from swagger_server.models.stacked_revenues_result import StackedRevenuesResult  # noqa: E501
+from swagger_server.models.day_offer_vector_euro_m_wh import DayOfferVectorEuroMWh  # noqa: E501
+from swagger_server.models.day_offer_vector_euro_m_wh2 import DayOfferVectorEuroMWh2  # noqa: E501
+from swagger_server.models.day_offer_vector_euro_m_var import DayOfferVectorEuroMVar  # noqa: E501
+from swagger_server.models.price_in_euro import PriceInEuro  # noqa: E501
+from stacked_revenues.maximize_stacked_revenues import battery_portfolio
+from swagger_server.adapters.market_adapter import MarketAdapter
+from datetime import datetime, timedelta
+import dateutil.parser
+
+
+def stacked_revenues_adapter(stacked_revenues_params):
+    assert isinstance(stacked_revenues_params, StackedRevenuesParams)
+
+    ns = len(stacked_revenues_params.storage_units)
+    print(f"We got {ns} batteries")
+
+    martketAdapter = MarketAdapter(
+        datetime.combine(stacked_revenues_params.sdate, datetime.min.time()),
+        datetime.combine(stacked_revenues_params.sdate, datetime.min.time()) +
+        timedelta(days=1) - timedelta(minutes=1))
+
+    timestamps = [(
+        (dateutil.parser.isoparse(martketAdapter.start_timestamp) +
+         timedelta(hours=t)).strftime('%Y-%m-%dT%H:%M:%SZ'),
+        (dateutil.parser.isoparse(martketAdapter.start_timestamp) +
+         timedelta(hours=t+1)).strftime('%Y-%m-%dT%H:%M:%SZ'),
+    ) for t in range(24)]
+
+    print(f"min time {datetime.min.time()} timestamps= {timestamps}")
+
+    dam_participation = "DAM" in stacked_revenues_params.markets
+    rm_participation = "RM" in stacked_revenues_params.markets
+    fm_participation = "FM" in stacked_revenues_params.markets
+    bm_participation = "BM" in stacked_revenues_params.markets
+
+    dam_prices = [obj['value'] for obj in martketAdapter.day_ahead_market()]
+    print(f"dam_prices= {len(dam_prices)}")
+    rup_prices = [obj['value']
+                  for obj in martketAdapter.reserve_market()]
+    rdn_prices = [obj['value']
+                  for obj in martketAdapter.reserve_market()]
+
+    fmp_prices = martketAdapter.fmp(
+        [su.location.id for su in stacked_revenues_params.storage_units])
+    fmq_prices = martketAdapter.fmq(
+        [su.location.id for su in stacked_revenues_params.storage_units])
+    bm_up_prices = [obj['value']
+                    for obj in martketAdapter.balancing_market_up()]
+    print(f"bm_up_prices= {len(bm_up_prices)}")
+
+    bm_dn_prices = [obj['value']
+                    for obj in martketAdapter.balancing_market_down()]
+    print(f"bm_dn_prices= {len(bm_dn_prices)}")
+
+    p_max = [obj.power_capacity_kw for obj in stacked_revenues_params.storage_units]
+    print(f"p_max= {p_max}")
+
+    E_max = [obj.energy_capacity_k_wh for obj in stacked_revenues_params.storage_units]
+    print(f"E_max= {E_max}")
+
+    roundtrip_eff = [
+        obj.inefficiency_rate_per_cent for obj in stacked_revenues_params.storage_units]
+    print(f"roundtrip_eff= {roundtrip_eff}")
+
+    E0 = [obj.initial_so_c_per_cent for obj in stacked_revenues_params.storage_units]
+    print(f"E0= {E0}")
+
+    ET = [obj.final_so_c_per_cent for obj in stacked_revenues_params.storage_units]
+    print(f"ET= {ET}")
+
+    # Create a battery object
+    bsu = battery_portfolio(ns, dam_participation, rm_participation, fm_participation, bm_participation, dam_prices,
+                            rup_prices, rdn_prices, fmp_prices, fmq_prices, bm_up_prices, bm_dn_prices,
+                            p_max, E_max, roundtrip_eff, E0, ET)
+
+    # Maximize stacked revenues
+    [Profits, pup, pdn, dam_schedule, rup_commitment, rdn_commitment, pflexibility, qflexibility,
+        soc, DAM_profits, RM_profits, FM_profits, BM_profits] = bsu.maximize_stacked_revenues()
+
+    print(f"\nProfits= {Profits},\n\n"
+          f"pup = {pup},\n\n"
+          f"pdn = {pdn},\n\n"
+          f"dam_schedule = {dam_schedule},\n\n"
+          f"rup_commitment = {rup_commitment},\n\n"
+          f"rdn_commitment = {rdn_commitment},\n\n"
+          f"pflexibility = {pflexibility},\n\n"
+          f"qflexibility = {qflexibility},\n\n"
+          f"soc = {soc},\n\n"
+          f"DAM_profits = {DAM_profits},\n\n"
+          f"RM_profits = {RM_profits},\n\n"
+          f"FM_profits = {FM_profits},\n\n"
+          f"BM_profits = {BM_profits}\n")
+
+    return StackedRevenuesResult.from_dict({
+        "sdate": str(stacked_revenues_params.sdate),
+        "flex_offer": [{
+            "location": stacked_revenues_params.storage_units[su_ind].location.id,
+            "day_ahead_market_offer": build_market_offer_mwh(timestamps, dam_schedule[su_ind]).to_dict(),
+            "reserve_market_offer_up": build_market_offer_mwh2(timestamps, rup_commitment[su_ind]).to_dict(),
+            "reserve_market_offer_down": build_market_offer_mwh2(timestamps, rdn_commitment[su_ind]).to_dict(),
+            "d-LMPs":  build_market_offer_mwh(timestamps, pflexibility[su_ind]),
+            "q-LMPs": build_market_offer_mvar(timestamps, qflexibility[su_ind]),
+            "balancing_market_offer_up": build_market_offer_mwh(timestamps, pup[su_ind]).to_dict(),
+            "balancing_market_offer_down": build_market_offer_mwh(timestamps, pdn[su_ind]).to_dict()
+        } for su_ind in range(len(stacked_revenues_params.storage_units))],
+        "revenues": {
+            "day_ahead_market_revenues": build_profits(DAM_profits).to_dict(),
+            "reserve_market_revenues": build_profits(RM_profits).to_dict(),
+            "flexibility_market_revenues": build_profits(FM_profits).to_dict(),
+            "balancing_market_revenues": build_profits(BM_profits).to_dict(),
+        }
+    })
+
+
+def build_market_offer_mwh(timestamps, schedule):
+    return DayOfferVectorEuroMWh.from_dict({
+        "values": [{
+            "start_timestamp": timestamps[i][0],
+            "end_timestamp": timestamps[i][1],
+            "volume": round(schedule[i],2),
+        } for i in range(len(timestamps))],
+        "price_unit": "€/MWh",
+        "volume_unit": "kWh"
+    })
+
+
+def build_market_offer_mwh2(timestamps, schedule):
+    return DayOfferVectorEuroMWh2.from_dict({
+        "values": [{
+            "start_timestamp": timestamps[i][0],
+            "end_timestamp": timestamps[i][1],
+            "volume": round(schedule[i],2),
+        } for i in range(len(timestamps))],
+        "price_unit": f"€/MWh^2",
+        "volume_unit": "kWh^2"
+    })
+
+
+def build_market_offer_mvar(timestamps, schedule):
+    return DayOfferVectorEuroMVar.from_dict({
+        "values": [{
+            "start_timestamp": timestamps[i][0],
+            "end_timestamp": timestamps[i][1],
+            "volume": round(schedule[i],2),
+        } for i in range(len(timestamps))],
+        "price_unit": "€/MVar",
+        "volume_unit": "kVar"
+    })
+
+
+def build_profits(price):
+    return PriceInEuro.from_dict({'value': price, 'currency': '€'})
+
+```
+
+## Using external data
+
+In order to use data from an external API, you can create an adapter
+file. Here is exapmle code for retrieving the data from Fingrid and
+Nordpool markers:
+
+market_adapter:
+
+```python
+import requests
+import os
+from dotenv import load_dotenv
+from datetime import datetime, timedelta
+import json
+from . nordpool_auth_client import NordpoolAuthClient
+import dateutil.parser
+
+
+class MarketAdapter:
+    def __init__(self, start_timestamp, end_timestamp):
+        load_dotenv()
+
+        self.start_timestamp = datetime.utcfromtimestamp(
+            start_timestamp.timestamp()).replace(minute=0, second=0).strftime('%Y-%m-%dT%H:%M:%SZ')
+        self.end_timestamp = datetime.utcfromtimestamp(
+            end_timestamp.timestamp()).replace(minute=0, second=0).strftime('%Y-%m-%dT%H:%M:%SZ')
+        self.market_ids = {
+            79: 'Frequency containment reserve for normal operation, hourly market prices',
+            244: 'Up-regulating price in the balancing power market',
+            106: 'Down-regulation price in the balancing market',
+        }
+
+    def fingrid(self, market_id):
+
+        url = f"https://api.fingrid.fi/v1/variable/{market_id}/events/json"
+        headers = {'x-api-key': os.environ.get("FINGRID_TOKEN")}
+        return json.loads(requests.request("GET", url, params={
+            'start_time': self.start_timestamp,
+            'end_time': self.end_timestamp},
+            headers=headers).content)
+
+    def nordpool(self, deliveryarea):
+        url = f"https://marketdata-api.nordpoolgroup.com/dayahead/prices/area"
+        headers = NordpoolAuthClient().auth_headers()
+        # print(f"The headers are {headers}")
+        params = {
+            'deliveryarea': deliveryarea,
+            'status': 'O',
+            'currency': 'EUR',
+            'startTime': self.start_timestamp,
+            'endTime':  (dateutil.parser.isoparse(self.end_timestamp) + timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%SZ'),
+        }
+        print(f"The params are --> {params}")
+        result = requests.request("GET", url, params=params,
+                                  headers=headers)
+
+        # print(f"The result is --> {json.loads(result.content)[0]['values']}")
+        return [{'value': val['value'], 'start_time': val['startTime'], 'end_time': val['endTime']} for val in json.loads(result.content)[0]['values']]
+
+    def fmp(self, location_ids):
+        dataset = {'DSO_AREA_1': [0] * 24,
+                   'DSO_AREA_2': [-100.27, -100.27, -10.27, -10.27, -10.27, -10.27, 0, 0, -9.59, -9.59,
+                                  -9.54, -15, -15, -15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   'DSO_AREA_3': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15,
+                                  3.55, 3.01, 3.01, 3.44, 3.41, 13.74, 12.02, 15, 12.55, 12.53, 12.04, 8.55, 2.98],
+                   'DSO_AREA_4': [-10.27, -10.27, -10.27, -10.27, -10.27, -10.27, -10.27, -10.01, -9.92, -9.54, -9.17,
+                                  -15, -15, -15, -9.26, -9.54, -9.54, -9.17, 1.83, 1.55, -9.65, 1.02, 0.61, 0.61],
+                   'DSO_AREA_5': [2.98, 2.98, 2.98, 2.98, 2.98, 2.98, 2.98, 3.36, 3.25, 15, 15, 3.54, 3.54, 3.54, 15,
+                                  15, 15, 15, 15, 12.57, 12, 12.07, 15, 15], }
+
+        return [dataset[lid] for lid in location_ids]
+
+    def fmq(self, location_ids):
+        dataset = {'DSO_AREA_1': [0] * 24,
+                   'DSO_AREA_2': [-6.97, -6.97, -6.97, -6.97, -6.97, -6.97, -0.05, -0.25, -6.88, -6.88, -6.87, -10.61,
+                                  -10.4, -10.4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                   'DSO_AREA_3': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11.24, 3, 3, 3, 3, 3, 10.34, 9.12,
+                                  10.54, 8.83, 8.82, 8.69, 6.41, 3],
+                   'DSO_AREA_4': [-6.97, -6.97, -6.97, -6.97, -6.97, -6.97, -6.97, -6.94, -6.93, -6.87, -6.82, -10.62,
+                                  -10.62, -10.62, -6.83, -6.87, -6.87, -6.82, 0.93, 0.79, -6.89, 0.52, 0.31, 0.31],
+                   'DSO_AREA_5': [3, 3, 3, 3, 3, 3, 3, 3, 3, 11.24, 10.85, 3, 3, 3, 10.94, 11.24, 11.24, 10.85, 10.54,
+                                  8.83, 9.11, 8.67, 11, 11], }
+
+        return [dataset[lid] for lid in location_ids]
+
+    def day_ahead_market(self):
+        if os.environ.get("SAMPLE_DATA"):
+            result = json.loads("""[
+                {
+                    "category": "dayAhead",
+                    "createdTime": 1601462571635,
+                    "type": "price",
+                    "SubType": "area",
+                    "resolution": "PT1H",
+                    "unit": "EUR/MWh",
+                    "scale": 2,
+                    "startTime": "2020-10-15T21:00:00Z",
+                    "endTime": "2020-10-16T21:00:00Z",
+                    "values": [
+                        {
+                            "startTime": "2020-10-15T21:00:00Z",
+                            "endTime": "2020-10-15T22:00:00Z",
+                            "value": 20.01
+                        },
+                        {
+                            "startTime": "2020-10-15T22:00:00Z",
+                            "endTime": "2020-10-15T23:00:00Z",
+                            "value": 20.13
+                        },
+                        {
+                            "startTime": "2020-10-15T23:00:00Z",
+                            "endTime": "2020-10-16T00:00:00Z",
+                            "value": 19.7
+                        },
+                        {
+                            "startTime": "2020-10-16T00:00:00Z",
+                            "endTime": "2020-10-16T01:00:00Z",
+                            "value": 19.56
+                        },
+                        {
+                            "startTime": "2020-10-16T01:00:00Z",
+                            "endTime": "2020-10-16T02:00:00Z",
+                            "value": 19.57
+                        },
+                        {
+                            "startTime": "2020-10-16T02:00:00Z",
+                            "endTime": "2020-10-16T03:00:00Z",
+                            "value": 19.96
+                        },
+                        {
+                            "startTime": "2020-10-16T03:00:00Z",
+                            "endTime": "2020-10-16T04:00:00Z",
+                            "value": 35.23
+                        },
+                        {
+                            "startTime": "2020-10-16T04:00:00Z",
+                            "endTime": "2020-10-16T05:00:00Z",
+                            "value": 50.03
+                        },
+                        {
+                            "startTime": "2020-10-16T05:00:00Z",
+                            "endTime": "2020-10-16T06:00:00Z",
+                            "value": 54.29
+                        },
+                        {
+                            "startTime": "2020-10-16T06:00:00Z",
+                            "endTime": "2020-10-16T07:00:00Z",
+                            "value": 66.22
+                        },
+                        {
+                            "startTime": "2020-10-16T07:00:00Z",
+                            "endTime": "2020-10-16T08:00:00Z",
+                            "value": 62.34
+                        },
+                        {
+                            "startTime": "2020-10-16T08:00:00Z",
+                            "endTime": "2020-10-16T09:00:00Z",
+                            "value": 56.59
+                        },
+                        {
+                            "startTime": "2020-10-16T09:00:00Z",
+                            "endTime": "2020-10-16T10:00:00Z",
+                            "value": 52.9
+                        },
+                        {
+                            "startTime": "2020-10-16T10:00:00Z",
+                            "endTime": "2020-10-16T11:00:00Z",
+                            "value": 52.84
+                        },
+                        {
+                            "startTime": "2020-10-16T11:00:00Z",
+                            "endTime": "2020-10-16T12:00:00Z",
+                            "value": 52.79
+                        },
+                        {
+                            "startTime": "2020-10-16T12:00:00Z",
+                            "endTime": "2020-10-16T13:00:00Z",
+                            "value": 45.23
+                        },
+                        {
+                            "startTime": "2020-10-16T13:00:00Z",
+                            "endTime": "2020-10-16T14:00:00Z",
+                            "value": 44.57
+                        },
+                        {
+                            "startTime": "2020-10-16T14:00:00Z",
+                            "endTime": "2020-10-16T15:00:00Z",
+                            "value": 46.42
+                        },
+                        {
+                            "startTime": "2020-10-16T15:00:00Z",
+                            "endTime": "2020-10-16T16:00:00Z",
+                            "value": 58.44
+                        },
+                        {
+                            "startTime": "2020-10-16T16:00:00Z",
+                            "endTime": "2020-10-16T17:00:00Z",
+                            "value": 59.68
+                        },
+                        {
+                            "startTime": "2020-10-16T17:00:00Z",
+                            "endTime": "2020-10-16T18:00:00Z",
+                            "value": 58.56
+                        },
+                        {
+                            "startTime": "2020-10-16T18:00:00Z",
+                            "endTime": "2020-10-16T19:00:00Z",
+                            "value": 39.59
+                        },
+                        {
+                            "startTime": "2020-10-16T19:00:00Z",
+                            "endTime": "2020-10-16T20:00:00Z",
+                            "value": 35.96
+                        },
+                        {
+                            "startTime": "2020-10-16T20:00:00Z",
+                            "endTime": "2020-10-16T21:00:00Z",
+                            "value": 26.48
+                        }
+                    ],
+                    "attributes": [
+                        {
+                            "role": null,
+                            "name": "deliveryArea",
+                            "value": "FI"
+                        },
+                        {
+                            "role": null,
+                            "name": "status",
+                            "value": "O"
+                        },
+                        {
+                            "role": null,
+                            "name": "currency",
+                            "value": "EUR"
+                        },
+                        {
+                            "role": null,
+                            "name": "confirmationStatus",
+                            "value": "confirmed"
+                        }
+                    ]
+                }
+            ] """)
+            return [{'value': val['value'], 'start_time': val['startTime'], 'end_time': val['endTime']} for val in result[0]['values']]
+        return self.nordpool('FI')
+
+    def balancing_market_up(self):
+        if os.environ.get("SAMPLE_DATA"):
+            return json.loads("""[
+                {
+                    "value": 20.010000,
+                    "start_time": "2020-10-15T21:00:00+0000",
+                    "end_time": "2020-10-15T22:00:00+0000"
+                },
+                {
+                    "value": 20.130000,
+                    "start_time": "2020-10-15T22:00:00+0000",
+                    "end_time": "2020-10-15T23:00:00+0000"
+                },
+                {
+                    "value": 19.700000,
+                    "start_time": "2020-10-15T23:00:00+0000",
+                    "end_time": "2020-10-16T00:00:00+0000"
+                },
+                {
+                    "value": 19.560000,
+                    "start_time": "2020-10-16T00:00:00+0000",
+                    "end_time": "2020-10-16T01:00:00+0000"
+                },
+                {
+                    "value": 19.570000,
+                    "start_time": "2020-10-16T01:00:00+0000",
+                    "end_time": "2020-10-16T02:00:00+0000"
+                },
+                {
+                    "value": 19.960000,
+                    "start_time": "2020-10-16T02:00:00+0000",
+                    "end_time": "2020-10-16T03:00:00+0000"
+                },
+                {
+                    "value": 35.230000,
+                    "start_time": "2020-10-16T03:00:00+0000",
+                    "end_time": "2020-10-16T04:00:00+0000"
+                },
+                {
+                    "value": 50.030000,
+                    "start_time": "2020-10-16T04:00:00+0000",
+                    "end_time": "2020-10-16T05:00:00+0000"
+                },
+                {
+                    "value": 54.290000,
+                    "start_time": "2020-10-16T05:00:00+0000",
+                    "end_time": "2020-10-16T06:00:00+0000"
+                },
+                {
+                    "value": 66.220000,
+                    "start_time": "2020-10-16T06:00:00+0000",
+                    "end_time": "2020-10-16T07:00:00+0000"
+                },
+                {
+                    "value": 62.340000,
+                    "start_time": "2020-10-16T07:00:00+0000",
+                    "end_time": "2020-10-16T08:00:00+0000"
+                },
+                {
+                    "value": 100.590000,
+                    "start_time": "2020-10-16T08:00:00+0000",
+                    "end_time": "2020-10-16T09:00:00+0000"
+                },
+                {
+                    "value": 52.900000,
+                    "start_time": "2020-10-16T09:00:00+0000",
+                    "end_time": "2020-10-16T10:00:00+0000"
+                },
+                {
+                    "value": 52.840000,
+                    "start_time": "2020-10-16T10:00:00+0000",
+                    "end_time": "2020-10-16T11:00:00+0000"
+                },
+                {
+                    "value": 52.790000,
+                    "start_time": "2020-10-16T11:00:00+0000",
+                    "end_time": "2020-10-16T12:00:00+0000"
+                },
+                {
+                    "value": 45.230000,
+                    "start_time": "2020-10-16T12:00:00+0000",
+                    "end_time": "2020-10-16T13:00:00+0000"
+                },
+                {
+                    "value": 44.570000,
+                    "start_time": "2020-10-16T13:00:00+0000",
+                    "end_time": "2020-10-16T14:00:00+0000"
+                },
+                {
+                    "value": 46.420000,
+                    "start_time": "2020-10-16T14:00:00+0000",
+                    "end_time": "2020-10-16T15:00:00+0000"
+                },
+                {
+                    "value": 58.440000,
+                    "start_time": "2020-10-16T15:00:00+0000",
+                    "end_time": "2020-10-16T16:00:00+0000"
+                },
+                {
+                    "value": 80.000000,
+                    "start_time": "2020-10-16T16:00:00+0000",
+                    "end_time": "2020-10-16T17:00:00+0000"
+                },
+                {
+                    "value": 58.560000,
+                    "start_time": "2020-10-16T17:00:00+0000",
+                    "end_time": "2020-10-16T18:00:00+0000"
+                },
+                {
+                    "value": 39.590000,
+                    "start_time": "2020-10-16T18:00:00+0000",
+                    "end_time": "2020-10-16T19:00:00+0000"
+                },
+                {
+                    "value": 35.960000,
+                    "start_time": "2020-10-16T19:00:00+0000",
+                    "end_time": "2020-10-16T20:00:00+0000"
+                },
+                {
+                    "value": 52.500000,
+                    "start_time": "2020-10-16T20:00:00+0000",
+                    "end_time": "2020-10-16T21:00:00+0000"
+                }
+            ]""")
+        return self.fingrid(244)
+
+    def balancing_market_down(self):
+        if os.environ.get("SAMPLE_DATA"):
+            return json.loads("""[
+                {
+                    "value": 20.010000,
+                    "start_time": "2020-10-15T21:00:00+0000",
+                    "end_time": "2020-10-15T22:00:00+0000"
+                },
+                {
+                    "value": 20.130000,
+                    "start_time": "2020-10-15T22:00:00+0000",
+                    "end_time": "2020-10-15T23:00:00+0000"
+                },
+                {
+                    "value": 19.700000,
+                    "start_time": "2020-10-15T23:00:00+0000",
+                    "end_time": "2020-10-16T00:00:00+0000"
+                },
+                {
+                    "value": 19.560000,
+                    "start_time": "2020-10-16T00:00:00+0000",
+                    "end_time": "2020-10-16T01:00:00+0000"
+                },
+                {
+                    "value": 19.570000,
+                    "start_time": "2020-10-16T01:00:00+0000",
+                    "end_time": "2020-10-16T02:00:00+0000"
+                },
+                {
+                    "value": 19.960000,
+                    "start_time": "2020-10-16T02:00:00+0000",
+                    "end_time": "2020-10-16T03:00:00+0000"
+                },
+                {
+                    "value": 35.230000,
+                    "start_time": "2020-10-16T03:00:00+0000",
+                    "end_time": "2020-10-16T04:00:00+0000"
+                },
+                {
+                    "value": 24.500000,
+                    "start_time": "2020-10-16T04:00:00+0000",
+                    "end_time": "2020-10-16T05:00:00+0000"
+                },
+                {
+                    "value": 54.290000,
+                    "start_time": "2020-10-16T05:00:00+0000",
+                    "end_time": "2020-10-16T06:00:00+0000"
+                },
+                {
+                    "value": 28.000000,
+                    "start_time": "2020-10-16T06:00:00+0000",
+                    "end_time": "2020-10-16T07:00:00+0000"
+                },
+                {
+                    "value": 28.000000,
+                    "start_time": "2020-10-16T07:00:00+0000",
+                    "end_time": "2020-10-16T08:00:00+0000"
+                },
+                {
+                    "value": 56.590000,
+                    "start_time": "2020-10-16T08:00:00+0000",
+                    "end_time": "2020-10-16T09:00:00+0000"
+                },
+                {
+                    "value": 52.900000,
+                    "start_time": "2020-10-16T09:00:00+0000",
+                    "end_time": "2020-10-16T10:00:00+0000"
+                },
+                {
+                    "value": 52.840000,
+                    "start_time": "2020-10-16T10:00:00+0000",
+                    "end_time": "2020-10-16T11:00:00+0000"
+                },
+                {
+                    "value": 52.790000,
+                    "start_time": "2020-10-16T11:00:00+0000",
+                    "end_time": "2020-10-16T12:00:00+0000"
+                },
+                {
+                    "value": 24.500000,
+                    "start_time": "2020-10-16T12:00:00+0000",
+                    "end_time": "2020-10-16T13:00:00+0000"
+                },
+                {
+                    "value": 24.500000,
+                    "start_time": "2020-10-16T13:00:00+0000",
+                    "end_time": "2020-10-16T14:00:00+0000"
+                },
+                {
+                    "value": 18.500000,
+                    "start_time": "2020-10-16T14:00:00+0000",
+                    "end_time": "2020-10-16T15:00:00+0000"
+                },
+                {
+                    "value": 26.000000,
+                    "start_time": "2020-10-16T15:00:00+0000",
+                    "end_time": "2020-10-16T16:00:00+0000"
+                },
+                {
+                    "value": 59.680000,
+                    "start_time": "2020-10-16T16:00:00+0000",
+                    "end_time": "2020-10-16T17:00:00+0000"
+                },
+                {
+                    "value": 58.560000,
+                    "start_time": "2020-10-16T17:00:00+0000",
+                    "end_time": "2020-10-16T18:00:00+0000"
+                },
+                {
+                    "value": 39.590000,
+                    "start_time": "2020-10-16T18:00:00+0000",
+                    "end_time": "2020-10-16T19:00:00+0000"
+                },
+                {
+                    "value": 16.000000,
+                    "start_time": "2020-10-16T19:00:00+0000",
+                    "end_time": "2020-10-16T20:00:00+0000"
+                },
+                {
+                    "value": 26.480000,
+                    "start_time": "2020-10-16T20:00:00+0000",
+                    "end_time": "2020-10-16T21:00:00+0000"
+                }
+            ]""")
+
+
+        return self.fingrid(106)
+
+    def reserve_market(self):
+        if os.environ.get("SAMPLE_DATA"):
+            return json.loads("""[
+                {
+                    "value": 5.240000,
+                    "start_time": "2020-10-15T21:00:00+0000",
+                    "end_time": "2020-10-15T22:00:00+0000"
+                },
+                {
+                    "value": 9.850000,
+                    "start_time": "2020-10-15T22:00:00+0000",
+                    "end_time": "2020-10-15T23:00:00+0000"
+                },
+                {
+                    "value": 9.940000,
+                    "start_time": "2020-10-15T23:00:00+0000",
+                    "end_time": "2020-10-16T00:00:00+0000"
+                },
+                {
+                    "value": 9.850000,
+                    "start_time": "2020-10-16T00:00:00+0000",
+                    "end_time": "2020-10-16T01:00:00+0000"
+                },
+                {
+                    "value": 9.850000,
+                    "start_time": "2020-10-16T01:00:00+0000",
+                    "end_time": "2020-10-16T02:00:00+0000"
+                },
+                {
+                    "value": 9.150000,
+                    "start_time": "2020-10-16T02:00:00+0000",
+                    "end_time": "2020-10-16T03:00:00+0000"
+                },
+                {
+                    "value": 9.310000,
+                    "start_time": "2020-10-16T03:00:00+0000",
+                    "end_time": "2020-10-16T04:00:00+0000"
+                },
+                {
+                    "value": 12.770000,
+                    "start_time": "2020-10-16T04:00:00+0000",
+                    "end_time": "2020-10-16T05:00:00+0000"
+                },
+                {
+                    "value": 12.310000,
+                    "start_time": "2020-10-16T05:00:00+0000",
+                    "end_time": "2020-10-16T06:00:00+0000"
+                },
+                {
+                    "value": 12.120000,
+                    "start_time": "2020-10-16T06:00:00+0000",
+                    "end_time": "2020-10-16T07:00:00+0000"
+                },
+                {
+                    "value": 12.500000,
+                    "start_time": "2020-10-16T07:00:00+0000",
+                    "end_time": "2020-10-16T08:00:00+0000"
+                },
+                {
+                    "value": 12.000000,
+                    "start_time": "2020-10-16T08:00:00+0000",
+                    "end_time": "2020-10-16T09:00:00+0000"
+                },
+                {
+                    "value": 12.310000,
+                    "start_time": "2020-10-16T09:00:00+0000",
+                    "end_time": "2020-10-16T10:00:00+0000"
+                },
+                {
+                    "value": 12.310000,
+                    "start_time": "2020-10-16T10:00:00+0000",
+                    "end_time": "2020-10-16T11:00:00+0000"
+                },
+                {
+                    "value": 12.690000,
+                    "start_time": "2020-10-16T11:00:00+0000",
+                    "end_time": "2020-10-16T12:00:00+0000"
+                },
+                {
+                    "value": 12.310000,
+                    "start_time": "2020-10-16T12:00:00+0000",
+                    "end_time": "2020-10-16T13:00:00+0000"
+                },
+                {
+                    "value": 12.120000,
+                    "start_time": "2020-10-16T13:00:00+0000",
+                    "end_time": "2020-10-16T14:00:00+0000"
+                },
+                {
+                    "value": 12.310000,
+                    "start_time": "2020-10-16T14:00:00+0000",
+                    "end_time": "2020-10-16T15:00:00+0000"
+                },
+                {
+                    "value": 12.880000,
+                    "start_time": "2020-10-16T15:00:00+0000",
+                    "end_time": "2020-10-16T16:00:00+0000"
+                },
+                {
+                    "value": 13.080000,
+                    "start_time": "2020-10-16T16:00:00+0000",
+                    "end_time": "2020-10-16T17:00:00+0000"
+                },
+                {
+                    "value": 14.000000,
+                    "start_time": "2020-10-16T17:00:00+0000",
+                    "end_time": "2020-10-16T18:00:00+0000"
+                },
+                {
+                    "value": 9.000000,
+                    "start_time": "2020-10-16T18:00:00+0000",
+                    "end_time": "2020-10-16T19:00:00+0000"
+                },
+                {
+                    "value": 8.850000,
+                    "start_time": "2020-10-16T19:00:00+0000",
+                    "end_time": "2020-10-16T20:00:00+0000"
+                },
+                {
+                    "value": 7.920000,
+                    "start_time": "2020-10-16T20:00:00+0000",
+                    "end_time": "2020-10-16T21:00:00+0000"
+                }
+            ]""")
+
+        return self.fingrid(79)
+```
+
+The client for authenticating to nordpool service is the following:
+
+```python
+import base64
+import json
+import requests
+import os
+from dotenv import load_dotenv
+from datetime import datetime, timedelta
+
+
+class NordpoolAuthClient:
+
+    token = {}
+    # url = f"https://sts.nordpoolgroup.com/connect/token"
+
+    def __init__(self):
+        load_dotenv()
+
+    def get_token(self):
+        headers = {
+            'Authorization': f"Basic {base64.b64encode('client_marketdata_api:client_marketdata_api'.encode('utf-8')).decode('utf-8')}",
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+        # print(f"headers: {headers} user {os.environ.get('NORDPOOL_USERNAME')} pass {os.environ.get('NORDPOOL_PASSWORD')}")
+        __class__.token = json.loads(
+            requests.post(
+                'https://sts.nordpoolgroup.com/connect/token',
+                data={
+                    'grant_type': 'password',
+                    'scope': 'marketdata_api',
+                    'username': os.environ.get("NORDPOOL_USERNAME"),
+                    'password': os.environ.get("NORDPOOL_PASSWORD"),
+                },
+                headers=headers
+            ).content)
+        __class__.token['acquired_at'] = datetime.utcnow()
+
+    def have_valid_token(self):
+        return __class__.token and 'acquired_at' in __class__.token and 'expires_in' in __class__.token and (__class__.token['acquired_at'] + timedelta(seconds=__class__.token['expires_in'] - 30) > datetime.utcnow())
+
+    def auth_headers(self):
+
+        if not self.have_valid_token():
+            self.get_token()
+
+        return {'Ocp-Apim-Subscription-Key':  os.environ.get("NORDPOOL_SUBSCRIPTION_KEY"),
+                'Authorization': f"Bearer {__class__.token['access_token']}"}
+```
+
+## Tests with sample data
+
+To test with local data (without relying on any external services),
+you can set the `SAMPLE_DATA=1` environment variable.
+
+Run your server like this:
 
 ```bash
-FLASK_ENV=development python -m swagger_server
+SAMPLE_DATA=1 python3 -m swagger_server
 ```
 
-to start the server.
+Then you can send a curl request like the follwoing:
 
-Don't forget to load the python virtual environment `testenv`, and to start the
-celery service as mentioned before.
+```curl
+curl --location --request POST 'http://localhost:8080/stacked_revenues' \
+--header 'Content-Type: application/vnd.api+json' \
+--header 'Authorization: Bearer q9R95vDAHOMumaANPTNKjCd5aeSSk2' \
+--data-raw '{"sdate": "2020-10-16",
+            "country": "GR",
+            "markets": ["DAM", "BM"],
+            "storage_units": [
+                {a
+                    "power_capacity_KW": 50,
+                    "energy_capacity_KWh": 100,
+                    "inefficiency_rate_per_cent": 0.999,
+                    "initial_SoC_per_cent": 0.5,
+                    "final_SoC_per_cent": 0.5,
+                    "location": {
+                        "id": "DSO_AREA_1",
+                        "name": "string"
+                    }
+                },
+                                {
+                    "power_capacity_KW": 50,
+                    "energy_capacity_KWh": 100,
+                    "inefficiency_rate_per_cent": 0.999,
+                    "initial_SoC_per_cent": 0.5,
+                    "final_SoC_per_cent": 0.5,
+                    "location": {
+                        "id": "DSO_AREA_2",
+                        "name": "string"
+                    }
+                }
+            ]}
+'
+```
 
-Now you will be able to obain the valid `dr_prosumers` object names, and the
-valid `flex_requst` names from the central DB API. You the following requests
-for this:
+And you should get a result like this:
 
-- [https://db.flexgrid-project.eu/swagger/#/Dr_prosumer/getdr_prosumers](https://db.flexgrid-project.eu/swagger/#/Dr_prosumer/getdr_prosumers)
+```json
+{
+    "flex_offer": [
+        {
+            "balancing_market_offer_down": {
+                "price_unit": "€/MWh",
+                "values": [
+                    {
+                        "end_timestamp": "2020-10-15T22:00:00Z",
+                        "start_timestamp": "2020-10-15T21:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-15T23:00:00Z",
+                        "start_timestamp": "2020-10-15T22:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T00:00:00Z",
+                        "start_timestamp": "2020-10-15T23:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T01:00:00Z",
+                        "start_timestamp": "2020-10-16T00:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T02:00:00Z",
+                        "start_timestamp": "2020-10-16T01:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T03:00:00Z",
+                        "start_timestamp": "2020-10-16T02:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T04:00:00Z",
+                        "start_timestamp": "2020-10-16T03:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T05:00:00Z",
+                        "start_timestamp": "2020-10-16T04:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T06:00:00Z",
+                        "start_timestamp": "2020-10-16T05:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T07:00:00Z",
+                        "start_timestamp": "2020-10-16T06:00:00Z",
+                        "volume": 50.25
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T08:00:00Z",
+                        "start_timestamp": "2020-10-16T07:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T09:00:00Z",
+                        "start_timestamp": "2020-10-16T08:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T10:00:00Z",
+                        "start_timestamp": "2020-10-16T09:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T11:00:00Z",
+                        "start_timestamp": "2020-10-16T10:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T12:00:00Z",
+                        "start_timestamp": "2020-10-16T11:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T13:00:00Z",
+                        "start_timestamp": "2020-10-16T12:00:00Z",
+                        "volume": 50.2
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T14:00:00Z",
+                        "start_timestamp": "2020-10-16T13:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T15:00:00Z",
+                        "start_timestamp": "2020-10-16T14:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T16:00:00Z",
+                        "start_timestamp": "2020-10-16T15:00:00Z",
+                        "volume": 50.05
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T17:00:00Z",
+                        "start_timestamp": "2020-10-16T16:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T18:00:00Z",
+                        "start_timestamp": "2020-10-16T17:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T19:00:00Z",
+                        "start_timestamp": "2020-10-16T18:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T20:00:00Z",
+                        "start_timestamp": "2020-10-16T19:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T21:00:00Z",
+                        "start_timestamp": "2020-10-16T20:00:00Z",
+                        "volume": 0.17
+                    }
+                ],
+                "volume_unit": "kWh"
+            },
+            "balancing_market_offer_up": {
+                "price_unit": "€/MWh",
+                "values": [
+                    {
+                        "end_timestamp": "2020-10-15T22:00:00Z",
+                        "start_timestamp": "2020-10-15T21:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-15T23:00:00Z",
+                        "start_timestamp": "2020-10-15T22:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T00:00:00Z",
+                        "start_timestamp": "2020-10-15T23:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T01:00:00Z",
+                        "start_timestamp": "2020-10-16T00:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T02:00:00Z",
+                        "start_timestamp": "2020-10-16T01:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T03:00:00Z",
+                        "start_timestamp": "2020-10-16T02:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T04:00:00Z",
+                        "start_timestamp": "2020-10-16T03:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T05:00:00Z",
+                        "start_timestamp": "2020-10-16T04:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T06:00:00Z",
+                        "start_timestamp": "2020-10-16T05:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T07:00:00Z",
+                        "start_timestamp": "2020-10-16T06:00:00Z",
+                        "volume": 49.75
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T08:00:00Z",
+                        "start_timestamp": "2020-10-16T07:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T09:00:00Z",
+                        "start_timestamp": "2020-10-16T08:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T10:00:00Z",
+                        "start_timestamp": "2020-10-16T09:00:00Z",
+                        "volume": 49.9
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T11:00:00Z",
+                        "start_timestamp": "2020-10-16T10:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T12:00:00Z",
+                        "start_timestamp": "2020-10-16T11:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T13:00:00Z",
+                        "start_timestamp": "2020-10-16T12:00:00Z",
+                        "volume": 49.8
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T14:00:00Z",
+                        "start_timestamp": "2020-10-16T13:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T15:00:00Z",
+                        "start_timestamp": "2020-10-16T14:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T16:00:00Z",
+                        "start_timestamp": "2020-10-16T15:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T17:00:00Z",
+                        "start_timestamp": "2020-10-16T16:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T18:00:00Z",
+                        "start_timestamp": "2020-10-16T17:00:00Z",
+                        "volume": 49.9
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T19:00:00Z",
+                        "start_timestamp": "2020-10-16T18:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T20:00:00Z",
+                        "start_timestamp": "2020-10-16T19:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T21:00:00Z",
+                        "start_timestamp": "2020-10-16T20:00:00Z",
+                        "volume": 99.83
+                    }
+                ],
+                "volume_unit": "kWh"
+            },
+            "d-LMPs": {
+                "price_unit": "€/MWh",
+                "values": [
+                    {
+                        "end_timestamp": "2020-10-15T22:00:00Z",
+                        "start_timestamp": "2020-10-15T21:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-15T23:00:00Z",
+                        "start_timestamp": "2020-10-15T22:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T00:00:00Z",
+                        "start_timestamp": "2020-10-15T23:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T01:00:00Z",
+                        "start_timestamp": "2020-10-16T00:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T02:00:00Z",
+                        "start_timestamp": "2020-10-16T01:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T03:00:00Z",
+                        "start_timestamp": "2020-10-16T02:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T04:00:00Z",
+                        "start_timestamp": "2020-10-16T03:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T05:00:00Z",
+                        "start_timestamp": "2020-10-16T04:00:00Z",
+                        "volume": -100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T06:00:00Z",
+                        "start_timestamp": "2020-10-16T05:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T07:00:00Z",
+                        "start_timestamp": "2020-10-16T06:00:00Z",
+                        "volume": -0.5
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T08:00:00Z",
+                        "start_timestamp": "2020-10-16T07:00:00Z",
+                        "volume": -100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T09:00:00Z",
+                        "start_timestamp": "2020-10-16T08:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T10:00:00Z",
+                        "start_timestamp": "2020-10-16T09:00:00Z",
+                        "volume": 49.9
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T11:00:00Z",
+                        "start_timestamp": "2020-10-16T10:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T12:00:00Z",
+                        "start_timestamp": "2020-10-16T11:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T13:00:00Z",
+                        "start_timestamp": "2020-10-16T12:00:00Z",
+                        "volume": -0.4
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T14:00:00Z",
+                        "start_timestamp": "2020-10-16T13:00:00Z",
+                        "volume": -100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T15:00:00Z",
+                        "start_timestamp": "2020-10-16T14:00:00Z",
+                        "volume": -100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T16:00:00Z",
+                        "start_timestamp": "2020-10-16T15:00:00Z",
+                        "volume": -50.05
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T17:00:00Z",
+                        "start_timestamp": "2020-10-16T16:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T18:00:00Z",
+                        "start_timestamp": "2020-10-16T17:00:00Z",
+                        "volume": 49.9
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T19:00:00Z",
+                        "start_timestamp": "2020-10-16T18:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T20:00:00Z",
+                        "start_timestamp": "2020-10-16T19:00:00Z",
+                        "volume": -100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T21:00:00Z",
+                        "start_timestamp": "2020-10-16T20:00:00Z",
+                        "volume": 99.65
+                    }
+                ],
+                "volume_unit": "kWh"
+            },
+            "day_ahead_market_offer": {
+                "price_unit": "€/MWh",
+                "values": [
+                    {
+                        "end_timestamp": "2020-10-15T22:00:00Z",
+                        "start_timestamp": "2020-10-15T21:00:00Z",
+                        "volume": -0.03
+                    },
+                    {
+                        "end_timestamp": "2020-10-15T23:00:00Z",
+                        "start_timestamp": "2020-10-15T22:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T00:00:00Z",
+                        "start_timestamp": "2020-10-15T23:00:00Z",
+                        "volume": -0.05
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T01:00:00Z",
+                        "start_timestamp": "2020-10-16T00:00:00Z",
+                        "volume": -50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T02:00:00Z",
+                        "start_timestamp": "2020-10-16T01:00:00Z",
+                        "volume": -50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T03:00:00Z",
+                        "start_timestamp": "2020-10-16T02:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T04:00:00Z",
+                        "start_timestamp": "2020-10-16T03:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T05:00:00Z",
+                        "start_timestamp": "2020-10-16T04:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T06:00:00Z",
+                        "start_timestamp": "2020-10-16T05:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T07:00:00Z",
+                        "start_timestamp": "2020-10-16T06:00:00Z",
+                        "volume": 0.25
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T08:00:00Z",
+                        "start_timestamp": "2020-10-16T07:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T09:00:00Z",
+                        "start_timestamp": "2020-10-16T08:00:00Z",
+                        "volume": -50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T10:00:00Z",
+                        "start_timestamp": "2020-10-16T09:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T11:00:00Z",
+                        "start_timestamp": "2020-10-16T10:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T12:00:00Z",
+                        "start_timestamp": "2020-10-16T11:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T13:00:00Z",
+                        "start_timestamp": "2020-10-16T12:00:00Z",
+                        "volume": 0.2
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T14:00:00Z",
+                        "start_timestamp": "2020-10-16T13:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T15:00:00Z",
+                        "start_timestamp": "2020-10-16T14:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T16:00:00Z",
+                        "start_timestamp": "2020-10-16T15:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T17:00:00Z",
+                        "start_timestamp": "2020-10-16T16:00:00Z",
+                        "volume": -50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T18:00:00Z",
+                        "start_timestamp": "2020-10-16T17:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T19:00:00Z",
+                        "start_timestamp": "2020-10-16T18:00:00Z",
+                        "volume": -50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T20:00:00Z",
+                        "start_timestamp": "2020-10-16T19:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T21:00:00Z",
+                        "start_timestamp": "2020-10-16T20:00:00Z",
+                        "volume": -49.83
+                    }
+                ],
+                "volume_unit": "kWh"
+            },
+            "location": "DSO_AREA_1",
+            "q-LMPs": {
+                "price_unit": "€/MVar",
+                "values": [
+                    {
+                        "end_timestamp": "2020-10-15T22:00:00Z",
+                        "start_timestamp": "2020-10-15T21:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-15T23:00:00Z",
+                        "start_timestamp": "2020-10-15T22:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T00:00:00Z",
+                        "start_timestamp": "2020-10-15T23:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T01:00:00Z",
+                        "start_timestamp": "2020-10-16T00:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T02:00:00Z",
+                        "start_timestamp": "2020-10-16T01:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T03:00:00Z",
+                        "start_timestamp": "2020-10-16T02:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T04:00:00Z",
+                        "start_timestamp": "2020-10-16T03:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T05:00:00Z",
+                        "start_timestamp": "2020-10-16T04:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T06:00:00Z",
+                        "start_timestamp": "2020-10-16T05:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T07:00:00Z",
+                        "start_timestamp": "2020-10-16T06:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T08:00:00Z",
+                        "start_timestamp": "2020-10-16T07:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T09:00:00Z",
+                        "start_timestamp": "2020-10-16T08:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T10:00:00Z",
+                        "start_timestamp": "2020-10-16T09:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T11:00:00Z",
+                        "start_timestamp": "2020-10-16T10:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T12:00:00Z",
+                        "start_timestamp": "2020-10-16T11:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T13:00:00Z",
+                        "start_timestamp": "2020-10-16T12:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T14:00:00Z",
+                        "start_timestamp": "2020-10-16T13:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T15:00:00Z",
+                        "start_timestamp": "2020-10-16T14:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T16:00:00Z",
+                        "start_timestamp": "2020-10-16T15:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T17:00:00Z",
+                        "start_timestamp": "2020-10-16T16:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T18:00:00Z",
+                        "start_timestamp": "2020-10-16T17:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T19:00:00Z",
+                        "start_timestamp": "2020-10-16T18:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T20:00:00Z",
+                        "start_timestamp": "2020-10-16T19:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T21:00:00Z",
+                        "start_timestamp": "2020-10-16T20:00:00Z",
+                        "volume": 0.0
+                    }
+                ],
+                "volume_unit": "kVar"
+            },
+            "reserve_market_offer_down": {
+                "price_unit": "€/MWh^2",
+                "values": [
+                    {
+                        "end_timestamp": "2020-10-15T22:00:00Z",
+                        "start_timestamp": "2020-10-15T21:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-15T23:00:00Z",
+                        "start_timestamp": "2020-10-15T22:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T00:00:00Z",
+                        "start_timestamp": "2020-10-15T23:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T01:00:00Z",
+                        "start_timestamp": "2020-10-16T00:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T02:00:00Z",
+                        "start_timestamp": "2020-10-16T01:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T03:00:00Z",
+                        "start_timestamp": "2020-10-16T02:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T04:00:00Z",
+                        "start_timestamp": "2020-10-16T03:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T05:00:00Z",
+                        "start_timestamp": "2020-10-16T04:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T06:00:00Z",
+                        "start_timestamp": "2020-10-16T05:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T07:00:00Z",
+                        "start_timestamp": "2020-10-16T06:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T08:00:00Z",
+                        "start_timestamp": "2020-10-16T07:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T09:00:00Z",
+                        "start_timestamp": "2020-10-16T08:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T10:00:00Z",
+                        "start_timestamp": "2020-10-16T09:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T11:00:00Z",
+                        "start_timestamp": "2020-10-16T10:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T12:00:00Z",
+                        "start_timestamp": "2020-10-16T11:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T13:00:00Z",
+                        "start_timestamp": "2020-10-16T12:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T14:00:00Z",
+                        "start_timestamp": "2020-10-16T13:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T15:00:00Z",
+                        "start_timestamp": "2020-10-16T14:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T16:00:00Z",
+                        "start_timestamp": "2020-10-16T15:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T17:00:00Z",
+                        "start_timestamp": "2020-10-16T16:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T18:00:00Z",
+                        "start_timestamp": "2020-10-16T17:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T19:00:00Z",
+                        "start_timestamp": "2020-10-16T18:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T20:00:00Z",
+                        "start_timestamp": "2020-10-16T19:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T21:00:00Z",
+                        "start_timestamp": "2020-10-16T20:00:00Z",
+                        "volume": 0.0
+                    }
+                ],
+                "volume_unit": "kWh^2"
+            },
+            "reserve_market_offer_up": {
+                "price_unit": "€/MWh^2",
+                "values": [
+                    {
+                        "end_timestamp": "2020-10-15T22:00:00Z",
+                        "start_timestamp": "2020-10-15T21:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-15T23:00:00Z",
+                        "start_timestamp": "2020-10-15T22:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T00:00:00Z",
+                        "start_timestamp": "2020-10-15T23:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T01:00:00Z",
+                        "start_timestamp": "2020-10-16T00:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T02:00:00Z",
+                        "start_timestamp": "2020-10-16T01:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T03:00:00Z",
+                        "start_timestamp": "2020-10-16T02:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T04:00:00Z",
+                        "start_timestamp": "2020-10-16T03:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T05:00:00Z",
+                        "start_timestamp": "2020-10-16T04:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T06:00:00Z",
+                        "start_timestamp": "2020-10-16T05:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T07:00:00Z",
+                        "start_timestamp": "2020-10-16T06:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T08:00:00Z",
+                        "start_timestamp": "2020-10-16T07:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T09:00:00Z",
+                        "start_timestamp": "2020-10-16T08:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T10:00:00Z",
+                        "start_timestamp": "2020-10-16T09:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T11:00:00Z",
+                        "start_timestamp": "2020-10-16T10:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T12:00:00Z",
+                        "start_timestamp": "2020-10-16T11:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T13:00:00Z",
+                        "start_timestamp": "2020-10-16T12:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T14:00:00Z",
+                        "start_timestamp": "2020-10-16T13:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T15:00:00Z",
+                        "start_timestamp": "2020-10-16T14:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T16:00:00Z",
+                        "start_timestamp": "2020-10-16T15:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T17:00:00Z",
+                        "start_timestamp": "2020-10-16T16:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T18:00:00Z",
+                        "start_timestamp": "2020-10-16T17:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T19:00:00Z",
+                        "start_timestamp": "2020-10-16T18:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T20:00:00Z",
+                        "start_timestamp": "2020-10-16T19:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T21:00:00Z",
+                        "start_timestamp": "2020-10-16T20:00:00Z",
+                        "volume": 0.0
+                    }
+                ],
+                "volume_unit": "kWh^2"
+            }
+        },
+        {
+            "balancing_market_offer_down": {
+                "price_unit": "€/MWh",
+                "values": [
+                    {
+                        "end_timestamp": "2020-10-15T22:00:00Z",
+                        "start_timestamp": "2020-10-15T21:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-15T23:00:00Z",
+                        "start_timestamp": "2020-10-15T22:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T00:00:00Z",
+                        "start_timestamp": "2020-10-15T23:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T01:00:00Z",
+                        "start_timestamp": "2020-10-16T00:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T02:00:00Z",
+                        "start_timestamp": "2020-10-16T01:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T03:00:00Z",
+                        "start_timestamp": "2020-10-16T02:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T04:00:00Z",
+                        "start_timestamp": "2020-10-16T03:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T05:00:00Z",
+                        "start_timestamp": "2020-10-16T04:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T06:00:00Z",
+                        "start_timestamp": "2020-10-16T05:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T07:00:00Z",
+                        "start_timestamp": "2020-10-16T06:00:00Z",
+                        "volume": 50.25
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T08:00:00Z",
+                        "start_timestamp": "2020-10-16T07:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T09:00:00Z",
+                        "start_timestamp": "2020-10-16T08:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T10:00:00Z",
+                        "start_timestamp": "2020-10-16T09:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T11:00:00Z",
+                        "start_timestamp": "2020-10-16T10:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T12:00:00Z",
+                        "start_timestamp": "2020-10-16T11:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T13:00:00Z",
+                        "start_timestamp": "2020-10-16T12:00:00Z",
+                        "volume": 50.2
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T14:00:00Z",
+                        "start_timestamp": "2020-10-16T13:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T15:00:00Z",
+                        "start_timestamp": "2020-10-16T14:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T16:00:00Z",
+                        "start_timestamp": "2020-10-16T15:00:00Z",
+                        "volume": 50.05
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T17:00:00Z",
+                        "start_timestamp": "2020-10-16T16:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T18:00:00Z",
+                        "start_timestamp": "2020-10-16T17:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T19:00:00Z",
+                        "start_timestamp": "2020-10-16T18:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T20:00:00Z",
+                        "start_timestamp": "2020-10-16T19:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T21:00:00Z",
+                        "start_timestamp": "2020-10-16T20:00:00Z",
+                        "volume": 0.17
+                    }
+                ],
+                "volume_unit": "kWh"
+            },
+            "balancing_market_offer_up": {
+                "price_unit": "€/MWh",
+                "values": [
+                    {
+                        "end_timestamp": "2020-10-15T22:00:00Z",
+                        "start_timestamp": "2020-10-15T21:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-15T23:00:00Z",
+                        "start_timestamp": "2020-10-15T22:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T00:00:00Z",
+                        "start_timestamp": "2020-10-15T23:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T01:00:00Z",
+                        "start_timestamp": "2020-10-16T00:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T02:00:00Z",
+                        "start_timestamp": "2020-10-16T01:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T03:00:00Z",
+                        "start_timestamp": "2020-10-16T02:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T04:00:00Z",
+                        "start_timestamp": "2020-10-16T03:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T05:00:00Z",
+                        "start_timestamp": "2020-10-16T04:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T06:00:00Z",
+                        "start_timestamp": "2020-10-16T05:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T07:00:00Z",
+                        "start_timestamp": "2020-10-16T06:00:00Z",
+                        "volume": 49.75
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T08:00:00Z",
+                        "start_timestamp": "2020-10-16T07:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T09:00:00Z",
+                        "start_timestamp": "2020-10-16T08:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T10:00:00Z",
+                        "start_timestamp": "2020-10-16T09:00:00Z",
+                        "volume": 49.9
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T11:00:00Z",
+                        "start_timestamp": "2020-10-16T10:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T12:00:00Z",
+                        "start_timestamp": "2020-10-16T11:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T13:00:00Z",
+                        "start_timestamp": "2020-10-16T12:00:00Z",
+                        "volume": 49.8
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T14:00:00Z",
+                        "start_timestamp": "2020-10-16T13:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T15:00:00Z",
+                        "start_timestamp": "2020-10-16T14:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T16:00:00Z",
+                        "start_timestamp": "2020-10-16T15:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T17:00:00Z",
+                        "start_timestamp": "2020-10-16T16:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T18:00:00Z",
+                        "start_timestamp": "2020-10-16T17:00:00Z",
+                        "volume": 49.9
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T19:00:00Z",
+                        "start_timestamp": "2020-10-16T18:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T20:00:00Z",
+                        "start_timestamp": "2020-10-16T19:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T21:00:00Z",
+                        "start_timestamp": "2020-10-16T20:00:00Z",
+                        "volume": 99.83
+                    }
+                ],
+                "volume_unit": "kWh"
+            },
+            "d-LMPs": {
+                "price_unit": "€/MWh",
+                "values": [
+                    {
+                        "end_timestamp": "2020-10-15T22:00:00Z",
+                        "start_timestamp": "2020-10-15T21:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-15T23:00:00Z",
+                        "start_timestamp": "2020-10-15T22:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T00:00:00Z",
+                        "start_timestamp": "2020-10-15T23:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T01:00:00Z",
+                        "start_timestamp": "2020-10-16T00:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T02:00:00Z",
+                        "start_timestamp": "2020-10-16T01:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T03:00:00Z",
+                        "start_timestamp": "2020-10-16T02:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T04:00:00Z",
+                        "start_timestamp": "2020-10-16T03:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T05:00:00Z",
+                        "start_timestamp": "2020-10-16T04:00:00Z",
+                        "volume": -100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T06:00:00Z",
+                        "start_timestamp": "2020-10-16T05:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T07:00:00Z",
+                        "start_timestamp": "2020-10-16T06:00:00Z",
+                        "volume": -0.5
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T08:00:00Z",
+                        "start_timestamp": "2020-10-16T07:00:00Z",
+                        "volume": -100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T09:00:00Z",
+                        "start_timestamp": "2020-10-16T08:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T10:00:00Z",
+                        "start_timestamp": "2020-10-16T09:00:00Z",
+                        "volume": 49.9
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T11:00:00Z",
+                        "start_timestamp": "2020-10-16T10:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T12:00:00Z",
+                        "start_timestamp": "2020-10-16T11:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T13:00:00Z",
+                        "start_timestamp": "2020-10-16T12:00:00Z",
+                        "volume": -0.4
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T14:00:00Z",
+                        "start_timestamp": "2020-10-16T13:00:00Z",
+                        "volume": -100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T15:00:00Z",
+                        "start_timestamp": "2020-10-16T14:00:00Z",
+                        "volume": -100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T16:00:00Z",
+                        "start_timestamp": "2020-10-16T15:00:00Z",
+                        "volume": -50.05
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T17:00:00Z",
+                        "start_timestamp": "2020-10-16T16:00:00Z",
+                        "volume": 100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T18:00:00Z",
+                        "start_timestamp": "2020-10-16T17:00:00Z",
+                        "volume": 49.9
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T19:00:00Z",
+                        "start_timestamp": "2020-10-16T18:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T20:00:00Z",
+                        "start_timestamp": "2020-10-16T19:00:00Z",
+                        "volume": -100.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T21:00:00Z",
+                        "start_timestamp": "2020-10-16T20:00:00Z",
+                        "volume": 99.65
+                    }
+                ],
+                "volume_unit": "kWh"
+            },
+            "day_ahead_market_offer": {
+                "price_unit": "€/MWh",
+                "values": [
+                    {
+                        "end_timestamp": "2020-10-15T22:00:00Z",
+                        "start_timestamp": "2020-10-15T21:00:00Z",
+                        "volume": -0.03
+                    },
+                    {
+                        "end_timestamp": "2020-10-15T23:00:00Z",
+                        "start_timestamp": "2020-10-15T22:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T00:00:00Z",
+                        "start_timestamp": "2020-10-15T23:00:00Z",
+                        "volume": -0.05
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T01:00:00Z",
+                        "start_timestamp": "2020-10-16T00:00:00Z",
+                        "volume": -50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T02:00:00Z",
+                        "start_timestamp": "2020-10-16T01:00:00Z",
+                        "volume": -50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T03:00:00Z",
+                        "start_timestamp": "2020-10-16T02:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T04:00:00Z",
+                        "start_timestamp": "2020-10-16T03:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T05:00:00Z",
+                        "start_timestamp": "2020-10-16T04:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T06:00:00Z",
+                        "start_timestamp": "2020-10-16T05:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T07:00:00Z",
+                        "start_timestamp": "2020-10-16T06:00:00Z",
+                        "volume": 0.25
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T08:00:00Z",
+                        "start_timestamp": "2020-10-16T07:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T09:00:00Z",
+                        "start_timestamp": "2020-10-16T08:00:00Z",
+                        "volume": -50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T10:00:00Z",
+                        "start_timestamp": "2020-10-16T09:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T11:00:00Z",
+                        "start_timestamp": "2020-10-16T10:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T12:00:00Z",
+                        "start_timestamp": "2020-10-16T11:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T13:00:00Z",
+                        "start_timestamp": "2020-10-16T12:00:00Z",
+                        "volume": 0.2
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T14:00:00Z",
+                        "start_timestamp": "2020-10-16T13:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T15:00:00Z",
+                        "start_timestamp": "2020-10-16T14:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T16:00:00Z",
+                        "start_timestamp": "2020-10-16T15:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T17:00:00Z",
+                        "start_timestamp": "2020-10-16T16:00:00Z",
+                        "volume": -50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T18:00:00Z",
+                        "start_timestamp": "2020-10-16T17:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T19:00:00Z",
+                        "start_timestamp": "2020-10-16T18:00:00Z",
+                        "volume": -50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T20:00:00Z",
+                        "start_timestamp": "2020-10-16T19:00:00Z",
+                        "volume": 50.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T21:00:00Z",
+                        "start_timestamp": "2020-10-16T20:00:00Z",
+                        "volume": -49.83
+                    }
+                ],
+                "volume_unit": "kWh"
+            },
+            "location": "DSO_AREA_2",
+            "q-LMPs": {
+                "price_unit": "€/MVar",
+                "values": [
+                    {
+                        "end_timestamp": "2020-10-15T22:00:00Z",
+                        "start_timestamp": "2020-10-15T21:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-15T23:00:00Z",
+                        "start_timestamp": "2020-10-15T22:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T00:00:00Z",
+                        "start_timestamp": "2020-10-15T23:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T01:00:00Z",
+                        "start_timestamp": "2020-10-16T00:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T02:00:00Z",
+                        "start_timestamp": "2020-10-16T01:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T03:00:00Z",
+                        "start_timestamp": "2020-10-16T02:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T04:00:00Z",
+                        "start_timestamp": "2020-10-16T03:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T05:00:00Z",
+                        "start_timestamp": "2020-10-16T04:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T06:00:00Z",
+                        "start_timestamp": "2020-10-16T05:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T07:00:00Z",
+                        "start_timestamp": "2020-10-16T06:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T08:00:00Z",
+                        "start_timestamp": "2020-10-16T07:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T09:00:00Z",
+                        "start_timestamp": "2020-10-16T08:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T10:00:00Z",
+                        "start_timestamp": "2020-10-16T09:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T11:00:00Z",
+                        "start_timestamp": "2020-10-16T10:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T12:00:00Z",
+                        "start_timestamp": "2020-10-16T11:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T13:00:00Z",
+                        "start_timestamp": "2020-10-16T12:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T14:00:00Z",
+                        "start_timestamp": "2020-10-16T13:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T15:00:00Z",
+                        "start_timestamp": "2020-10-16T14:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T16:00:00Z",
+                        "start_timestamp": "2020-10-16T15:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T17:00:00Z",
+                        "start_timestamp": "2020-10-16T16:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T18:00:00Z",
+                        "start_timestamp": "2020-10-16T17:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T19:00:00Z",
+                        "start_timestamp": "2020-10-16T18:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T20:00:00Z",
+                        "start_timestamp": "2020-10-16T19:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T21:00:00Z",
+                        "start_timestamp": "2020-10-16T20:00:00Z",
+                        "volume": 0.0
+                    }
+                ],
+                "volume_unit": "kVar"
+            },
+            "reserve_market_offer_down": {
+                "price_unit": "€/MWh^2",
+                "values": [
+                    {
+                        "end_timestamp": "2020-10-15T22:00:00Z",
+                        "start_timestamp": "2020-10-15T21:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-15T23:00:00Z",
+                        "start_timestamp": "2020-10-15T22:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T00:00:00Z",
+                        "start_timestamp": "2020-10-15T23:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T01:00:00Z",
+                        "start_timestamp": "2020-10-16T00:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T02:00:00Z",
+                        "start_timestamp": "2020-10-16T01:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T03:00:00Z",
+                        "start_timestamp": "2020-10-16T02:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T04:00:00Z",
+                        "start_timestamp": "2020-10-16T03:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T05:00:00Z",
+                        "start_timestamp": "2020-10-16T04:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T06:00:00Z",
+                        "start_timestamp": "2020-10-16T05:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T07:00:00Z",
+                        "start_timestamp": "2020-10-16T06:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T08:00:00Z",
+                        "start_timestamp": "2020-10-16T07:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T09:00:00Z",
+                        "start_timestamp": "2020-10-16T08:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T10:00:00Z",
+                        "start_timestamp": "2020-10-16T09:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T11:00:00Z",
+                        "start_timestamp": "2020-10-16T10:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T12:00:00Z",
+                        "start_timestamp": "2020-10-16T11:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T13:00:00Z",
+                        "start_timestamp": "2020-10-16T12:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T14:00:00Z",
+                        "start_timestamp": "2020-10-16T13:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T15:00:00Z",
+                        "start_timestamp": "2020-10-16T14:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T16:00:00Z",
+                        "start_timestamp": "2020-10-16T15:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T17:00:00Z",
+                        "start_timestamp": "2020-10-16T16:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T18:00:00Z",
+                        "start_timestamp": "2020-10-16T17:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T19:00:00Z",
+                        "start_timestamp": "2020-10-16T18:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T20:00:00Z",
+                        "start_timestamp": "2020-10-16T19:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T21:00:00Z",
+                        "start_timestamp": "2020-10-16T20:00:00Z",
+                        "volume": 0.0
+                    }
+                ],
+                "volume_unit": "kWh^2"
+            },
+            "reserve_market_offer_up": {
+                "price_unit": "€/MWh^2",
+                "values": [
+                    {
+                        "end_timestamp": "2020-10-15T22:00:00Z",
+                        "start_timestamp": "2020-10-15T21:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-15T23:00:00Z",
+                        "start_timestamp": "2020-10-15T22:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T00:00:00Z",
+                        "start_timestamp": "2020-10-15T23:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T01:00:00Z",
+                        "start_timestamp": "2020-10-16T00:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T02:00:00Z",
+                        "start_timestamp": "2020-10-16T01:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T03:00:00Z",
+                        "start_timestamp": "2020-10-16T02:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T04:00:00Z",
+                        "start_timestamp": "2020-10-16T03:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T05:00:00Z",
+                        "start_timestamp": "2020-10-16T04:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T06:00:00Z",
+                        "start_timestamp": "2020-10-16T05:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T07:00:00Z",
+                        "start_timestamp": "2020-10-16T06:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T08:00:00Z",
+                        "start_timestamp": "2020-10-16T07:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T09:00:00Z",
+                        "start_timestamp": "2020-10-16T08:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T10:00:00Z",
+                        "start_timestamp": "2020-10-16T09:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T11:00:00Z",
+                        "start_timestamp": "2020-10-16T10:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T12:00:00Z",
+                        "start_timestamp": "2020-10-16T11:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T13:00:00Z",
+                        "start_timestamp": "2020-10-16T12:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T14:00:00Z",
+                        "start_timestamp": "2020-10-16T13:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T15:00:00Z",
+                        "start_timestamp": "2020-10-16T14:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T16:00:00Z",
+                        "start_timestamp": "2020-10-16T15:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T17:00:00Z",
+                        "start_timestamp": "2020-10-16T16:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T18:00:00Z",
+                        "start_timestamp": "2020-10-16T17:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T19:00:00Z",
+                        "start_timestamp": "2020-10-16T18:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T20:00:00Z",
+                        "start_timestamp": "2020-10-16T19:00:00Z",
+                        "volume": 0.0
+                    },
+                    {
+                        "end_timestamp": "2020-10-16T21:00:00Z",
+                        "start_timestamp": "2020-10-16T20:00:00Z",
+                        "volume": 0.0
+                    }
+                ],
+                "volume_unit": "kWh^2"
+            }
+        }
+    ],
+    "revenues": {
+        "balancing_market_revenues": {
+            "currency": "€",
+            "value": 49.59638526603818
+        },
+        "day_ahead_market_revenues": {
+            "currency": "€",
+            "value": 7.686546558905
+        },
+        "flexibility_market_revenues": {
+            "currency": "€",
+            "value": -6.7827000126063925
+        },
+        "reserve_market_revenues": {
+            "currency": "€",
+            "value": 0.0
+        }
+    },
+    "sdate": "2020-10-16"
+}
+```
 
-- [https://db.flexgrid-project.eu/swagger/#/Flex_request](https://db.flexgrid-project.eu/swagger/#/Flex_request)
 
-## Develop using local database
+## Original Instructions Swagger generated server
 
-If you want to try a local copy of the central database, you can use the
-repository at
-[https://github.com/FlexGrid/central-db-api](https://github.com/FlexGrid/central-db-api),
-and the set the `.env` file with the appropriate `CENTRAL_DB_BASE_URL` value,
-such as `http://localhost:5000`, and also set the credentials set in your local
-copy of the database.
+## Overview
+This server was generated by the [swagger-codegen](https://github.com/swagger-api/swagger-codegen) project. By using the
+[OpenAPI-Spec](https://github.com/swagger-api/swagger-core/wiki) from a remote server, you can easily generate a server stub.  This
+is an example of building a swagger-enabled Flask server.
 
-## Deployment instructions
+This example uses the [Connexion](https://github.com/zalando/connexion) library on top of Flask.
 
-Deployment has been tested with `nginx` with `uwsgi`, using `systemd` to start
-and enable the api service and the celery program for the background tasks.
-
-Sample configuration files for these services may be found at the
-[./config/](./config/) subdirectory, but changes are needed to set your oun url,
-file paths, and user names.
-
----
-
-Original README.md from upstream
-
-## Swagger generated server
-
-### Overview
-
-This server was generated by the
-[swagger-codegen](https://github.com/swagger-api/swagger-codegen) project. By
-using the [OpenAPI-Spec](https://github.com/swagger-api/swagger-core/wiki) from
-a remote server, you can easily generate a server stub. This is an example of
-building a swagger-enabled Flask server.
-
-This example uses the [Connexion](https://github.com/zalando/connexion) library
-on top of Flask.
-
-### Requirements
-
+## Requirements
 Python 3.5.2+
 
-### Usage
-
+## Usage
 To run the server, please execute the following from the root directory:
 
 ```
@@ -462,16 +3205,14 @@ http://localhost:8080//swagger.json
 ```
 
 To launch the integration tests, use tox:
-
 ```
 sudo pip install tox
 tox
 ```
 
-### Running with Docker
+## Running with Docker
 
-To run the server on a Docker container, please execute the following from the
-root directory:
+To run the server on a Docker container, please execute the following from the root directory:
 
 ```bash
 # building the image
