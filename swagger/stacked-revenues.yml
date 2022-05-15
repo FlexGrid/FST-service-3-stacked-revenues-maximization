@@ -15,7 +15,7 @@ info:
     name: GNU
   version: 1.0.1
 servers:
-  - url: https://flex-offers-api.flexgrid-project.eu/
+  - url: https://stacked-revenues-api.flexgrid-project.eu/
 paths:
   /stacked_revenues:
     post:
@@ -36,7 +36,7 @@ paths:
           description: bad request
       security:
         - oAuth2: []
-      x-openapi-router-controller: swagger_server.controllers.flex_offers_ucs43_controller
+      x-openapi-router-controller: swagger_server.controllers.stacked_revenues_ucs23_controller
 components:
   requestBodies:
     StackedRevenuesParams:

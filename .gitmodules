@@ -1,3 +1,6 @@
 [submodule "swagger-codegen"]
 	path = swagger-codegen
 	url = https://github.com/swagger-api/swagger-codegen.git
+[submodule "stacked_revenues"]
+	path = stacked_revenues
+	url = git@github.com:FlexGrid/stacked_revenues.git
