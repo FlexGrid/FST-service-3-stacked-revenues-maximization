@@ -1,0 +1,392 @@
+openapi: 3.0.3
+info:
+  title: Flexgrid Stacked Revenues API
+  description: |-
+    Interface for obtaining optimal bids in different markets, based
+    on flex assets that are available. 
+
+    The credentials for the API are from the central DB can be obtained
+    by the ICCS team of the [FlexGrid project](https://flexgrid-project.eu)
+
+  contact:
+    name: Dimitros J. Vergados
+    url: https://flexgrid-project.eu
+  license:
+    name: GNU
+  version: 1.0.1
+servers:
+  - url: https://flex-offers-api.flexgrid-project.eu/
+paths:
+  /stacked_revenues:
+    post:
+      tags:
+        - StackedRevenues (UCS 2.3)
+      summary: Initiates a simulation scenario for Stacked Revenues maximization
+      operationId: stacked_revenues_post
+      requestBody:
+        $ref: "#/components/requestBodies/StackedRevenuesParams"
+      responses:
+        "201":
+          description: operation has been successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StackedRevenuesResult"
+        "400":
+          description: bad request
+      security:
+        - oAuth2: []
+      x-openapi-router-controller: swagger_server.controllers.flex_offers_ucs43_controller
+components:
+  requestBodies:
+    StackedRevenuesParams:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/StackedRevenuesParams"
+  schemas:
+    PricingParams:
+      required:
+        - dr_prosumers
+        - end_datetime
+        - flex_request
+        - gamma_values
+        - profit_margin
+        - start_datetime
+      type: object
+      properties:
+        country:
+          type: string
+        start_datetime:
+          type: string
+          format: date-time
+        end_datetime:
+          type: string
+          format: date-time
+        time_granularity:
+          type: object
+          properties:
+            id:
+              type: string
+            duration_seconds:
+              type: integer
+        dr_prosumers:
+          minItems: 1
+          type: array
+          items:
+            type: string
+        flex_request:
+          type: string
+        gamma_values:
+          minItems: 1
+          type: array
+          items:
+            type: number
+        profit_margin:
+          type: number
+        flex_assets:
+          type: array
+          items:
+            required:
+              - consumer_id
+              - location
+            type: object
+            properties:
+              consumer_id:
+                type: string
+              reserve_market_offer_up:
+                $ref: "#/components/schemas/DayOfferMatrixEuroMWh"
+              reserve_market_offer_down:
+                $ref: "#/components/schemas/DayOfferMatrixEuroMWh"
+              location:
+                $ref: "#/components/schemas/Location"
+            anyOf:
+              - required:
+                  - reserve_market_offer_up
+              - required:
+                  - reserve_market_offer_down
+        storage_units:
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/StorageUnit"
+        curtailable_loads:
+          type: array
+          items:
+            type: object
+            properties:
+              consumer_id:
+                type: string
+              unit:
+                type: string
+                enum:
+                  - KW
+              power_vector:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    start_timestamp:
+                      type: string
+                      format: date-time
+                    end_timestamp:
+                      type: string
+                      format: date-time
+                    power:
+                      type: number
+              location:
+                $ref: "#/components/schemas/Location"
+        flex_contracts:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              id:
+                type: number
+              gamma:
+                type: number
+        store_data:
+          type: boolean
+    StorageUnit:
+      required:
+        - location
+      type: object
+      properties:
+        power_capacity_KW:
+          minimum: 0
+          type: number
+        energy_capacity_KWh:
+          minimum: 0
+          type: number
+        inefficiency_rate_per_cent:
+          maximum: 1
+          minimum: 0
+          type: number
+        initial_SoC_per_cent:
+          maximum: 1
+          minimum: 0
+          type: number
+        final_SoC_per_cent:
+          maximum: 1
+          minimum: 0
+          type: number
+        location:
+          $ref: "#/components/schemas/Location"
+    DayOfferMatrixEuroMWh:
+      required:
+        - price_unit
+        - values
+        - volume_unit
+      type: object
+      properties:
+        values:
+          maxItems: 25
+          minItems: 23
+          type: array
+          items:
+            required:
+              - end_timestamp
+              - start_timestamp
+              - values
+            type: object
+            properties:
+              start_timestamp:
+                type: string
+                format: date-time
+              end_timestamp:
+                type: string
+                format: date-time
+              values:
+                minItems: 1
+                type: array
+                items:
+                  type: object
+                  properties:
+                    price:
+                      type: number
+                      format: currency
+                    volume:
+                      type: number
+        per_price_vector:
+          type: array
+          items:
+            type: object
+            properties:
+              price:
+                type: number
+              values:
+                $ref: "#/components/schemas/DayOfferVector"
+        price_unit:
+          type: string
+          enum:
+            - €/MWh
+        volume_unit:
+          type: string
+          enum:
+            - MWh
+            - kWh
+    Location:
+      required:
+        - id
+        - name
+      type: object
+      properties:
+        id:
+          type: string
+          enum:
+            - DSO_AREA_1
+            - DSO_AREA_2
+            - DSO_AREA_3
+            - DSO_AREA_4
+            - DSO_AREA_5
+        name:
+          type: string
+    DayOfferVector:
+      maxItems: 25
+      minItems: 23
+      type: array
+      items:
+        type: object
+        properties:
+          start_timestamp:
+            type: string
+            format: date-time
+          end_timestamp:
+            type: string
+            format: date-time
+          price:
+            type: number
+            format: currency
+          volume:
+            type: number
+    StackedRevenuesParams:
+      required:
+        - country
+        - markets
+        - sdate
+        - storage_units
+      type: object
+      properties:
+        sdate:
+          type: string
+          format: date
+        country:
+          type: string
+        markets:
+          minItems: 1
+          type: array
+          items:
+            type: string
+            enum:
+              - DAM
+              - RM
+              - FM
+              - BM
+        storage_units:
+          minItems: 1
+          type: array
+          items:
+            $ref: "#/components/schemas/StorageUnit"
+    StackedRevenuesResult:
+      required:
+        - flex_offer
+        - revenues
+        - sdate
+      type: object
+      properties:
+        sdate:
+          type: string
+          format: date
+        flex_offer:
+          type: array
+          items:
+            type: object
+            properties:
+              storage_unit:
+                type: string
+              day_ahead_market_offer:
+                $ref: "#/components/schemas/DayOfferVectorEuroMWh"
+              reserve_market_offer_up:
+                $ref: "#/components/schemas/DayOfferVectorEuroMWh"
+              reserve_market_offer_down:
+                $ref: "#/components/schemas/DayOfferVectorEuroMWh"
+              d-LMPs:
+                $ref: "#/components/schemas/DayOfferVectorEuroMWh"
+              q-LMPs:
+                required:
+                  - price_unit
+                  - values
+                  - volume_unit
+                type: object
+                properties:
+                  values:
+                    $ref: "#/components/schemas/DayOfferVector"
+                  price_unit:
+                    type: string
+                    enum:
+                      - €/MVar
+                  volume_unit:
+                    type: string
+                    enum:
+                      - MVar
+                      - kVar
+              balancing_market_offer_up:
+                $ref: "#/components/schemas/DayOfferVectorEuroMWh"
+              balancing_market_offer_down:
+                $ref: "#/components/schemas/DayOfferVectorEuroMWh"
+        revenues:
+          type: object
+          properties:
+            day_ahead_market_revenues:
+              $ref: "#/components/schemas/Price_In_Euro"
+            reserve_market_revenues:
+              $ref: "#/components/schemas/Price_In_Euro"
+            flexibility_market_revenues:
+              $ref: "#/components/schemas/Price_In_Euro"
+            balancing_market_revenues:
+              $ref: "#/components/schemas/Price_In_Euro"
+    DayOfferVectorEuroMWh:
+      required:
+        - price_unit
+        - values
+        - volume_unit
+      type: object
+      properties:
+        values:
+          $ref: "#/components/schemas/DayOfferVector"
+        price_unit:
+          type: string
+          enum:
+            - €/MWh
+        volume_unit:
+          type: string
+          enum:
+            - MWh
+            - kWh
+    Price_In_Euro:
+      required:
+        - currency
+        - value
+      type: object
+      properties:
+        value:
+          type: number
+        currency:
+          type: string
+          enum:
+            - €
+  securitySchemes:
+    oAuth2:
+      type: oauth2
+      description: oAuth2 password credentials.
+      flows:
+        password:
+          tokenUrl: https://db.flexgrid-project.eu/oauth/token
+          scopes:
+            post_flex_offers: post a flex offer scenario
+      x-tokenInfoFunc: swagger_server.controllers.authorization_controller.check_oAuth2
+      x-scopeValidateFunc: swagger_server.controllers.authorization_controller.check_oAuth2
+security:
+  - oAuth2: [post_flex_offers]
