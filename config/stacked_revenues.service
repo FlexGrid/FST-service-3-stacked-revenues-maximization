@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI instance to serve atp_service
+After=network.target eveoauth2.service nginx.service
+
+[Service]
+User=dss
+Group=www-data
+WorkingDirectory=/home/dss/flexgrid/stacked-revenues
+Environment="PATH=/home/dss/flexgrid/stacked-revenues/stacked-revenuesvenv/bin"
+ExecStart=/home/dss/flexgrid/stacked-revenues/stacked-revenuesvenv/bin/uwsgi --ini stacked_revenues_service.ini
+
+[Install]
+WantedBy=multi-user.target
