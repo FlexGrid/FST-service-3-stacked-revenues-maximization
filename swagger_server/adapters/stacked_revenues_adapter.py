@@ -37,8 +37,10 @@ def stacked_revenues_adapter(stacked_revenues_params):
     print(f"dam_prices= {len(dam_prices)}")
     rup_prices = [obj['value']
                   for obj in martketAdapter.reserve_market()]
+    print(f"rup_prices= {len(rup_prices)}")
     rdn_prices = [obj['value']
                   for obj in martketAdapter.reserve_market()]
+    print(f"rdn_prices= {len(rdn_prices)}")
 
     fmp_prices = martketAdapter.fmp(
         [su.location.id for su in stacked_revenues_params.storage_units])
